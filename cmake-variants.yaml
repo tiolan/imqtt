@@ -1,0 +1,21 @@
+mqttlib:
+  default: mosquitto
+  choices:
+    mosquitto:
+      short: mosq
+      settings:
+        USE_MOSQ: ON
+    paho:
+      short: paho
+      settings:
+        USE_PAHO: ON
+
+buildtype:
+  default: release
+  choices:
+    debug:
+      short: deb
+      buildType: Debug
+    release:
+      short: rel
+      buildType: Release
