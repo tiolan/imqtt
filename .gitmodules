@@ -1,0 +1,6 @@
+[submodule "thirdparty/paho"]
+	path = thirdparty/paho
+	url = https://github.com/eclipse/paho.mqtt.c.git
+[submodule "thirdparty/mosquitto"]
+	path = thirdparty/mosquitto
+	url = https://github.com/eclipse/mosquitto.git
