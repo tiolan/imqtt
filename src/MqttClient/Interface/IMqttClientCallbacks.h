@@ -49,8 +49,14 @@ public:
     /*To be overriden by user*/
     virtual void OnMqttMessage(upMqttMessage_t mqttMessage) const = 0;
     /*To be overriden by user, if needed*/
+    /*TODO: The user should be able to provide a token, such that a correlation to the previous call can be made*/
     virtual void OnSubscribe(void) const {/*by default, do nothing*/};
     virtual void OnUnSubscribe(void) const {/*by default, do nothing*/};
+    virtual void
+    OnPublish(int token) const
+    {
+        (void)token; /*by default, do nothing*/
+    };
 };
 
 class IMqttClientCallbacks : public IMqttLogCallbacks, public IMqttMessageCallbacks, public IMqttConnectionCallbacks {

@@ -16,25 +16,16 @@
 
 using namespace std;
 
-namespace {
-constexpr auto MOSQUITTO_KEEP_ALIVE_INTERVAL{15};
-}  // namespace
-
 namespace mqttclient {
 std::atomic_uint MosquittoClient::counter{0ul};
 std::string      MosquittoClient::libVersion;
 std::mutex       MosquittoClient::libMutex;
 
-MosquittoClient::MosquittoClient(std::string                address,
-                                 int                        port,
-                                 std::string                clientId,
-                                 MqttClientCallbacks const& callbacks)
-  : address(address)
-  , port(port)
-  , id(clientId)
+MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parameters)
+  : params(parameters)
   , messageDispatcherThread(&MosquittoClient::messageDispatcherWorker, this)
 {
-    setCallbacks(callbacks);
+    setCallbacks(params.callbackProvider);
     bool initError{false};
     {
         lock_guard<mutex> lock(libMutex);
@@ -50,9 +41,15 @@ MosquittoClient::MosquittoClient(std::string                address,
 
     // Init instance
     cbs.log->Log(LogLevel::Info, "Initializing mosquitto instance");
-    pClient = mosquitto_new(id.c_str(), cleanSession, this);
+    pClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
 
-    // initError |= mosquitto_threaded_set(pClient, true);
+    if (!params.httpProxy.empty() || !params.httpsProxy.empty()) {
+        cbs.log->Log(LogLevel::Warning, "Ignoring proxy settings, as not supported by Mosquitto");
+        initError = true;
+    }
+    if (!params.mqttUsername.empty()) {
+        initError |= mosquitto_username_pw_set(pClient, params.mqttUsername.c_str(), params.mqttPassword.c_str());
+    }
     initError |= mosquitto_int_option(pClient, MOSQ_OPT_PROTOCOL_VERSION, MQTT_PROTOCOL_V5);
     mosquitto_connect_v5_callback_set(
         pClient, [](struct mosquitto* pClient, void* pThis, int rc, int flags, const mosquitto_property* pProps) {
@@ -180,9 +177,9 @@ void
 MosquittoClient::onPublishCb(struct mosquitto* pClient, int messageId, int rc, const mosquitto_property* pProps)
 {
     (void)pClient;
-    (void)messageId;
     (void)pProps;
     cbs.log->Log(LogLevel::Debug, "Mosquitto published: " + to_string(rc));
+    cbs.msg->OnPublish(messageId);
 }
 
 void
@@ -194,36 +191,69 @@ MosquittoClient::onMessageCb(struct mosquitto*               pClient,
 
     cbs.log->Log(LogLevel::Debug, "Mosquitto received message");
 
-    IMqttMessage::userProps_t userProps;
-    const mosquitto_property* pUserProps{pProps};
-    bool                      skipFirst{false};
-    do {
-        char* key{nullptr};
-        char* val{nullptr};
-        pUserProps = mosquitto_property_read_string_pair(pUserProps, MQTT_PROP_USER_PROPERTY, &key, &val, skipFirst);
-        skipFirst  = true;
-        if (key) {
-            auto keyStr       = string(key);
-            userProps[keyStr] = val ? string(val) : string();
+    auto mqttMessage{MqttMessageFactory::create(
+        pMsg->topic,
+        IMqttMessage::payload_t(static_cast<IMqttMessage::payloadRaw_t*>(pMsg->payload),
+                                static_cast<IMqttMessage::payloadRaw_t*>(pMsg->payload) + pMsg->payloadlen),
+        IMqttMessage::intToQos(pMsg->qos),
+        pMsg->retain)};
+    mqttMessage->messageId = pMsg->mid;
+
+    {
+        const mosquitto_property* pUserProps{pProps};
+        bool                      skipFirst{false};
+        do {
+            char* key{nullptr};
+            char* val{nullptr};
+            pUserProps =
+                mosquitto_property_read_string_pair(pUserProps, MQTT_PROP_USER_PROPERTY, &key, &val, skipFirst);
+            skipFirst = true;
+            if (key) {
+                auto keyStr = string(key);
+                if (!mqttMessage->userProps.insert(make_pair(keyStr, val ? string(val) : string())).second) {
+                    cbs.log->Log(LogLevel::Error, "Was not able to add user props - ignoring");
+                }
+            }
+        } while (pUserProps);
+    }
+
+    {
+        uint16_t corellationDataSize{0};
+        void*    pCorrelationData{nullptr};
+        (void)mosquitto_property_read_binary(
+            pProps, MQTT_PROP_CORRELATION_DATA, &pCorrelationData, &corellationDataSize, false);
+        if (pCorrelationData) {
+            mqttMessage->correlationDataProps = IMqttMessage::correlationDataProps_t(
+                static_cast<unsigned char*>(pCorrelationData),
+                static_cast<unsigned char*>(pCorrelationData) + corellationDataSize);
         }
-    } while (pUserProps);
+    }
 
-    uint16_t corellationDataSize{0};
-    void*    pCorrelationData{nullptr};
-    (void)mosquitto_property_read_binary(
-        pProps, MQTT_PROP_CORRELATION_DATA, &pCorrelationData, &corellationDataSize, false);
-    IMqttMessage::correlationDataProps_t correlationData(
-        static_cast<unsigned char*>(pCorrelationData),
-        static_cast<unsigned char*>(pCorrelationData) + corellationDataSize);
+    {
+        char* pResponseTopic{nullptr};
+        (void)mosquitto_property_read_string(pProps, MQTT_PROP_RESPONSE_TOPIC, &pResponseTopic, false);
+        if (pResponseTopic) {
+            mqttMessage->responseTopic = string(pResponseTopic);
+        }
+    }
 
-    dispatchMessage(MqttMessageFactory::create(pMsg->topic,
-                                               pMsg->payload,
-                                               pMsg->payloadlen,
-                                               IMqttMessage::intToQos(pMsg->qos),
-                                               pMsg->retain,
-                                               userProps,
-                                               correlationData,
-                                               pMsg->mid));
+    {
+        char* pContentType{nullptr};
+        (void)mosquitto_property_read_string(pProps, MQTT_PROP_CONTENT_TYPE, &pContentType, false);
+        if (pContentType) {
+            mqttMessage->responseTopic = string(pContentType);
+        }
+    }
+
+    {
+        uint8_t formatIndicator{0u};
+        (void)mosquitto_property_read_byte(pProps, MQTT_PROP_PAYLOAD_FORMAT_INDICATOR, &formatIndicator, false);
+        mqttMessage->payloadFormatIndicator =
+            formatIndicator == 1u ? IMqttMessage::FormatIndicator::UTF8 : IMqttMessage::FormatIndicator::Unspecified;
+    }
+
+
+    dispatchMessage(move(mqttMessage));
 }
 
 void
@@ -292,8 +322,8 @@ MosquittoClient::GetLibVersion(void) const noexcept
 void
 MosquittoClient::ConnectAsync(void)
 {
-    cbs.log->Log(LogLevel::Info, "Connecting to broker async: [" + address + "]:" + to_string(port));
-    int rc{mosquitto_connect_async(pClient, address.c_str(), port, MOSQUITTO_KEEP_ALIVE_INTERVAL)};
+    cbs.log->Log(LogLevel::Info, "Connecting to broker async: [" + params.hostAddress + "]:" + to_string(params.port));
+    int rc{mosquitto_connect_async(pClient, params.hostAddress.c_str(), params.port, MQTT_KEEP_ALIVE_INTERVAL)};
     if (MOSQ_ERR_SUCCESS != rc) {
         cbs.log->Log(LogLevel::Fatal,
                      "Mosquitto_connect_async could not be called: " + string(mosquitto_strerror(rc)) + " (" +
@@ -316,8 +346,9 @@ MosquittoClient::Disconnect(void)
 }
 
 IMqttClient::RetCodes
-MosquittoClient::Subscribe(string const& topic, IMqttMessage::QOS qos, bool getRetained)
+MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, bool getRetained)
 {
+    cbs.log->Log(LogLevel::Trace, "Subscribing to topic: \"" + topic + "\"");
     int options{mqtt5_sub_options::MQTT_SUB_OPT_NO_LOCAL};
     if (getRetained == false) {
         options |= mqtt5_sub_options::MQTT_SUB_OPT_SEND_RETAIN_NEVER;
@@ -335,7 +366,7 @@ MosquittoClient::Subscribe(string const& topic, IMqttMessage::QOS qos, bool getR
 }
 
 IMqttClient::RetCodes
-MosquittoClient::UnSubscribe(string const& topic)
+MosquittoClient::UnSubscribeAsync(string const& topic)
 {
     cbs.log->Log(LogLevel::Trace, "Unsubscribing from topic: \"" + topic + "\"");
     switch (mosquitto_unsubscribe_v5(pClient, NULL, topic.c_str(), NULL)) {
@@ -351,15 +382,15 @@ MosquittoClient::UnSubscribe(string const& topic)
 }
 
 IMqttClient::RetCodes
-MosquittoClient::Publish(upMqttMessage_t mqttMsg)
+MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
 {
     cbs.log->Log(LogLevel::Trace, "Publishing to topic: \"" + mqttMsg->getTopic() + "\"");
 
     auto propertiesOkay{true};
     auto status{IMqttClient::RetCodes::ERROR_PERMANENT};
-    /* Note: freed at the end of this function */
+
     mosquitto_property* pProps{nullptr};
-    for (auto const& prop : mqttMsg->getUserProps()) {
+    for (auto const& prop : mqttMsg->userProps) {
         if (MOSQ_ERR_SUCCESS != mosquitto_property_add_string_pair(
                                     &pProps, MQTT_PROP_USER_PROPERTY, prop.first.c_str(), prop.second.c_str())) {
             cbs.log->Log(LogLevel::Error, "Invalid MQTT user property - ignoring message");
@@ -370,15 +401,35 @@ MosquittoClient::Publish(upMqttMessage_t mqttMsg)
 
     if (MOSQ_ERR_SUCCESS != mosquitto_property_add_binary(&pProps,
                                                           MQTT_PROP_CORRELATION_DATA,
-                                                          mqttMsg->getCorrelationDataProps().data(),
-                                                          mqttMsg->getCorrelationDataProps().size())) {
-        cbs.log->Log(LogLevel::Error, "invalid MQTT correlation data property - ignoring message");
+                                                          mqttMsg->correlationDataProps.data(),
+                                                          mqttMsg->correlationDataProps.size())) {
+        cbs.log->Log(LogLevel::Error, "Invalid MQTT correlation data property - ignoring message");
+        propertiesOkay = false;
+    }
+
+    if (MOSQ_ERR_SUCCESS !=
+        mosquitto_property_add_string(&pProps, MQTT_PROP_RESPONSE_TOPIC, mqttMsg->responseTopic.c_str())) {
+        cbs.log->Log(LogLevel::Error, "Invalid MQTT response topic - ignoring message");
+        propertiesOkay = false;
+    }
+
+    if (MOSQ_ERR_SUCCESS !=
+        mosquitto_property_add_string(&pProps, MQTT_PROP_CONTENT_TYPE, mqttMsg->payloadContentType.c_str())) {
+        cbs.log->Log(LogLevel::Error, "Invalid MQTT content type - ignoring message");
+        propertiesOkay = false;
+    }
+
+    if (MOSQ_ERR_SUCCESS !=
+        mosquitto_property_add_byte(&pProps,
+                                    MQTT_PROP_PAYLOAD_FORMAT_INDICATOR,
+                                    mqttMsg->payloadFormatIndicator == IMqttMessage::FormatIndicator::UTF8 ? 1 : 0)) {
+        cbs.log->Log(LogLevel::Error, "Invalid MQTT format indicator - ignoring message");
         propertiesOkay = false;
     }
 
     if (propertiesOkay) {
         switch (mosquitto_publish_v5(pClient,
-                                     NULL,
+                                     token,
                                      mqttMsg->getTopic().c_str(),
                                      mqttMsg->getPayload().size(),
                                      mqttMsg->getPayload().data(),
@@ -397,7 +448,7 @@ MosquittoClient::Publish(upMqttMessage_t mqttMsg)
         }
     }
     if (status != IMqttClient::RetCodes::OKAY) {
-        cbs.log->Log(LogLevel::Error, "Publish failed - will not retry");
+        cbs.log->Log(LogLevel::Error, "PublishAsync failed - will not retry");
     }
 
     mosquitto_property_free_all(&pProps);
@@ -411,9 +462,9 @@ MosquittoClient::GetConnectionStatus(void) const noexcept
 }
 
 unique_ptr<IMqttClient>
-MqttClientFactory::create(std::string address, int port, std::string clientId, MqttClientCallbacks const& cbs)
+MqttClientFactory::create(IMqttClient::InitializeParameters const& params)
 {
-    return unique_ptr<MosquittoClient>(new MosquittoClient(address, port, clientId, cbs));
+    return unique_ptr<MosquittoClient>(new MosquittoClient(params));
 }
 
 }  // namespace mqttclient

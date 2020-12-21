@@ -4,11 +4,11 @@ mqttlib:
     mosquitto:
       short: mosq
       settings:
-        USE_MOSQ: ON
+        USE_MOSQ: TRUE
     paho:
       short: paho
       settings:
-        USE_PAHO: ON
+        USE_PAHO: TRUE
 
 buildtype:
   default: release

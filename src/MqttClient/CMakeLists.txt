@@ -1,23 +1,31 @@
 # MqttClient interface
 add_library(MqttClientInterface INTERFACE)
 target_include_directories(MqttClientInterface
-                           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/interface)
+                           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
 # MqttClient module
-add_library(MqttClientLibrary MosquittoClient.cpp MqttMessage.cpp)
 
 if(${USE_MOSQ})
-  # TODO: also allow the other (static) libs
-  set(LIB_MOSQ mosquitto)
+  set(LIB_MQTT libmosquitto)
+  set(HEADER_MQTT ${CMAKE_SOURCE_DIR}/thirdparty/mosquitto/lib)
+  list(APPEND CLIENT_SOURCES Mosquitto/MosquittoClient.cpp)
 endif()
 
 if(${USE_PAHO})
-  set(LIB_PAHO "")
+  set(LIB_MQTT paho-mqtt3a)
+  set(HEADER_MQTT ${CMAKE_SOURCE_DIR}/thirdparty/paho/src)
+  list(APPEND CLIENT_SOURCES Paho/PahoClient.cpp)
 endif()
+
+list(APPEND CLIENT_SOURCES MqttMessage.cpp)
+
+add_library(MqttClientLibrary ${CLIENT_SOURCES})
 
 target_link_libraries(
   MqttClientLibrary
   # PUBLIC
   PUBLIC MqttClientInterface
   # PRIVATE
-  PRIVATE Threads::Threads ${LIB_MOSQ} ${LIB_PAHO})
+  PRIVATE Threads::Threads ${LIB_MQTT})
+
+target_include_directories(MqttClientLibrary PRIVATE ${HEADER_MQTT})

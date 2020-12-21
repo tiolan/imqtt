@@ -12,7 +12,21 @@ endif()
 option(USE_MOSQ "use mosquitto as the mqtt lib" OFF)
 option(USE_PAHO "use paho as the mqtt lib" OFF)
 
+if(${BUILD_PAHO} AND ${BUILD_MOSQ})
+  message(FATAL_ERROR "more than one MQTT lib at a time is not supported")
+endif()
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
 find_package(Threads REQUIRED)
+
+if(${USE_MOSQ})
+  include(buildMosquitto)
+endif()
+
+if(${USE_PAHO})
+  include(buildPaho)
+endif()
 
 add_subdirectory(src/MqttClient)
 add_subdirectory(src/Sample)

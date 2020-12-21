@@ -37,6 +37,17 @@ public:
     virtual ~IMqttClient() noexcept = default;
 
     enum class RetCodes { OKAY, ERROR_PERMANENT, ERROR_TEMPORARY };
+    struct InitializeParameters final {
+        std::string         hostAddress{"localhost"};
+        unsigned int        port{1883u};
+        std::string         clientId{"clientId"};
+        MqttClientCallbacks callbackProvider{MqttClientCallbacks(nullptr, nullptr, nullptr)};
+        std::string         mqttUsername{""};
+        std::string         mqttPassword{""};
+        std::string         httpProxy{""};
+        std::string         httpsProxy{""};
+        bool                cleanSession{true};
+    };
 
     virtual void
     setCallbacks(MqttClientCallbacks const& callbacks) noexcept
@@ -47,23 +58,22 @@ public:
     }
 
     /*Interface definition*/
-    virtual std::string      GetLibVersion(void) const noexcept                                                  = 0;
-    virtual void             ConnectAsync(void)                                                                  = 0;
-    virtual void             Disconnect(void)                                                                    = 0;
-    virtual RetCodes         Subscribe(std::string const& topic, IMqttMessage::QOS qos, bool getRetained = true) = 0;
-    virtual RetCodes         UnSubscribe(std::string const& topic)                                               = 0;
-    virtual RetCodes         Publish(mqttclient::upMqttMessage_t mqttMessage)                                    = 0;
+    virtual std::string GetLibVersion(void) const noexcept                                                       = 0;
+    virtual void        ConnectAsync(void)                                                                       = 0;
+    virtual void        Disconnect(void)                                                                         = 0;
+    virtual RetCodes    SubscribeAsync(std::string const& topic, IMqttMessage::QOS qos, bool getRetained = true) = 0;
+    virtual RetCodes    UnSubscribeAsync(std::string const& topic)                                               = 0;
+    virtual RetCodes    PublishAsync(mqttclient::upMqttMessage_t mqttMessage, int* token = nullptr)              = 0;
     virtual ConnectionStatus GetConnectionStatus(void) const noexcept                                            = 0;
 };
 
 class MqttClientFactory final {
 public:
-    static std::unique_ptr<IMqttClient> create(std::string                host,
-                                               int                        port,
-                                               std::string                clientId,
-                                               MqttClientCallbacks const& callbacks = MqttClientCallbacks(nullptr,
-                                                                                                          nullptr,
-                                                                                                          nullptr));
+    static std::unique_ptr<IMqttClient> create(IMqttClient::InitializeParameters const&);
     MqttClientFactory() = delete;
 };
 }  // namespace mqttclient
+
+namespace {
+constexpr auto MQTT_KEEP_ALIVE_INTERVAL{10};
+}  // namespace

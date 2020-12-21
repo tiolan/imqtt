@@ -11,20 +11,8 @@
 using namespace std;
 
 namespace mqttclient {
-MqttMessage::MqttMessage(string const&                 topic,
-                         payload_t const&              payload,
-                         QOS                           qos,
-                         userProps_t const&            userProps,
-                         int                           messageId,
-                         bool                          retain,
-                         correlationDataProps_t const& correlationDataProps)
-  : topic(topic)
-  , payload(payload)
-  , messageId(messageId)
-  , qos(qos)
-  , retain(retain)
-  , userProps(userProps)
-  , correlationDataProps(correlationDataProps)
+MqttMessage::MqttMessage(string const& topic, payload_t const& payload, QOS qos, bool retain)
+  : IMqttMessage(topic, payload, qos, retain)
 {
 }
 
@@ -34,9 +22,9 @@ MqttMessage::toString(void) const noexcept
     string str{"MqttMessage [topic]:\t" + getTopic() + "\n"};
     str += "MqttMessage [qos]:\t" + to_string(IMqttMessage::qosToInt(getQos())) + "\n";
     str += "MqttMessage [retain]:\t" + to_string(getRetained()) + "\n";
-    str += "MqttMessage [messageId]:\t" + to_string(getMessageId()) + "\n";
+    str += "MqttMessage [messageId]:\t" + to_string(messageId) + "\n";
     str += "\nMqttMessage[userProps]:\n";
-    for (auto const& prop : getUserProps()) {
+    for (auto const& prop : userProps) {
         str += "\t[" + prop.first + "]:" + prop.second + "\n";
     }
 
@@ -61,12 +49,6 @@ MqttMessage::getPayloadCastedToString(void) const
     return string(reinterpret_cast<const char*>(payload.data()), reinterpret_cast<size_t>(payload.size()));
 }
 
-int
-MqttMessage::getMessageId(void) const noexcept
-{
-    return messageId;
-}
-
 bool
 MqttMessage::getRetained(void) const noexcept
 {
@@ -79,47 +61,9 @@ MqttMessage::getQos(void) const noexcept
     return qos;
 }
 
-IMqttMessage::userProps_t const&
-MqttMessage::getUserProps(void) const noexcept
-{
-    return userProps;
-}
-
-IMqttMessage::correlationDataProps_t const&
-MqttMessage::getCorrelationDataProps(void) const noexcept
-{
-    return correlationDataProps;
-}
-
 upMqttMessage_t
-MqttMessageFactory::create(string const&                               topic,
-                           IMqttMessage::payload_t&&                   payload,
-                           IMqttMessage::QOS                           qos,
-                           bool                                        retain,
-                           IMqttMessage::userProps_t const&            userProps,
-                           IMqttMessage::correlationDataProps_t const& correlationDataProps,
-                           int                                         messageId)
+MqttMessageFactory::create(string const& topic, IMqttMessage::payload_t&& payload, IMqttMessage::QOS qos, bool retain)
 {
-    return upMqttMessage_t(new MqttMessage(topic, payload, qos, userProps, messageId, retain, correlationDataProps));
-}
-
-upMqttMessage_t
-MqttMessageFactory::create(string const&                               topic,
-                           void*                                       pPayload,
-                           size_t                                      size,
-                           IMqttMessage::QOS                           qos,
-                           bool                                        retain,
-                           IMqttMessage::userProps_t const&            userProps,
-                           IMqttMessage::correlationDataProps_t const& correlationDataProps,
-                           int                                         messageId)
-{
-    return MqttMessageFactory::create(
-        topic,
-        IMqttMessage::payload_t(static_cast<unsigned char*>(pPayload), static_cast<unsigned char*>(pPayload) + size),
-        qos,
-        retain,
-        userProps,
-        correlationDataProps,
-        messageId);
+    return upMqttMessage_t(new MqttMessage(topic, payload, qos, retain));
 }
 }  // namespace mqttclient

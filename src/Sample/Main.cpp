@@ -23,16 +23,33 @@ private:
     static mutex              exitRunMutex;
     static condition_variable interrupt;
 
-    unique_ptr<IMqttClient> client{/* create with logs handled by this, messages handled by this */
-                                   MqttClientFactory::create("localhost", 1885, "myId", {this, this, this})};
+    string const subscribeTopic{"my/topic"};
+
+    IMqttClient::InitializeParameters params;
+    unique_ptr<IMqttClient>           client;
 
     inline static void InterruptHandler(int signal) noexcept;
 
+    void sendMessage(void) const;
+
     virtual void Log(LogLevel, string const&) const override;
     virtual void OnMqttMessage(upMqttMessage_t) const override;
+    virtual void OnConnectionStatusChanged(ConnectionStatus) const override;
+    virtual void OnSubscribe(void) const override;
+    virtual void OnPublish(int) const override;
 
 public:
-    Sample(void) noexcept { signal(SIGINT, InterruptHandler); };
+    Sample(void) noexcept
+    {
+        signal(SIGINT, InterruptHandler);
+        /*create with logs handled by this, messages handled by this, connection info handled by this*/
+        params.callbackProvider = {this, this, this};
+        params.clientId         = "myId";
+        params.hostAddress      = "localhost";
+        params.port             = 1885;
+        params.cleanSession     = true;
+        client                  = MqttClientFactory::create(params);
+    };
     ~Sample() noexcept = default;
     void Run(void);
 };
@@ -40,6 +57,46 @@ public:
 bool               Sample::exitRun{false};
 mutex              Sample::exitRunMutex;
 condition_variable Sample::interrupt;
+
+void
+Sample::OnPublish(int token) const
+{
+    Log(LogLevel::Info, "Message was published for token: " + to_string(token));
+}
+
+void
+Sample::sendMessage(void) const
+{
+    auto mqttMessage{MqttMessageFactory::create("pub", {'H', 'E', 'L', 'L', 'O', '\0'}, IMqttMessage::QOS::QOS_0)};
+    mqttMessage->userProps.insert({"myKey1", "myValue1"});
+    mqttMessage->userProps.insert({"myKey2", "myValue2"});
+    mqttMessage->correlationDataProps   = IMqttMessage::correlationDataProps_t({'C', 'O', 'R', 'R', '\0'});
+    mqttMessage->responseTopic          = "my/response/topic";
+    mqttMessage->payloadFormatIndicator = IMqttMessage::FormatIndicator::UTF8;
+    mqttMessage->payloadContentType     = "ASCII";
+    int token{0};
+    client->PublishAsync(move(mqttMessage), &token);
+    Log(LogLevel::Info, "Publish done for token: " + to_string(token));
+}
+
+void
+Sample::OnSubscribe(void) const
+{
+    sendMessage();
+    sendMessage();
+}
+
+void
+Sample::OnConnectionStatusChanged(ConnectionStatus status) const
+{
+    if (status == ConnectionStatus::Connected) {
+        Log(LogLevel::Info, "Sample is connected");
+        client->SubscribeAsync(subscribeTopic, IMqttMessage::QOS::QOS_0);
+    }
+    else {
+        Log(LogLevel::Info, "Sample is disconnected");
+    }
+}
 
 void
 Sample::Log(LogLevel lvl, string const& txt) const
@@ -72,7 +129,7 @@ Sample::Log(LogLevel lvl, string const& txt) const
 void
 Sample::OnMqttMessage(upMqttMessage_t msq) const
 {
-    cout << "got Mqtt Message: " << msq->toString() << endl;
+    Log(LogLevel::Info, "Got Mqtt Message: " + msq->toString());
 }
 
 void
@@ -83,12 +140,13 @@ Sample::Run(void)
     client->setCallbacks({nullptr, this, this});
     /* enable logs */
     client->setCallbacks({this, this, this});
-    cout << client->GetLibVersion() << endl;
+    Log(LogLevel::Info, "Using lib version: " + client->GetLibVersion());
     client->ConnectAsync();
-    client->Subscribe("mytopic", IMqttMessage::QOS::QOS_0);
-    client->Publish(MqttMessageFactory::create("mytopic", {1, 2, 3}, IMqttMessage::QOS::QOS_0));
+
     // Block
     interrupt.wait(lock, [] { return exitRun; });
+    client->UnSubscribeAsync(subscribeTopic);
+    client->Disconnect();
 }
 
 void

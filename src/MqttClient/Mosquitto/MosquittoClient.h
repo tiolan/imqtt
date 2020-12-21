@@ -24,17 +24,14 @@ private:
     static std::string      libVersion;
     static std::mutex       libMutex;
 
-    std::atomic_bool            connected{false};
-    std::string                 address;
-    int                         port;
-    std::string                 id;
-    bool                        cleanSession{true};
-    mosquitto*                  pClient{nullptr};
-    std::mutex                  messageDispatcherMutex;
-    std::thread                 messageDispatcherThread;
-    std::queue<upMqttMessage_t> messageDispatcherQueue;
-    std::condition_variable     messageDispatcherAwaiter;
-    std::atomic_bool            messageDispatcherExit{false};
+    std::atomic_bool                  connected{false};
+    mosquitto*                        pClient{nullptr};
+    std::mutex                        messageDispatcherMutex;
+    std::thread                       messageDispatcherThread;
+    std::queue<upMqttMessage_t>       messageDispatcherQueue;
+    std::condition_variable           messageDispatcherAwaiter;
+    std::atomic_bool                  messageDispatcherExit{false};
+    IMqttClient::InitializeParameters params;
 
     void messageDispatcherWorker(void);
     void dispatchMessage(upMqttMessage_t&&);
@@ -46,18 +43,17 @@ private:
     void onUnSubscribeCb(struct mosquitto*, int, const mosquitto_property*);
     void onLog(struct mosquitto*, int, const char*);
 
-public:
-    MosquittoClient(std::string, int, std::string, MqttClientCallbacks const&);
-    virtual ~MosquittoClient() noexcept;
-
-    virtual inline std::string GetLibVersion(void) const noexcept override;
-
+    virtual std::string      GetLibVersion(void) const noexcept override;
     virtual void             ConnectAsync(void) override;
     virtual void             Disconnect(void) override;
-    virtual RetCodes         Subscribe(std::string const&, mqttclient::IMqttMessage::QOS, bool) override;
-    virtual RetCodes         UnSubscribe(std::string const&) override;
-    virtual RetCodes         Publish(upMqttMessage_t) override;
+    virtual RetCodes         SubscribeAsync(std::string const&, IMqttMessage::QOS, bool) override;
+    virtual RetCodes         UnSubscribeAsync(std::string const&) override;
+    virtual RetCodes         PublishAsync(upMqttMessage_t, int*) override;
     virtual ConnectionStatus GetConnectionStatus(void) const noexcept override;
+
+public:
+    MosquittoClient(IMqttClient::InitializeParameters const&);
+    virtual ~MosquittoClient() noexcept;
 };
 
 }  // namespace mqttclient
