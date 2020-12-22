@@ -13,6 +13,7 @@
 #include <functional>
 #include <mutex>
 #include <queue>
+#include <random>
 #include <thread>
 
 #include "IMqttClient.h"
@@ -32,6 +33,7 @@ private:
     std::condition_variable           messageDispatcherAwaiter;
     std::atomic_bool                  messageDispatcherExit{false};
     IMqttClient::InitializeParameters params;
+    std::default_random_engine        rndGenerator{std::random_device()()};
 
     void messageDispatcherWorker(void);
     void dispatchMessage(upMqttMessage_t&&);
@@ -46,8 +48,8 @@ private:
     virtual std::string      GetLibVersion(void) const noexcept override;
     virtual void             ConnectAsync(void) override;
     virtual void             Disconnect(void) override;
-    virtual RetCodes         SubscribeAsync(std::string const&, IMqttMessage::QOS, bool) override;
-    virtual RetCodes         UnSubscribeAsync(std::string const&) override;
+    virtual RetCodes         SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
+    virtual RetCodes         UnSubscribeAsync(std::string const&, int*) override;
     virtual RetCodes         PublishAsync(upMqttMessage_t, int*) override;
     virtual ConnectionStatus GetConnectionStatus(void) const noexcept override;
 

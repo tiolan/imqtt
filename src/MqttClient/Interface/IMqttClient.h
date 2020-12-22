@@ -39,14 +39,26 @@ public:
     enum class RetCodes { OKAY, ERROR_PERMANENT, ERROR_TEMPORARY };
     struct InitializeParameters final {
         std::string         hostAddress{"localhost"};
-        unsigned int        port{1883u};
+        int                 port{1883u};
         std::string         clientId{"clientId"};
         MqttClientCallbacks callbackProvider{MqttClientCallbacks(nullptr, nullptr, nullptr)};
         std::string         mqttUsername{""};
         std::string         mqttPassword{""};
-        std::string         httpProxy{""};
-        std::string         httpsProxy{""};
         bool                cleanSession{true};
+        int                 keepAliveInterval{10 /*seconds*/};
+        int                 reconnectDelayMin{1 /*seconds*/};
+        int                 reconnectDelayMinLower{0 /*seconds*/};
+        int                 reconnectDelayMinUpper{0 /*seconds*/};
+        int                 reconnectDelayMax{30 /*seconds*/};
+        bool                allowLocalTopics{false};
+#ifdef USE_PAHO
+        bool        autoReconnect{true}; /*true on MOSQ*/
+        std::string httpProxy{""};       /*n/a on MOSQ*/
+        std::string httpsProxy{""};      /*n/a on MOSQ*/
+#endif
+#ifdef USE_MOSQ
+        bool exponentialBackoff{false}; /*true on PAHO*/
+#endif
     };
 
     virtual void
@@ -58,13 +70,16 @@ public:
     }
 
     /*Interface definition*/
-    virtual std::string GetLibVersion(void) const noexcept                                                       = 0;
-    virtual void        ConnectAsync(void)                                                                       = 0;
-    virtual void        Disconnect(void)                                                                         = 0;
-    virtual RetCodes    SubscribeAsync(std::string const& topic, IMqttMessage::QOS qos, bool getRetained = true) = 0;
-    virtual RetCodes    UnSubscribeAsync(std::string const& topic)                                               = 0;
-    virtual RetCodes    PublishAsync(mqttclient::upMqttMessage_t mqttMessage, int* token = nullptr)              = 0;
-    virtual ConnectionStatus GetConnectionStatus(void) const noexcept                                            = 0;
+    virtual std::string      GetLibVersion(void) const noexcept                                          = 0;
+    virtual void             ConnectAsync(void)                                                          = 0;
+    virtual void             Disconnect(void)                                                            = 0;
+    virtual RetCodes         SubscribeAsync(std::string const& topic,
+                                            IMqttMessage::QOS  qos,
+                                            int*               token       = nullptr,
+                                            bool               getRetained = true)                                     = 0;
+    virtual RetCodes         UnSubscribeAsync(std::string const& topic, int* token = nullptr)            = 0;
+    virtual RetCodes         PublishAsync(mqttclient::upMqttMessage_t mqttMessage, int* token = nullptr) = 0;
+    virtual ConnectionStatus GetConnectionStatus(void) const noexcept                                    = 0;
 };
 
 class MqttClientFactory final {
@@ -73,7 +88,3 @@ public:
     MqttClientFactory() = delete;
 };
 }  // namespace mqttclient
-
-namespace {
-constexpr auto MQTT_KEEP_ALIVE_INTERVAL{10};
-}  // namespace

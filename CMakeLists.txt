@@ -11,8 +11,9 @@ endif()
 
 option(USE_MOSQ "use mosquitto as the mqtt lib" OFF)
 option(USE_PAHO "use paho as the mqtt lib" OFF)
+option(BUILD_SAMPLE "build the sample code" ON)
 
-if(${BUILD_PAHO} AND ${BUILD_MOSQ})
+if(${USE_PAHO} AND ${USE_MOSQ})
   message(FATAL_ERROR "more than one MQTT lib at a time is not supported")
 endif()
 
@@ -22,11 +23,15 @@ find_package(Threads REQUIRED)
 
 if(${USE_MOSQ})
   include(buildMosquitto)
+  add_definitions(-DUSE_MOSQ)
 endif()
 
 if(${USE_PAHO})
   include(buildPaho)
+  add_definitions(-DUSE_PAHO)
 endif()
 
 add_subdirectory(src/MqttClient)
-add_subdirectory(src/Sample)
+if(${BUILD_SAMPLE})
+  add_subdirectory(src/Sample)
+endif()

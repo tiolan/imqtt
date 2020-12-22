@@ -6,16 +6,20 @@
  * @copyright Timo Lange
  */
 
+#include <chrono>
 #include <condition_variable>
 #include <csignal>
 #include <iostream>
 #include <mutex>
 #include <string>
+#include <thread>
 
 #include "IMqttClient.h"
 
 using namespace std;
 using namespace mqttclient;
+using namespace chrono;
+using namespace this_thread;
 
 class Sample final : public IMqttClientCallbacks {
 private:
@@ -23,7 +27,8 @@ private:
     static mutex              exitRunMutex;
     static condition_variable interrupt;
 
-    string const subscribeTopic{"my/topic"};
+    string const  subscribeTopic{"my/topic"};
+    mutable mutex coutMutex;
 
     IMqttClient::InitializeParameters params;
     unique_ptr<IMqttClient>           client;
@@ -35,20 +40,22 @@ private:
     virtual void Log(LogLevel, string const&) const override;
     virtual void OnMqttMessage(upMqttMessage_t) const override;
     virtual void OnConnectionStatusChanged(ConnectionStatus) const override;
-    virtual void OnSubscribe(void) const override;
+    virtual void OnSubscribe(int) const override;
+    virtual void OnUnSubscribe(int) const override;
     virtual void OnPublish(int) const override;
 
 public:
-    Sample(void) noexcept
+    Sample(void)
     {
         signal(SIGINT, InterruptHandler);
         /*create with logs handled by this, messages handled by this, connection info handled by this*/
-        params.callbackProvider = {this, this, this};
-        params.clientId         = "myId";
-        params.hostAddress      = "localhost";
-        params.port             = 1885;
-        params.cleanSession     = true;
-        client                  = MqttClientFactory::create(params);
+        params.callbackProvider  = {this, this, this};
+        params.clientId          = "myId";
+        params.hostAddress       = "localhost";
+        params.port              = 1885;
+        params.cleanSession      = true;
+        params.keepAliveInterval = 10;
+        client                   = MqttClientFactory::create(params);
     };
     ~Sample() noexcept = default;
     void Run(void);
@@ -62,6 +69,12 @@ void
 Sample::OnPublish(int token) const
 {
     Log(LogLevel::Info, "Message was published for token: " + to_string(token));
+}
+
+void
+Sample::OnUnSubscribe(int token) const
+{
+    Log(LogLevel::Info, "Unsubscribe done for token: " + to_string(token));
 }
 
 void
@@ -80,8 +93,9 @@ Sample::sendMessage(void) const
 }
 
 void
-Sample::OnSubscribe(void) const
+Sample::OnSubscribe(int token) const
 {
+    Log(LogLevel::Info, "Subscribe done for token: " + to_string(token));
     sendMessage();
     sendMessage();
 }
@@ -91,7 +105,9 @@ Sample::OnConnectionStatusChanged(ConnectionStatus status) const
 {
     if (status == ConnectionStatus::Connected) {
         Log(LogLevel::Info, "Sample is connected");
-        client->SubscribeAsync(subscribeTopic, IMqttMessage::QOS::QOS_0);
+        int token{0};
+        client->SubscribeAsync(subscribeTopic, IMqttMessage::QOS::QOS_0, &token);
+        Log(LogLevel::Info, "Subscribe token: " + to_string(token));
     }
     else {
         Log(LogLevel::Info, "Sample is disconnected");
@@ -101,6 +117,7 @@ Sample::OnConnectionStatusChanged(ConnectionStatus status) const
 void
 Sample::Log(LogLevel lvl, string const& txt) const
 {
+    lock_guard<mutex> lock(coutMutex);
     switch (lvl) {
     case LogLevel::Debug:
         cout << "D";
@@ -145,20 +162,21 @@ Sample::Run(void)
 
     // Block
     interrupt.wait(lock, [] { return exitRun; });
-    client->UnSubscribeAsync(subscribeTopic);
+    int token{0};
+    client->UnSubscribeAsync(subscribeTopic, &token);
+    Log(LogLevel::Info, "Unsubscribe token: " + to_string(token));
+    /*Some time to allow the unsubscribe happen*/
+    sleep_for(milliseconds(500));
     client->Disconnect();
 }
 
 void
 Sample::InterruptHandler(int signal) noexcept
 {
-    // acquire a mutex to protect "exitRun"
     lock_guard<mutex> lock(exitRunMutex);
     exitRun = true;
-
-    // notify all waiters with acquired "exitRun" mutex
     interrupt.notify_all();
-}  // release "exitRun" mutex while going out of scope
+}
 
 int
 main(void)

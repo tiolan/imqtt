@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <string>
 
 using namespace std;
 
@@ -43,13 +42,16 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     cbs.log->Log(LogLevel::Info, "Initializing mosquitto instance");
     pClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
 
-    if (!params.httpProxy.empty() || !params.httpsProxy.empty()) {
-        cbs.log->Log(LogLevel::Warning, "Ignoring proxy settings, as not supported by Mosquitto");
-        initError = true;
-    }
     if (!params.mqttUsername.empty()) {
         initError |= mosquitto_username_pw_set(pClient, params.mqttUsername.c_str(), params.mqttPassword.c_str());
     }
+
+    auto reconnMin{
+        params.reconnectDelayMin +
+        uniform_int_distribution<int>(params.reconnectDelayMinLower, params.reconnectDelayMinUpper)(rndGenerator)};
+    cbs.log->Log(LogLevel::Debug,
+                 "Reconnect delay min: " + to_string(reconnMin) + "," + " max: " + to_string(params.reconnectDelayMax));
+    initError |= mosquitto_reconnect_delay_set(pClient, reconnMin, params.reconnectDelayMax, params.exponentialBackoff);
     initError |= mosquitto_int_option(pClient, MOSQ_OPT_PROTOCOL_VERSION, MQTT_PROTOCOL_V5);
     mosquitto_connect_v5_callback_set(
         pClient, [](struct mosquitto* pClient, void* pThis, int rc, int flags, const mosquitto_property* pProps) {
@@ -264,22 +266,20 @@ MosquittoClient::onSubscribeCb(struct mosquitto*         pClient,
                                const mosquitto_property* pProps)
 {
     (void)pClient;
-    (void)messageId;
     (void)pProps;
     for (int i{0}; i < grantedQosCount; i++) {
         cbs.log->Log(LogLevel::Debug, "Mosquitto Subscribed with QOS: " + to_string(*(pGrantedQos + i)));
     }
-    cbs.msg->OnSubscribe();
+    cbs.msg->OnSubscribe(messageId);
 }
 
 void
 MosquittoClient::onUnSubscribeCb(struct mosquitto* pClient, int messageId, const mosquitto_property* pProps)
 {
     (void)pClient;
-    (void)messageId;
     (void)pProps;
     cbs.log->Log(LogLevel::Debug, "Mosquitto UnSubscribed");
-    cbs.msg->OnUnSubscribe();
+    cbs.msg->OnUnSubscribe(messageId);
 }
 
 void
@@ -322,8 +322,8 @@ MosquittoClient::GetLibVersion(void) const noexcept
 void
 MosquittoClient::ConnectAsync(void)
 {
-    cbs.log->Log(LogLevel::Info, "Connecting to broker async: [" + params.hostAddress + "]:" + to_string(params.port));
-    int rc{mosquitto_connect_async(pClient, params.hostAddress.c_str(), params.port, MQTT_KEEP_ALIVE_INTERVAL)};
+    cbs.log->Log(LogLevel::Info, "Connecting to broker async: " + params.hostAddress + ":" + to_string(params.port));
+    int rc{mosquitto_connect_async(pClient, params.hostAddress.c_str(), params.port, params.keepAliveInterval)};
     if (MOSQ_ERR_SUCCESS != rc) {
         cbs.log->Log(LogLevel::Fatal,
                      "Mosquitto_connect_async could not be called: " + string(mosquitto_strerror(rc)) + " (" +
@@ -346,14 +346,17 @@ MosquittoClient::Disconnect(void)
 }
 
 IMqttClient::RetCodes
-MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, bool getRetained)
+MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int* token, bool getRetained)
 {
     cbs.log->Log(LogLevel::Trace, "Subscribing to topic: \"" + topic + "\"");
-    int options{mqtt5_sub_options::MQTT_SUB_OPT_NO_LOCAL};
+    int options{0};
+    if (!params.allowLocalTopics) {
+        options |= mqtt5_sub_options::MQTT_SUB_OPT_NO_LOCAL;
+    };
     if (getRetained == false) {
         options |= mqtt5_sub_options::MQTT_SUB_OPT_SEND_RETAIN_NEVER;
     }
-    switch (mosquitto_subscribe_v5(pClient, NULL, topic.c_str(), IMqttMessage::qosToInt(qos), options, NULL)) {
+    switch (mosquitto_subscribe_v5(pClient, token, topic.c_str(), IMqttMessage::qosToInt(qos), options, NULL)) {
     case MOSQ_ERR_SUCCESS:
         return IMqttClient::RetCodes::OKAY;
     case MOSQ_ERR_NO_CONN:
@@ -366,10 +369,10 @@ MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, bool
 }
 
 IMqttClient::RetCodes
-MosquittoClient::UnSubscribeAsync(string const& topic)
+MosquittoClient::UnSubscribeAsync(string const& topic, int* token)
 {
     cbs.log->Log(LogLevel::Trace, "Unsubscribing from topic: \"" + topic + "\"");
-    switch (mosquitto_unsubscribe_v5(pClient, NULL, topic.c_str(), NULL)) {
+    switch (mosquitto_unsubscribe_v5(pClient, token, topic.c_str(), NULL)) {
     case MOSQ_ERR_SUCCESS:
         return IMqttClient::RetCodes::OKAY;
     case MOSQ_ERR_NO_CONN:

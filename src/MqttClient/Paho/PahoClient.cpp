@@ -8,19 +8,17 @@
 
 #include "PahoClient.h"
 
-#include <functional>
-
 using namespace std;
-using namespace std::placeholders;
 
 namespace mqttclient {
 std::atomic_uint PahoClient::counter{0ul};
 std::string      PahoClient::libVersion;
 std::mutex       PahoClient::libMutex;
 
-PahoClient::PahoClient(IMqttClient::InitializeParameters const& parameter)
-  : params(parameter)
+PahoClient::PahoClient(IMqttClient::InitializeParameters const& parameters)
+  : params(parameters)
 {
+    printf("1\n");
     setCallbacks(params.callbackProvider);
     bool initError{false};
     {
@@ -89,16 +87,16 @@ PahoClient::~PahoClient() noexcept
 void
 PahoClient::onSuccessCb(MQTTAsync_successData5* data)
 {
-    cbs.log->Log(LogLevel::Debug, "Success: MQTT reason code: " + string(MQTTReasonCode_toString(data->reasonCode)));
+    cbs.log->Log(LogLevel::Trace, "Success: MQTT reason code: " + string(MQTTReasonCode_toString(data->reasonCode)));
 }
 
 void
 PahoClient::onFailureCb(MQTTAsync_failureData5* data)
 {
-    cbs.log->Log(LogLevel::Debug, "Failure: MQTT reason code: " + string(MQTTReasonCode_toString(data->reasonCode)));
-    cbs.log->Log(LogLevel::Debug, "Failure: Paho return code: " + string(MQTTAsync_strerror(data->code)));
+    cbs.log->Log(LogLevel::Trace, "Failure: MQTT reason code: " + string(MQTTReasonCode_toString(data->reasonCode)));
+    cbs.log->Log(LogLevel::Trace, "Failure: Paho return code: " + string(MQTTAsync_strerror(data->code)));
     if (data->message) {
-        cbs.log->Log(LogLevel::Debug, "Failure: Paho reason: " + string(data->message));
+        cbs.log->Log(LogLevel::Trace, "Failure: Paho reason: " + string(data->message));
     }
 }
 
@@ -169,13 +167,18 @@ PahoClient::ConnectAsync(void)
 {
     cbs.log->Log(LogLevel::Info, "Start connecting to broker");
     MQTTAsync_connectOptions connectOptions MQTTAsync_connectOptions_initializer5;
-    connectOptions.keepAliveInterval  = MQTT_KEEP_ALIVE_INTERVAL;
-    connectOptions.automaticReconnect = 1;
+    connectOptions.keepAliveInterval  = params.keepAliveInterval;
+    connectOptions.automaticReconnect = params.autoReconnect ? 1 : 0;
     connectOptions.cleanstart         = params.cleanSession ? 1 : 0;
-    connectOptions.minRetryInterval   = 1;
-    connectOptions.maxRetryInterval   = 15;
-    connectOptions.context            = this;
-    connectOptions.onSuccess5         = [](void* pThis, MQTTAsync_successData5* data) {
+    connectOptions.maxRetryInterval   = params.reconnectDelayMax;
+    connectOptions.minRetryInterval =
+        params.reconnectDelayMin +
+        uniform_int_distribution<int>(params.reconnectDelayMinLower, params.reconnectDelayMinUpper)(rndGenerator);
+    cbs.log->Log(LogLevel::Debug,
+                 "Reconnect delay min: " + to_string(connectOptions.minRetryInterval) + "," +
+                     " max: " + to_string(connectOptions.maxRetryInterval));
+    connectOptions.context    = this;
+    connectOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->onSuccessCb(data);
     };
     connectOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
@@ -221,7 +224,7 @@ PahoClient::Disconnect(void)
 }
 
 IMqttClient::RetCodes
-PahoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, bool getRetained)
+PahoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int* token, bool getRetained)
 {
     cbs.log->Log(LogLevel::Trace, "Subscribing to topic: \"" + topic + "\"");
     MQTTAsync_callOptions callOptions MQTTAsync_callOptions_initializer;
@@ -229,17 +232,20 @@ PahoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, bool getR
     callOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->cbs.log->Log(LogLevel::Debug, "Paho Subscribed");
         static_cast<PahoClient*>(pThis)->onSuccessCb(data);
-        static_cast<PahoClient*>(pThis)->cbs.msg->OnSubscribe();
+        static_cast<PahoClient*>(pThis)->cbs.msg->OnSubscribe(data->token);
     };
     callOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
         static_cast<PahoClient*>(pThis)->onFailureCb(data);
     };
     callOptions.subscribeOptions                   = MQTTSubscribe_options_initializer;
-    callOptions.subscribeOptions.noLocal           = 1;
+    callOptions.subscribeOptions.noLocal           = params.allowLocalTopics ? 0 : 1;
     callOptions.subscribeOptions.retainAsPublished = getRetained ? 0 : 2;
 
     switch (MQTTAsync_subscribe(pClient, topic.c_str(), IMqttMessage::qosToInt(qos), &callOptions)) {
     case MQTTASYNC_SUCCESS:
+        if (token) {
+            *token = callOptions.token;
+        }
         return RetCodes::OKAY;
         break;
     case MQTTASYNC_DISCONNECTED:
@@ -252,7 +258,7 @@ PahoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, bool getR
 }
 
 IMqttClient::RetCodes
-PahoClient::UnSubscribeAsync(string const& topic)
+PahoClient::UnSubscribeAsync(string const& topic, int* token)
 {
     cbs.log->Log(LogLevel::Trace, "Unsubscribing from topic: \"" + topic + "\"");
     MQTTAsync_callOptions callOptions MQTTAsync_callOptions_initializer;
@@ -260,7 +266,7 @@ PahoClient::UnSubscribeAsync(string const& topic)
     callOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->cbs.log->Log(LogLevel::Debug, "Paho UnSubscribed");
         static_cast<PahoClient*>(pThis)->onSuccessCb(data);
-        static_cast<PahoClient*>(pThis)->cbs.msg->OnUnSubscribe();
+        static_cast<PahoClient*>(pThis)->cbs.msg->OnUnSubscribe(data->token);
     };
     callOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
         static_cast<PahoClient*>(pThis)->onFailureCb(data);
@@ -268,6 +274,9 @@ PahoClient::UnSubscribeAsync(string const& topic)
 
     switch (MQTTAsync_unsubscribe(pClient, topic.c_str(), &callOptions)) {
     case MQTTASYNC_SUCCESS:
+        if (token) {
+            *token = callOptions.token;
+        }
         return RetCodes::OKAY;
         break;
     case MQTTASYNC_DISCONNECTED:

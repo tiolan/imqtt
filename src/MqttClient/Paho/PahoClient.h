@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <random>
 #include <string>
 
 #include "IMqttClient.h"
@@ -22,14 +23,15 @@ private:
     static std::string      libVersion;
     static std::mutex       libMutex;
 
+    MQTTAsync                         pClient{nullptr};
     IMqttClient::InitializeParameters params;
+    std::default_random_engine        rndGenerator{std::random_device()()};
 
-    MQTTAsync                pClient;
     virtual std::string      GetLibVersion(void) const noexcept override;
     virtual void             ConnectAsync(void) override;
     virtual void             Disconnect(void) override;
-    virtual RetCodes         SubscribeAsync(std::string const&, IMqttMessage::QOS, bool) override;
-    virtual RetCodes         UnSubscribeAsync(std::string const&) override;
+    virtual RetCodes         SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
+    virtual RetCodes         UnSubscribeAsync(std::string const&, int*) override;
     virtual RetCodes         PublishAsync(upMqttMessage_t, int*) override;
     virtual ConnectionStatus GetConnectionStatus(void) const noexcept override;
 
