@@ -31,7 +31,7 @@ target_link_libraries(
 target_include_directories(MqttClientLibrary PRIVATE ${HEADER_MQTT})
 
 if(MSVC)
-  target_compile_options(MqttClientLibrary PRIVATE /W4 /WX)
+  #target_compile_options(MqttClientLibrary PRIVATE /W4 /WX)
 else()
   target_compile_options(MqttClientLibrary PRIVATE -Wall -Wextra # -pedantic
                                                    -Werror)

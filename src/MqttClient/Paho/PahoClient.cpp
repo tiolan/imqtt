@@ -306,7 +306,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
 
     MQTTAsync_message msg MQTTAsync_message_initializer;
     msg.payload    = const_cast<void*>(reinterpret_cast<const void*>(mqttMsg->getPayload().data()));
-    msg.payloadlen = mqttMsg->getPayload().size();
+    msg.payloadlen = static_cast<int>(mqttMsg->getPayload().size());
     msg.msgid      = mqttMsg->messageId > 0 ? mqttMsg->messageId : msg.msgid;
     msg.qos        = IMqttMessage::qosToInt(mqttMsg->getQos());
     msg.retained   = mqttMsg->getRetained() ? 1 : 0;
@@ -315,9 +315,9 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         MQTTProperty prop;
         prop.identifier       = MQTTPROPERTY_CODE_USER_PROPERTY;
         prop.value.data.data  = const_cast<char*>(userProp.first.c_str());
-        prop.value.data.len   = userProp.first.size();
+        prop.value.data.len   = static_cast<int>(userProp.first.size());
         prop.value.value.data = const_cast<char*>(userProp.second.c_str());
-        prop.value.value.len  = userProp.second.size();
+        prop.value.value.len  = static_cast<int>(userProp.second.size());
 
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
             cbs.log->Log(LogLevel::Error, "Was not able to add user property, ignoring message");
@@ -328,7 +328,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         MQTTProperty prop;
         prop.identifier      = MQTTPROPERTY_CODE_RESPONSE_TOPIC;
         prop.value.data.data = const_cast<char*>(mqttMsg->responseTopic.c_str());
-        prop.value.data.len  = mqttMsg->responseTopic.size();
+        prop.value.data.len  = static_cast<int>(mqttMsg->responseTopic.size());
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
             cbs.log->Log(LogLevel::Error, "Was not able to add reponse topic, ignoring message");
             propertiesOkay = false;
@@ -338,7 +338,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         MQTTProperty prop;
         prop.identifier      = MQTTPROPERTY_CODE_CORRELATION_DATA;
         prop.value.data.data = reinterpret_cast<char*>(mqttMsg->correlationDataProps.data());
-        prop.value.data.len  = mqttMsg->correlationDataProps.size();
+        prop.value.data.len  = static_cast<int>(mqttMsg->correlationDataProps.size());
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
             cbs.log->Log(LogLevel::Error, "Was not able to add correlation data, ignoring message");
             propertiesOkay = false;
@@ -357,7 +357,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         MQTTProperty prop;
         prop.identifier      = MQTTPROPERTY_CODE_CONTENT_TYPE;
         prop.value.data.data = const_cast<char*>(mqttMsg->payloadContentType.c_str());
-        prop.value.data.len  = mqttMsg->payloadContentType.size();
+        prop.value.data.len  = static_cast<int>(mqttMsg->payloadContentType.size());
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
             cbs.log->Log(LogLevel::Error, "Was not able to add content type, ignoring message");
             propertiesOkay = false;
