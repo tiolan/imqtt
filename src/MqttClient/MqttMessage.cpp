@@ -46,7 +46,7 @@ MqttMessage::getPayload(void) const noexcept
 string
 MqttMessage::getPayloadCastedToString(void) const
 {
-    return string(reinterpret_cast<const char*>(payload.data()), reinterpret_cast<size_t>(payload.size()));
+    return string(reinterpret_cast<const char*>(payload.data()), static_cast<size_t>(payload.size()));
 }
 
 bool

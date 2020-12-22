@@ -114,7 +114,7 @@ PahoClient::onMessageCb(char* pTopic, int topicLen, MQTTAsync_message* msg) cons
         IMqttMessage::intToQos(msg->qos),
         msg->retained == 0 ? false : true)};
 
-    for (auto prop{0u}; prop < msg->properties.count; prop++) {
+    for (auto prop{0}; prop < msg->properties.count; prop++) {
         switch (msg->properties.array[prop].identifier) {
         case MQTTPROPERTY_CODE_USER_PROPERTY: {
             auto key{string(msg->properties.array[prop].value.data.data, msg->properties.array[prop].value.data.len)};
@@ -312,7 +312,8 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
     msg.retained   = mqttMsg->getRetained() ? 1 : 0;
 
     for (auto const& userProp : mqttMsg->userProps) {
-        MQTTProperty prop     = {.identifier = MQTTPROPERTY_CODE_USER_PROPERTY};
+        MQTTProperty prop;
+        prop.identifier       = MQTTPROPERTY_CODE_USER_PROPERTY;
         prop.value.data.data  = const_cast<char*>(userProp.first.c_str());
         prop.value.data.len   = userProp.first.size();
         prop.value.value.data = const_cast<char*>(userProp.second.c_str());
@@ -324,7 +325,8 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         }
     }
     {
-        MQTTProperty prop    = {.identifier = MQTTPROPERTY_CODE_RESPONSE_TOPIC};
+        MQTTProperty prop;
+        prop.identifier      = MQTTPROPERTY_CODE_RESPONSE_TOPIC;
         prop.value.data.data = const_cast<char*>(mqttMsg->responseTopic.c_str());
         prop.value.data.len  = mqttMsg->responseTopic.size();
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
@@ -333,7 +335,8 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         }
     }
     {
-        MQTTProperty prop    = {.identifier = MQTTPROPERTY_CODE_CORRELATION_DATA};
+        MQTTProperty prop;
+        prop.identifier      = MQTTPROPERTY_CODE_CORRELATION_DATA;
         prop.value.data.data = reinterpret_cast<char*>(mqttMsg->correlationDataProps.data());
         prop.value.data.len  = mqttMsg->correlationDataProps.size();
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
@@ -342,15 +345,17 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         }
     }
     {
-        MQTTProperty prop = {.identifier = MQTTPROPERTY_CODE_PAYLOAD_FORMAT_INDICATOR};
-        prop.value.byte   = mqttMsg->payloadFormatIndicator == IMqttMessage::FormatIndicator::UTF8 ? 1u : 0u;
+        MQTTProperty prop;
+        prop.identifier = MQTTPROPERTY_CODE_PAYLOAD_FORMAT_INDICATOR;
+        prop.value.byte = mqttMsg->payloadFormatIndicator == IMqttMessage::FormatIndicator::UTF8 ? 1u : 0u;
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
             cbs.log->Log(LogLevel::Error, "Was not able to add format indicator, ignoring message");
             propertiesOkay = false;
         }
     }
     {
-        MQTTProperty prop    = {.identifier = MQTTPROPERTY_CODE_CONTENT_TYPE};
+        MQTTProperty prop;
+        prop.identifier      = MQTTPROPERTY_CODE_CONTENT_TYPE;
         prop.value.data.data = const_cast<char*>(mqttMsg->payloadContentType.c_str());
         prop.value.data.len  = mqttMsg->payloadContentType.size();
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {

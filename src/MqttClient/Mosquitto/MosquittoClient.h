@@ -27,13 +27,14 @@ private:
 
     std::atomic_bool                  connected{false};
     mosquitto*                        pClient{nullptr};
-    std::mutex                        messageDispatcherMutex;
-    std::thread                       messageDispatcherThread;
-    std::queue<upMqttMessage_t>       messageDispatcherQueue;
-    std::condition_variable           messageDispatcherAwaiter;
-    std::atomic_bool                  messageDispatcherExit{false};
     IMqttClient::InitializeParameters params;
     std::default_random_engine        rndGenerator{std::random_device()()};
+
+    std::mutex                  messageDispatcherMutex;
+    std::thread                 messageDispatcherThread;
+    std::queue<upMqttMessage_t> messageDispatcherQueue;
+    std::condition_variable     messageDispatcherAwaiter;
+    std::atomic_bool            messageDispatcherExit{false};
 
     void messageDispatcherWorker(void);
     void dispatchMessage(upMqttMessage_t&&);
