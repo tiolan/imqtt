@@ -51,12 +51,12 @@ public:
         int                 reconnectDelayMinUpper{0 /*seconds*/};
         int                 reconnectDelayMax{30 /*seconds*/};
         bool                allowLocalTopics{false};
-#ifdef USE_PAHO
+#ifdef IMQTT_USE_PAHO
         bool        autoReconnect{true}; /*true on MOSQ*/
         std::string httpProxy{""};       /*n/a on MOSQ*/
         std::string httpsProxy{""};      /*n/a on MOSQ*/
 #endif
-#ifdef USE_MOSQ
+#ifdef IMQTT_USE_MOSQ
         bool exponentialBackoff{false}; /*true on PAHO*/
 #endif
     };

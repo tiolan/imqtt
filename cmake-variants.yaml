@@ -5,14 +5,16 @@ mqttlib:
       short: mosq
       long: Build using Mosquitto
       settings:
-        USE_MOSQ: ON
-        BUILD_SAMPLE: ON
+        IMQTT_USE_MOSQ: ON
+        IMQTT_BUILD_SAMPLE: ON
+        IMQTT_INSTALL: ON
     paho:
       short: paho
       long: Build using Paho
       settings:
-        USE_PAHO: ON
-        BUILD_SAMPLE: ON
+        IMQTT_USE_PAHO: ON
+        IMQTT_BUILD_SAMPLE: ON
+        IMQTT_INSTALL: ON
 
 linktype:
   default: static

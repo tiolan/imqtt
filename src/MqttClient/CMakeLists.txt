@@ -1,46 +1,47 @@
 # MqttClient interface
-add_library(MqttClientInterface INTERFACE)
-target_include_directories(MqttClientInterface
-                           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
+add_library(${IMQTT_INTERFACE} INTERFACE)
+target_include_directories(
+  ${IMQTT_INTERFACE}
+  INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Interface>
+            $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>)
+
+set(IMQTT_INTERFACE_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttClient.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttClientCallbacks.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttMessage.h)
+
+target_sources(${IMQTT_INTERFACE}
+               INTERFACE $<BUILD_INTERFACE:${IMQTT_INTERFACE_HEADERS}>)
 
 # MqttClient library
-if(${USE_MOSQ})
-  if(${BUILD_SHARED_LIBS})
-    set(LIB_MQTT mosquitto_static)
-  else()
-    set(LIB_MQTT mosquitto)
-  endif()
+if(${IMQTT_USE_MOSQ})
   list(APPEND CLIENT_SOURCES Mosquitto/MosquittoClient.cpp)
 endif()
 
-if(${USE_PAHO})
-  set(LIB_MQTT paho-mqtt3a)
+if(${IMQTT_USE_PAHO})
   list(APPEND CLIENT_SOURCES Paho/PahoClient.cpp)
 endif()
 
 list(APPEND CLIENT_SOURCES MqttMessage.cpp)
 
-if(${BUILD_SHARED_LIBS})
-  set(SHARED_LIB SHARED)
-endif()
-
-add_library(MqttClientLibrary ${SHARED_LIB} ${CLIENT_SOURCES})
-
+add_library(${IMQTT_LIBRARY} ${IMQTT_LINKAGE} ${CLIENT_SOURCES})
+set_target_properties(${IMQTT_LIBRARY} PROPERTIES PUBLIC_HEADER
+                                                  "${IMQTT_INTERFACE_HEADERS}")
 if(${EXTERNAL_PROJECT})
-  add_dependencies(MqttClientLibrary ${EXTERNAL_PROJECT_NAME})
+  add_dependencies(${IMQTT_LIBRARY} ${EXTERNAL_PROJECT_NAME})
 endif()
 
-target_include_directories(MqttClientLibrary PRIVATE ${MQTT_LIB_PATH}/include)
+target_include_directories(${IMQTT_LIBRARY} PRIVATE ${MQTT_LIB_PATH}/include)
 
 target_link_libraries(
-  MqttClientLibrary
+  ${IMQTT_LIBRARY}
   # PUBLIC
-  PUBLIC MqttClientInterface
+  PUBLIC ${IMQTT_INTERFACE}
   # PRIVATE
   PRIVATE Threads::Threads ${LIB_MQTT})
 
 if(MSVC)
-  # target_compile_options(MqttClientLibrary PRIVATE /W4 /WX)
+  # target_compile_options(${IMQTT_LIBRARY} PRIVATE /W4 /WX)
 else()
-  target_compile_options(MqttClientLibrary PRIVATE -Wall -Wextra -Werror)
+  target_compile_options(${IMQTT_LIBRARY} PRIVATE -Wall -Wextra -Werror)
 endif()
