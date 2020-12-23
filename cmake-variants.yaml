@@ -3,19 +3,37 @@ mqttlib:
   choices:
     mosquitto:
       short: mosq
+      long: Build using Mosquitto
       settings:
-        USE_MOSQ: TRUE
+        USE_MOSQ: ON
+        BUILD_SAMPLE: ON
     paho:
       short: paho
+      long: Build using Paho
       settings:
-        USE_PAHO: TRUE
+        USE_PAHO: ON
+        BUILD_SAMPLE: ON
 
 buildtype:
   default: release
   choices:
     debug:
       short: deb
+      long: With debug symbols
       buildType: Debug
     release:
       short: rel
+      long: Without debug symbols
       buildType: Release
+
+mqttSource:
+  default: extProj
+  choices:
+    extProj:
+      short: extProj
+      long: Build MQTT lib as external CMake project
+    preBuild:
+      short: preBuild
+      long: Use existing MQTT lib binaries
+      settings:
+        MQTT_LIB_PATH: /path/to/lib
