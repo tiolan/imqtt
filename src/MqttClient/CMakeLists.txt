@@ -3,10 +3,13 @@ add_library(MqttClientInterface INTERFACE)
 target_include_directories(MqttClientInterface
                            INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 
-# MqttClient module
-
+# MqttClient library
 if(${USE_MOSQ})
-  set(LIB_MQTT mosquitto)
+  if(${BUILD_SHARED_LIBS})
+    set(LIB_MQTT mosquitto_static)
+  else()
+    set(LIB_MQTT mosquitto)
+  endif()
   list(APPEND CLIENT_SOURCES Mosquitto/MosquittoClient.cpp)
 endif()
 
@@ -23,7 +26,7 @@ endif()
 
 add_library(MqttClientLibrary ${SHARED_LIB} ${CLIENT_SOURCES})
 
-if(EXTERNAL_PROJECT)
+if(${EXTERNAL_PROJECT})
   add_dependencies(MqttClientLibrary ${EXTERNAL_PROJECT_NAME})
 endif()
 

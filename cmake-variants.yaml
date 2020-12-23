@@ -14,6 +14,18 @@ mqttlib:
         USE_PAHO: ON
         BUILD_SAMPLE: ON
 
+linktype:
+  default: static
+  choices:
+    static:
+      short: static
+      linkage: static
+      long: Link and build static
+    shared:
+      short: shared
+      linkage: shared
+      long: Link and build shared
+
 buildtype:
   default: release
   choices:

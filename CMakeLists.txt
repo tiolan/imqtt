@@ -32,6 +32,8 @@ if(${USE_MOSQ})
       -DWITH_CLIENTS:BOOL=OFF
       -DWITH_PLUGINS:BOOL=OFF
       -DWITH_APPS:BOOL=OFF
+      -DWITH_PIC:BOOL=ON
+      -DWITH_TLS:BOOL=OFF # For now
       -DWITH_BROKER:BOOL=OFF)
 endif()
 
@@ -41,8 +43,13 @@ if(${USE_PAHO})
   set(GIT_REPO https://github.com/eclipse/paho.mqtt.c.git)
   set(EXTERNAL_PROJECT_NAME paho_external)
   set(EXTERNAL_PROJECT_BUILD_ARGS
-      -DPAHO_BUILD_STATIC:BOOL=ON -DPAHO_HIGH_PERFORMANCE:BOOL=ON
-      -DPAHO_ENABLE_TESTING:BOOL=OFF -DPAHO_ENABLE_CPACK:BOOL=OFF)
+      -DPAHO_BUILD_SHARED:BOOL=ON
+      -DPAHO_BUILD_STATIC:BOOL=ON
+      -DPAHO_WITH_SSL:BOOL=ON
+      -DPAHO_HIGH_PERFORMANCE:BOOL=ON
+      -DPAHO_ENABLE_TESTING:BOOL=OFF
+      -DPAHO_ENABLE_CPACK:BOOL=OFF
+      -DPAHO_BUILD_DOCUMENTATION:BOOL=OFF)
 endif()
 
 if(NOT DEFINED MQTT_LIB_PATH)
@@ -67,10 +74,6 @@ message(STATUS "Searching MQTT lib in: ${MQTT_LIB_PATH}")
 link_directories(${MQTT_LIB_PATH}/lib)
 
 add_subdirectory(src/MqttClient)
-
-if(DEFINED EXTERNAL_PROJECT)
-  add_dependencies(MqttClientLibrary ${EXTERNAL_PROJECT_NAME})
-endif()
 
 if(${BUILD_SAMPLE})
   add_subdirectory(src/Sample)
