@@ -62,7 +62,7 @@ public:
     virtual void
     OnPublish(int token) const
     {
-        /*for Paho and QOS, the token is always 0*/
+        /*for Paho and QOS0, the token is always 0*/
         (void)token; /*by default, do nothing*/
     };
 };

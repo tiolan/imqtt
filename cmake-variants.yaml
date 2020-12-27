@@ -16,6 +16,20 @@ mqttlib:
         IMQTT_BUILD_SAMPLE: ON
         IMQTT_INSTALL: ON
 
+tls:
+  default: with
+  choices:
+    with:
+      short: tls
+      long: Build with TLS support
+      settings:
+        IMQTT_WITH_TLS: ON
+    without:
+      short: noTls
+      long: Build without TLS support
+      settings:
+        IMQTT_WITH_TLS: OFF
+
 linktype:
   default: static
   choices:

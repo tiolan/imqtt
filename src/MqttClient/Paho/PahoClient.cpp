@@ -36,14 +36,15 @@ PahoClient::PahoClient(IMqttClient::InitializeParameters const& parameters)
         };
     }  // unlock mutex, from here everything is instance specific
     cbs.log->Log(LogLevel::Info, "Initializing paho instance");
+    auto brokerAddress{params.hostAddress + ":" + to_string(params.port)};
+    cbs.log->Log(LogLevel::Info, "Broker-Address: " + brokerAddress);
     MQTTAsync_createOptions createOptions MQTTAsync_createOptions_initializer5;
-    initError |=
-        MQTTASYNC_SUCCESS != MQTTAsync_createWithOptions(&pClient,
-                                                         (params.hostAddress + ":" + to_string(params.port)).c_str(),
-                                                         params.clientId.c_str(),
-                                                         MQTTCLIENT_PERSISTENCE_NONE,
-                                                         NULL,
-                                                         &createOptions);
+    initError |= MQTTASYNC_SUCCESS != MQTTAsync_createWithOptions(&pClient,
+                                                                  brokerAddress.c_str(),
+                                                                  params.clientId.c_str(),
+                                                                  MQTTCLIENT_PERSISTENCE_NONE,
+                                                                  NULL,
+                                                                  &createOptions);
 
     initError |=
         MQTTASYNC_SUCCESS !=
@@ -194,6 +195,23 @@ PahoClient::ConnectAsync(void)
     if (!params.httpsProxy.empty()) {
         connectOptions.httpsProxy = params.httpsProxy.c_str();
     }
+#ifdef IMQTT_WITH_TLS
+    MQTTAsync_SSLOptions sslOptions MQTTAsync_SSLOptions_initializer;
+    connectOptions.ssl             = &sslOptions;
+    connectOptions.ssl->trustStore = params.caFilePath.empty() ? nullptr : params.caFilePath.c_str();
+    connectOptions.ssl->CApath     = params.caDirPath.empty() ? nullptr : params.caDirPath.c_str();
+    connectOptions.ssl->keyStore   = params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str();
+    connectOptions.ssl->privateKey = params.clientKeyFilePath.empty() ? nullptr : params.clientKeyFilePath.c_str();
+    connectOptions.ssl->privateKeyPassword =
+        params.clientKeyPassword.empty() ? nullptr : params.clientKeyPassword.c_str();
+    connectOptions.ssl->verify               = 1;
+    connectOptions.ssl->enableServerCertAuth = 1;
+    connectOptions.ssl->ssl_error_context    = this;
+    connectOptions.ssl->ssl_error_cb         = [](const char* str, size_t len, void* pThis) -> int {
+        static_cast<PahoClient*>(pThis)->cbs.log->Log(LogLevel::Error, string(str, len));
+        return 0;
+    };
+#endif
     auto rc{MQTTAsync_connect(pClient, &connectOptions)};
     if (rc == MQTTASYNC_SUCCESS) {
     }

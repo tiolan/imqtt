@@ -19,21 +19,41 @@ option(IMQTT_USE_MOSQ "use mosquitto as the mqtt lib" OFF)
 option(IMQTT_USE_PAHO "use paho as the mqtt lib" OFF)
 option(IMQTT_BUILD_SAMPLE "build the sample code" OFF)
 option(IMQTT_INSTALL "install generated artifacts" OFF)
-option(BUILD_SHARED_LIBS "build shared lib" OFF)
+option(IMQTT_WITH_TLS "enable TLS configurations" OFF)
+option(BUILD_SHARED_LIBS "build and link MQTT library as shared lib" OFF)
 
 if(${IMQTT_USE_PAHO} AND ${IMQTT_USE_MOSQ})
   message(FATAL_ERROR "more than one MQTT lib at a time is not supported")
 endif()
 
 find_package(Threads REQUIRED)
+if(${IMQTT_WITH_TLS})
+  find_package(OpenSSL REQUIRED)
+endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(ExternalProject)
 
 if(${BUILD_SHARED_LIBS})
+  set(BUILD_STATIC_LIBS OFF)
   set(IMQTT_LINKAGE SHARED)
+  if(MSVC)
+    set(LIB_MQTT_EXT .dll)
+  else()
+    set(LIB_MQTT_EXT .so)
+  endif()
 else()
+  set(BUILD_STATIC_LIBS ON)
   set(IMQTT_LINKAGE STATIC)
+  if(MSVC)
+    set(LIB_MQTT_EXT .lib)
+  else()
+    set(LIB_MQTT_EXT .a)
+  endif()
+endif()
+
+if(${IMQTT_WITH_TLS})
+  add_definitions(-DIMQTT_WITH_TLS)
 endif()
 
 if(${IMQTT_USE_MOSQ})
@@ -42,21 +62,19 @@ if(${IMQTT_USE_MOSQ})
   set(GIT_REPO https://github.com/eclipse/mosquitto.git)
   set(EXTERNAL_PROJECT_NAME mosquitto_external)
   set(EXTERNAL_PROJECT_BUILD_ARGS
-      -DWITH_STATIC_LIBRARIES:BOOL=ON
+      -DWITH_STATIC_LIBRARIES:BOOL=${BUILD_STATIC_LIBS}
       -DDOCUMENTATION:BOOL=OFF
       -DWITH_THREADING:BOOL=ON
       -DWITH_CLIENTS:BOOL=OFF
       -DWITH_PLUGINS:BOOL=OFF
       -DWITH_APPS:BOOL=OFF
-      -DWITH_PIC:BOOL=ON
-      -DWITH_TLS:BOOL=OFF # For now
+      -DWITH_PIC:BOOL=ON # TODO: Needed?
+      -DWITH_TLS:BOOL=${IMQTT_WITH_TLS}
       -DWITH_BROKER:BOOL=OFF)
-  if(${BUILD_SHARED_LIBS})
-    # TODO: Handle different names on Windows
-    set(LIB_MQTT libmosquitto.so)
-  else()
-    set(LIB_MQTT libmosquitto_static.a)
+  if(${BUILD_STATIC_LIBS})
+    set(LIB_MQTT_STATIC _static)
   endif()
+  set(LIB_MQTT libmosquitto${LIB_MQTT_STATIC}${LIB_MQTT_EXT})
 endif()
 
 if(${IMQTT_USE_PAHO})
@@ -65,19 +83,17 @@ if(${IMQTT_USE_PAHO})
   set(GIT_REPO https://github.com/eclipse/paho.mqtt.c.git)
   set(EXTERNAL_PROJECT_NAME paho_external)
   set(EXTERNAL_PROJECT_BUILD_ARGS
-      -DPAHO_BUILD_SHARED:BOOL=ON
-      -DPAHO_BUILD_STATIC:BOOL=ON
-      -DPAHO_WITH_SSL:BOOL=ON
+      -DPAHO_BUILD_STATIC:BOOL=${BUILD_STATIC_LIBS}
+      -DPAHO_BUILD_SHARED:BOOL=${BUILD_SHARED_LIBS}
+      -DPAHO_WITH_SSL:BOOL=${IMQTT_WITH_TLS}
       -DPAHO_HIGH_PERFORMANCE:BOOL=ON
       -DPAHO_ENABLE_TESTING:BOOL=OFF
       -DPAHO_ENABLE_CPACK:BOOL=OFF
       -DPAHO_BUILD_DOCUMENTATION:BOOL=OFF)
-  if(${BUILD_SHARED_LIBS})
-    # TODO: Handle different names on Windows
-    set(LIB_MQTT libpaho-mqtt3a.so)
-  else()
-    set(LIB_MQTT libpaho-mqtt3a.a)
+  if(${IMQTT_WITH_TLS})
+    set(LIB_MQTT_SECURE s)
   endif()
+  set(LIB_MQTT libpaho-mqtt3a${LIB_MQTT_SECURE}${LIB_MQTT_EXT})
 endif()
 
 if(NOT DEFINED MQTT_LIB_PATH)

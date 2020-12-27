@@ -10,8 +10,8 @@ set(IMQTT_INTERFACE_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttClientCallbacks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttMessage.h)
 
-target_sources(${IMQTT_INTERFACE}
-               INTERFACE $<BUILD_INTERFACE:${IMQTT_INTERFACE_HEADERS}>)
+# target_sources(${IMQTT_INTERFACE} INTERFACE
+# $<BUILD_INTERFACE:${IMQTT_INTERFACE_HEADERS}>)
 
 # MqttClient library
 if(${IMQTT_USE_MOSQ})
@@ -39,6 +39,10 @@ target_link_libraries(
   PUBLIC ${IMQTT_INTERFACE}
   # PRIVATE
   PRIVATE Threads::Threads ${LIB_MQTT})
+
+if(${IMQTT_WITH_TLS})
+  target_link_libraries(${IMQTT_LIBRARY} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+endif()
 
 if(MSVC)
   # target_compile_options(${IMQTT_LIBRARY} PRIVATE /W4 /WX)

@@ -49,10 +49,20 @@ public:
     {
         signal(SIGINT, InterruptHandler);
         /*create with logs handled by this, messages handled by this, connection info handled by this*/
-        params.callbackProvider  = {this, this, this};
-        params.clientId          = "myId";
-        params.hostAddress       = "localhost";
-        params.port              = 1885;
+        params.callbackProvider = {this, this, this};
+        params.clientId         = "myId";
+        params.hostAddress      = "localhost";
+#ifdef IMQTT_WITH_TLS
+#ifdef IMQTT_USE_PAHO
+        params.hostAddress = "ssl://" + params.hostAddress;
+#endif
+        params.port               = 8883;
+        params.caFilePath         = "/etc/mosquitto/certs/ca.crt";
+        params.clientCertFilePath = "/src/co/imqtt/cert/user1.crt";
+        params.clientKeyFilePath  = "/src/co/imqtt/cert/user1.key";
+#else
+        params.port = 1883;
+#endif
         params.cleanSession      = true;
         params.keepAliveInterval = 10;
         client                   = MqttClientFactory::create(params);

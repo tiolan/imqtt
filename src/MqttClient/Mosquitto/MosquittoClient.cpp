@@ -9,6 +9,9 @@
 #include "MosquittoClient.h"
 
 #include <mqtt_protocol.h>
+#ifdef IMQTT_WITH_TLS
+#include "openssl/ssl.h"
+#endif
 
 #include <iostream>
 #include <stdexcept>
@@ -40,6 +43,7 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
 
     // Init instance
     cbs.log->Log(LogLevel::Info, "Initializing mosquitto instance");
+    cbs.log->Log(LogLevel::Info, "Broker-Address: " + params.hostAddress + ":" + to_string(params.port));
     pClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
 
     if (!params.mqttUsername.empty()) {
@@ -89,6 +93,23 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     mosquitto_log_callback_set(pClient, [](struct mosquitto* pClient, void* pThis, int logLevel, const char* pTxt) {
         static_cast<MosquittoClient*>(pThis)->onLog(pClient, logLevel, pTxt);
     });
+#ifdef IMQTT_WITH_TLS
+    initError |= mosquitto_tls_set(
+        pClient,
+        params.caFilePath.empty() ? nullptr : params.caFilePath.c_str(),
+        params.caDirPath.empty() ? nullptr : params.caDirPath.c_str(),
+        params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str(),
+        params.clientKeyFilePath.empty() ? nullptr : params.clientKeyFilePath.c_str(),
+        [](char* buf, int size, int rwflag, void* pClient) -> int {
+            if (rwflag == 1) {
+                return static_cast<int>(
+                    static_cast<MosquittoClient*>(mosquitto_userdata(static_cast<mosquitto*>(pClient)))
+                        ->params.clientKeyPassword.copy(buf, size));
+            }
+            return 0;
+        });
+    initError |= mosquitto_tls_opts_set(pClient, SSL_VERIFY_PEER, nullptr, nullptr);
+#endif
     cbs.log->Log(LogLevel::Info, "Starting mosquitto instance");
     initError |= mosquitto_loop_start(pClient);
     if (initError) {

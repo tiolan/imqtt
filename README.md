@@ -17,6 +17,7 @@ make -j$(nproc) install
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `IMQTT_USE_MOSQ:BOOL`       | When set, Mosquitto is used as MQTT library                                                                                                       | `OFF`   |
 | `IMQTT_USE_PAHO:BOOL`       | When set, Paho is used as MQTT library                                                                                                            | `OFF`   |
+| `IMQTT_WITH_TLS:BOOL`       | When set, TLS configuration options are provided and MQTT lib can be configured to establish TLS connections                                      | `OFF`   |
 | `IMQTT_BUILD_SAMPLE:BOOL`   | When set, a sample app `imqttsample` is built as CMake subdirectory                                                                               | `OFF`   |
 | `IMQTT_INSTALL:BOOL`        | When set, target `install` will install artifacts to `CMAKE_INSTALL_PREFIX`                                                                       | `OFF`   |
 | `BUILD_SHARED_LIBS:BOOL`    | When set, IMQTT will be built as shared lib and also the MQTT lib will be linked as shared lib, else as static libs                               | `OFF`   |

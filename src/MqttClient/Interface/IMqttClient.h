@@ -51,6 +51,13 @@ public:
         int                 reconnectDelayMinUpper{0 /*seconds*/};
         int                 reconnectDelayMax{30 /*seconds*/};
         bool                allowLocalTopics{false};
+#ifdef IMQTT_WITH_TLS
+        std::string caFilePath{""};
+        std::string caDirPath{""};
+        std::string clientCertFilePath{""};
+        std::string clientKeyFilePath{""};
+        std::string clientKeyPassword{""};
+#endif
 #ifdef IMQTT_USE_PAHO
         bool        autoReconnect{true}; /*true on MOSQ*/
         std::string httpProxy{""};       /*n/a on MOSQ*/

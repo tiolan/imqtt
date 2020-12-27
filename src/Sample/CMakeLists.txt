@@ -7,16 +7,15 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
   include(GNUInstallDirs)
 
-  # -DCMAKE_PREFIX_PATH:PATH is set from outside
-
   find_package(Threads REQUIRED)
   find_package(IMqtt CONFIG REQUIRED)
 
+  # -DCMAKE_PREFIX_PATH:PATH is set from outside
   link_directories(${CMAKE_PREFIX_PATH}/lib)
 
   add_executable(${PROJECT_NAME} ${SOURCES})
   target_link_libraries(
-    ${PROJECT_NAME} IMqtt::IMqttClient
+    ${PROJECT_NAME} PRIVATE IMqtt::IMqttClient
     # IMqtt::IMqttClientInterface - in case only the abstract interface would be
     # needed without actually linking the library
   )
@@ -25,7 +24,7 @@ else()
   # this shows how to use IMqtt as CMake subdirectory
   add_executable(${PROJECT_NAME} ${SOURCES})
   target_link_libraries(
-    ${PROJECT_NAME} IMqttClient
+    ${PROJECT_NAME} PRIVATE IMqttClient
     # IMqttClientInterface - in case only the abstract interface would be needed
     # without actually linking the library
   )
