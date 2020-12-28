@@ -1,8 +1,21 @@
 # IMqtt
-IMqtt is a (by far not fully complete) C++ Wrapper around MQTT libraries, written in C.
+IMqtt is a (by far not fully complete) C++ wrapper around existing MQTT libraries. It is desgined to use MQTTv5 protocol only.
 
-The idea is to provide an abstract C++ interface to make the underlaying C MQTT library exchangeable quite easy.
-Target for now is to support [Paho](https://github.com/eclipse/paho.mqtt.c) and [Mosquitto](https://github.com/eclipse/mosquitto).
+The idea is to provide an abstract C++ interface to make the underlaying MQTT library exchangeable quite easy.
+Target for now is to support [Paho](https://github.com/eclipse/paho.mqtt.c) (written in C) and [Mosquitto](https://github.com/eclipse/mosquitto) (written in C).
+
+## Currently Supported:
+- MQTTv5 user fields for publishing messages
+- MQTTv5 correlationData field for publishing messages
+- MQTTv5 payloadType field for publishing messages
+- TLS support (details depend on used MQTT lib)
+- Asynchronous interface with non-blocking calls
+- Exponential backoff with randomized delay (details depend on used MQTT lib)
+## Currently Not Supported:
+- TLS-PSK
+- Other than mentioned MQTTv5 fields
+- MQTTv5 fields for messages other than publish
+- Synchronous interface with blocking calls
 
 # Building
 ## Example
@@ -29,9 +42,17 @@ make -j$(nproc) install
 An example app can be found here: [Main.cpp](src/Sample/Main.cpp)
 ## CMake find_package
 There is a CMake target `imqttsample_external` provided, that builds the example app using IMqtt with CMake `find_package` in this [CMakeLists.txt](src/Sample/CMakeLists.txt).
+
+In order to make it find the CMake package IMqtt, the target `install` has to be built already.
+
 ## CMake subdirectory
 When building with `-DIMQTT_BUILD_SAMPLE:BOOL=ON` the provided sample is built as CMake subdirectory, see [CMakeLists.txt](src/Sample/CMakeLists.txt).
-In order to make it find the CMake package IMqtt, the target install has to be built already.
 
 # Maturity
-IMqtt is in development. It is not ready for production. There are no tests done yet and no testing-framework is setup currently.
+IMqtt is in development.
+- It is not ready for production.
+-  There are no (automated) tests done yet and no testing-framework is setup currently.
+- There is currently no further documentation than this Readme.
+- There are no releases done regularly (yet), take master as is.
+
+In case the community is interested, the project might be driven further.
