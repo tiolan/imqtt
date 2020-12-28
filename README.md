@@ -21,8 +21,8 @@ make -j$(nproc) install
 | `IMQTT_BUILD_SAMPLE:BOOL`   | When set, a sample app `imqttsample` is built as CMake subdirectory                                                                               | `OFF`   |
 | `IMQTT_INSTALL:BOOL`        | When set, target `install` will install artifacts to `CMAKE_INSTALL_PREFIX`                                                                       | `OFF`   |
 | `BUILD_SHARED_LIBS:BOOL`    | When set, IMQTT will be built as shared lib and also the MQTT lib will be linked as shared lib, else as static libs                               | `OFF`   |
-| `MQTT_LIB_PATH:STRING`      | When set, MQTT library binaries will be used from this path, instead of being built as external CMake project                                     | -       |
-| `GIT_TAG:STRING`            | When set and `MQTT_LIB_PATH` not set, CMake will clone MQTT library repos from github using provided git tag. When not set, a default tag is used | -       |
+| `LIB_MQTT_PATH:STRING`      | When set, MQTT library binaries will be used from this path, instead of being built as external CMake project                                     | -       |
+| `GIT_TAG:STRING`            | When set and `LIB_MQTT_PATH` not set, CMake will clone MQTT library repos from github using provided git tag. When not set, a default tag is used | -       |
 | `CMAKE_INSTALL_PREFIX:PATH` | When `IMQTT_INSTALL` is set, artifacts will be installed to this path                                                                             | -       |
 
 # Usage

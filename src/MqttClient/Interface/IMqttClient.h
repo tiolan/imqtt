@@ -54,11 +54,14 @@ public:
 #ifdef IMQTT_WITH_TLS
         std::string caFilePath{""};
         std::string caDirPath{""};
+        std::string clientCert{""};
         std::string clientCertFilePath{""};
-        std::string clientKeyFilePath{""};
-        std::string clientKeyPassword{""};
+        std::string privateKey{""};
+        std::string privateKeyFilePath{""};
+        std::string privateKeyPassword{""};
 #endif
 #ifdef IMQTT_USE_PAHO
+        bool        disableDefaultCaStore{false};
         bool        autoReconnect{true}; /*true on MOSQ*/
         std::string httpProxy{""};       /*n/a on MOSQ*/
         std::string httpsProxy{""};      /*n/a on MOSQ*/

@@ -31,7 +31,7 @@ if(${EXTERNAL_PROJECT})
   add_dependencies(${IMQTT_LIBRARY} ${EXTERNAL_PROJECT_NAME})
 endif()
 
-target_include_directories(${IMQTT_LIBRARY} PRIVATE ${MQTT_LIB_PATH}/include)
+target_include_directories(${IMQTT_LIBRARY} PRIVATE ${LIB_MQTT_PATH}/include)
 
 target_link_libraries(
   ${IMQTT_LIBRARY}

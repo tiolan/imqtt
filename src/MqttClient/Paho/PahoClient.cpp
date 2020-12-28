@@ -18,7 +18,6 @@ std::mutex       PahoClient::libMutex;
 PahoClient::PahoClient(IMqttClient::InitializeParameters const& parameters)
   : params(parameters)
 {
-    printf("1\n");
     setCallbacks(params.callbackProvider);
     bool initError{false};
     {
@@ -201,9 +200,14 @@ PahoClient::ConnectAsync(void)
     connectOptions.ssl->trustStore = params.caFilePath.empty() ? nullptr : params.caFilePath.c_str();
     connectOptions.ssl->CApath     = params.caDirPath.empty() ? nullptr : params.caDirPath.c_str();
     connectOptions.ssl->keyStore   = params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str();
-    connectOptions.ssl->privateKey = params.clientKeyFilePath.empty() ? nullptr : params.clientKeyFilePath.c_str();
+    connectOptions.ssl->privateKey = params.privateKeyFilePath.empty() ? nullptr : params.privateKeyFilePath.c_str();
+    connectOptions.ssl->disableDefaultTrustStore = params.disableDefaultCaStore ? 1 : 0;
+#ifdef IMQTT_EXPERIMENTAL
+    connectOptions.ssl->clientCertString = params.clientCert.empty() ? nullptr : params.clientCert.c_str();
+    connectOptions.ssl->privateKeyString = params.privateKey.empty() ? nullptr : params.privateKey.c_str();
+#endif
     connectOptions.ssl->privateKeyPassword =
-        params.clientKeyPassword.empty() ? nullptr : params.clientKeyPassword.c_str();
+        params.privateKeyPassword.empty() ? nullptr : params.privateKeyPassword.c_str();
     connectOptions.ssl->verify               = 1;
     connectOptions.ssl->enableServerCertAuth = 1;
     connectOptions.ssl->ssl_error_context    = this;

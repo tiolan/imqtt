@@ -99,12 +99,12 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
         params.caFilePath.empty() ? nullptr : params.caFilePath.c_str(),
         params.caDirPath.empty() ? nullptr : params.caDirPath.c_str(),
         params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str(),
-        params.clientKeyFilePath.empty() ? nullptr : params.clientKeyFilePath.c_str(),
+        params.privateKeyFilePath.empty() ? nullptr : params.privateKeyFilePath.c_str(),
         [](char* buf, int size, int rwflag, void* pClient) -> int {
             if (rwflag == 1) {
                 return static_cast<int>(
                     static_cast<MosquittoClient*>(mosquitto_userdata(static_cast<mosquitto*>(pClient)))
-                        ->params.clientKeyPassword.copy(buf, size));
+                        ->params.privateKeyPassword.copy(buf, size));
             }
             return 0;
         });

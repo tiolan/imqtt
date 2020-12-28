@@ -20,6 +20,7 @@ option(IMQTT_USE_PAHO "use paho as the mqtt lib" OFF)
 option(IMQTT_BUILD_SAMPLE "build the sample code" OFF)
 option(IMQTT_INSTALL "install generated artifacts" OFF)
 option(IMQTT_WITH_TLS "enable TLS configurations" OFF)
+option(IMQTT_EXPERIMENTAL "enable experimental features" OFF)
 option(BUILD_SHARED_LIBS "build and link MQTT library as shared lib" OFF)
 
 if(${IMQTT_USE_PAHO} AND ${IMQTT_USE_MOSQ})
@@ -56,6 +57,10 @@ if(${IMQTT_WITH_TLS})
   add_definitions(-DIMQTT_WITH_TLS)
 endif()
 
+if(${IMQTT_EXPERIMENTAL})
+  add_definitions(-DIMQTT_EXPERIMENTAL)
+endif()
+
 if(${IMQTT_USE_MOSQ})
   add_definitions(-DIMQTT_USE_MOSQ)
   set(GIT_DEFAULT_TAG v2.0.4)
@@ -86,17 +91,17 @@ if(${IMQTT_USE_PAHO})
       -DPAHO_BUILD_STATIC:BOOL=${BUILD_STATIC_LIBS}
       -DPAHO_BUILD_SHARED:BOOL=${BUILD_SHARED_LIBS}
       -DPAHO_WITH_SSL:BOOL=${IMQTT_WITH_TLS}
-      -DPAHO_HIGH_PERFORMANCE:BOOL=ON
       -DPAHO_ENABLE_TESTING:BOOL=OFF
       -DPAHO_ENABLE_CPACK:BOOL=OFF
       -DPAHO_BUILD_DOCUMENTATION:BOOL=OFF)
-  if(${IMQTT_WITH_TLS})
-    set(LIB_MQTT_SECURE s)
+  if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(EXTERNAL_PROJECT_BUILD_ARGS ${EXTERNAL_PROJECT_BUILD_ARGS}
+                                    -DPAHO_HIGH_PERFORMANCE:BOOL=ON)
   endif()
   set(LIB_MQTT libpaho-mqtt3a${LIB_MQTT_SECURE}${LIB_MQTT_EXT})
 endif()
 
-if(NOT DEFINED MQTT_LIB_PATH)
+if(NOT DEFINED LIB_MQTT_PATH)
   set(EXTERNAL_PROJECT ON)
   if(NOT DEFINED GIT_TAG)
     set(GIT_TAG ${GIT_DEFAULT_TAG})
@@ -110,11 +115,11 @@ if(NOT DEFINED MQTT_LIB_PATH)
                -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>)
 
   ExternalProject_Get_Property(${EXTERNAL_PROJECT_NAME} INSTALL_DIR)
-  set(MQTT_LIB_PATH ${INSTALL_DIR})
+  set(LIB_MQTT_PATH ${INSTALL_DIR})
 endif()
 
-message(STATUS "Searching MQTT lib in: ${MQTT_LIB_PATH}")
-link_directories(${MQTT_LIB_PATH}/lib)
+message(STATUS "Searching MQTT lib in: ${LIB_MQTT_PATH}")
+link_directories(${LIB_MQTT_PATH}/lib)
 
 set(IMQTT_LIBRARY IMqttClient)
 set(IMQTT_INTERFACE IMqttClientInterface)
@@ -135,7 +140,7 @@ if(${IMQTT_INSTALL})
     BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime)
   if(${BUILD_SHARED_LIBS})
     install(
-      DIRECTORY ${MQTT_LIB_PATH}/lib
+      DIRECTORY ${LIB_MQTT_PATH}/lib
       DESTINATION ${CMAKE_INSTALL_PREFIX}
       FILES_MATCHING
       PATTERN "${LIB_MQTT}*"

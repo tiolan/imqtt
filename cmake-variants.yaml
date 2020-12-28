@@ -12,6 +12,7 @@ mqttlib:
       short: paho
       long: Build using Paho
       settings:
+        IMQTT_EXPERIMENTAL: OFF
         IMQTT_USE_PAHO: ON
         IMQTT_BUILD_SAMPLE: ON
         IMQTT_INSTALL: ON
@@ -64,4 +65,4 @@ mqttSource:
       short: preBuild
       long: Use existing MQTT lib binaries
       settings:
-        MQTT_LIB_PATH: /path/to/lib
+        LIB_MQTT_PATH: /src/co/tiolan/paho.mqtt.c/install

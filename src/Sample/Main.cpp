@@ -13,6 +13,9 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#ifdef IMQTT_EXPERIMENTAL
+#include "certs.h"
+#endif
 
 #include "IMqttClient.h"
 
@@ -49,23 +52,29 @@ public:
     {
         signal(SIGINT, InterruptHandler);
         /*create with logs handled by this, messages handled by this, connection info handled by this*/
-        params.callbackProvider = {this, this, this};
-        params.clientId         = "myId";
-        params.hostAddress      = "localhost";
+        params.callbackProvider  = {this, this, this};
+        params.clientId          = "myId";
+        params.hostAddress       = "localhost";
+        params.cleanSession      = true;
+        params.keepAliveInterval = 10;
 #ifdef IMQTT_WITH_TLS
 #ifdef IMQTT_USE_PAHO
-        params.hostAddress = "ssl://" + params.hostAddress;
+        params.hostAddress           = "ssl://" + params.hostAddress;
+        params.disableDefaultCaStore = false;
 #endif
-        params.port               = 8883;
-        params.caFilePath         = "/etc/mosquitto/certs/ca.crt";
+#ifdef IMQTT_EXPERIMENTAL
+        params.clientCert = CLIENT_CERT;
+        params.privateKey = PRIVATE_KEY;
+#else
         params.clientCertFilePath = "/src/co/imqtt/cert/user1.crt";
-        params.clientKeyFilePath  = "/src/co/imqtt/cert/user1.key";
+        params.privateKeyFilePath = "/src/co/imqtt/cert/user1.key";
+#endif
+        params.port = 8883;
+        // params.caFilePath = "/etc/mosquitto/certs/ca.crt";
 #else
         params.port = 1883;
 #endif
-        params.cleanSession      = true;
-        params.keepAliveInterval = 10;
-        client                   = MqttClientFactory::create(params);
+        client = MqttClientFactory::create(params);
     };
     ~Sample() noexcept = default;
     void Run(void);
