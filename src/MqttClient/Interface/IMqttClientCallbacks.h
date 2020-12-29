@@ -1,7 +1,7 @@
 /**
  * @file IMqttClientCallbacks.h
  * @author Timo Lange
- * @brief
+ * @brief Callback definitions for an abstract MqttClient
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -20,9 +20,12 @@
 
 #pragma once
 
+#include <map>
+#include <string>
+
 #include "IMqttMessage.h"
 
-namespace mqttclient {
+namespace i_mqtt_client {
 class IMqttLogCallbacks {
 protected:
     IMqttLogCallbacks(void) = default;
@@ -41,13 +44,11 @@ protected:
 
 public:
     virtual ~IMqttConnectionCallbacks() noexcept = default;
-    enum class ConnectionStatus { Connected, Disconnected };
+    enum class ConnectionType { CONNECT, DISCONNECT };
 
     /*To be overriden by user, if needed*/
-    virtual void
-    OnConnectionStatusChanged(ConnectionStatus status) const
-    {
-        (void)status; /*by default, do nothing*/
+    virtual void OnConnectionStatusChanged(ConnectionType, Mqtt5ReasonCode) const {
+        /*by default, do nothing*/
     };
 };
 
@@ -57,25 +58,20 @@ protected:
 
 public:
     virtual ~IMqttMessageCallbacks() noexcept = default;
+    using token_t                             = int;
 
     /*To be overriden by user*/
     virtual void OnMqttMessage(upMqttMessage_t mqttMessage) const = 0;
     /*To be overriden by user, if needed*/
-    virtual void
-    OnSubscribe(int token) const
-    {
-        (void)token; /*by default, do nothing*/
+    virtual void OnSubscribe(token_t) const {
+        /*by default, do nothing*/
     };
-    virtual void
-    OnUnSubscribe(int token) const
-    {
-        (void)token; /*by default, do nothing*/
+    virtual void OnUnSubscribe(token_t) const {
+        /*by default, do nothing*/
     };
-    virtual void
-    OnPublish(int token) const
-    {
+    virtual void OnPublish(token_t, Mqtt5ReasonCode) const {
         /*for Paho and QOS0, the token is always 0*/
-        (void)token; /*by default, do nothing*/
+        /*by default, do nothing*/
     };
 };
 
@@ -102,4 +98,4 @@ struct MqttClientCallbacks final {
 };
 
 
-}  // namespace mqttclient
+}  // namespace i_mqtt_client

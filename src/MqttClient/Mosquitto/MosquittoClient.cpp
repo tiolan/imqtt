@@ -1,7 +1,7 @@
 /**
- * @file IMqttClient.h
+ * @file MosquittoClient.cpp
  * @author Timo Lange
- * @brief
+ * @brief Implementation of wrapper for mosquitto library
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -30,26 +30,30 @@
 
 using namespace std;
 
-namespace mqttclient {
-std::atomic_uint MosquittoClient::counter{0ul};
-std::string      MosquittoClient::libVersion;
-std::mutex       MosquittoClient::libMutex;
+namespace i_mqtt_client {
+atomic_uint MosquittoClient::counter{0ul};
+string      MosquittoClient::libVersion;
+mutex       MosquittoClient::libMutex;
 
 MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parameters)
   : params(parameters)
   , messageDispatcherThread(&MosquittoClient::messageDispatcherWorker, this)
 {
+    auto rc{static_cast<int>(MOSQ_ERR_SUCCESS)};
     setCallbacks(params.callbackProvider);
-    bool initError{false};
     {
         lock_guard<mutex> lock(libMutex);
         // Init lib, if nobody ever did
         if (counter.fetch_add(1) == 0) {
             cbs.log->Log(LogLevel::Info, "Initializing mosquitto lib");
-            initError |= mosquitto_lib_init();
+            rc = mosquitto_lib_init();
+            if (MOSQ_ERR_SUCCESS != rc) {
+                throw runtime_error("Was not able to initialize mosquitto lib: " + string(mosquitto_strerror(rc)));
+            }
             int major = 0, minor = 0, patch = 0;
-            (void)mosquitto_lib_version(&major, &minor, &patch);
-            libVersion = "libmosquitto " + to_string(major) + "." + to_string(minor) + "." + to_string(patch);
+            int vers   = mosquitto_lib_version(&major, &minor, &patch);
+            libVersion = "libmosquitto " + to_string(major) + "." + to_string(minor) + "." + to_string(patch) + " (" +
+                         to_string(vers) + ")";
         };
     }  // unlock mutex, from here everything is instance specific
 
@@ -59,7 +63,10 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     pClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
 
     if (!params.mqttUsername.empty()) {
-        initError |= mosquitto_username_pw_set(pClient, params.mqttUsername.c_str(), params.mqttPassword.c_str());
+        rc = mosquitto_username_pw_set(pClient, params.mqttUsername.c_str(), params.mqttPassword.c_str());
+        if (MOSQ_ERR_SUCCESS != rc) {
+            throw runtime_error("Was not able to set MQTT credentials: " + string(mosquitto_strerror(rc)));
+        }
     }
 
     auto reconnMin{
@@ -67,8 +74,14 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
         uniform_int_distribution<int>(params.reconnectDelayMinLower, params.reconnectDelayMinUpper)(rndGenerator)};
     cbs.log->Log(LogLevel::Debug,
                  "Reconnect delay min: " + to_string(reconnMin) + "," + " max: " + to_string(params.reconnectDelayMax));
-    initError |= mosquitto_reconnect_delay_set(pClient, reconnMin, params.reconnectDelayMax, params.exponentialBackoff);
-    initError |= mosquitto_int_option(pClient, MOSQ_OPT_PROTOCOL_VERSION, MQTT_PROTOCOL_V5);
+    rc = mosquitto_reconnect_delay_set(pClient, reconnMin, params.reconnectDelayMax, params.exponentialBackoff);
+    if (MOSQ_ERR_SUCCESS != rc) {
+        throw runtime_error("Was not able to set reconnect delay: " + string(mosquitto_strerror(rc)));
+    }
+    rc = mosquitto_int_option(pClient, MOSQ_OPT_PROTOCOL_VERSION, MQTT_PROTOCOL_V5);
+    if (MOSQ_ERR_SUCCESS != rc) {
+        throw runtime_error("Was not able to set MQTT version: " + string(mosquitto_strerror(rc)));
+    }
     mosquitto_connect_v5_callback_set(
         pClient, [](struct mosquitto* pClient, void* pThis, int rc, int flags, const mosquitto_property* pProps) {
             static_cast<MosquittoClient*>(pThis)->onConnectCb(pClient, rc, flags, pProps);
@@ -106,26 +119,31 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
         static_cast<MosquittoClient*>(pThis)->onLog(pClient, logLevel, pTxt);
     });
 #ifdef IMQTT_WITH_TLS
-    initError |= mosquitto_tls_set(
-        pClient,
-        params.caFilePath.empty() ? nullptr : params.caFilePath.c_str(),
-        params.caDirPath.empty() ? nullptr : params.caDirPath.c_str(),
-        params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str(),
-        params.privateKeyFilePath.empty() ? nullptr : params.privateKeyFilePath.c_str(),
-        [](char* buf, int size, int rwflag, void* pClient) -> int {
-            if (rwflag == 1) {
-                return static_cast<int>(
-                    static_cast<MosquittoClient*>(mosquitto_userdata(static_cast<mosquitto*>(pClient)))
-                        ->params.privateKeyPassword.copy(buf, size));
-            }
-            return 0;
-        });
-    initError |= mosquitto_tls_opts_set(pClient, SSL_VERIFY_PEER, nullptr, nullptr);
+    rc = mosquitto_tls_set(pClient,
+                           params.caFilePath.empty() ? nullptr : params.caFilePath.c_str(),
+                           params.caDirPath.empty() ? nullptr : params.caDirPath.c_str(),
+                           params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str(),
+                           params.privateKeyFilePath.empty() ? nullptr : params.privateKeyFilePath.c_str(),
+                           [](char* buf, int size, int rwflag, void* pClient) -> int {
+                               if (rwflag != 0) {
+                                   return static_cast<int>(static_cast<MosquittoClient*>(
+                                                               mosquitto_userdata(static_cast<mosquitto*>(pClient)))
+                                                               ->params.privateKeyPassword.copy(buf, size));
+                               }
+                               return 0;
+                           });
+    if (MOSQ_ERR_SUCCESS != rc) {
+        throw runtime_error("Was not able to set TLS settings: " + string(mosquitto_strerror(rc)));
+    }
+    rc = mosquitto_tls_opts_set(pClient, SSL_VERIFY_PEER, nullptr, nullptr);
+    if (MOSQ_ERR_SUCCESS != rc) {
+        throw runtime_error("Was not able to set TLS options: " + string(mosquitto_strerror(rc)));
+    }
 #endif
     cbs.log->Log(LogLevel::Info, "Starting mosquitto instance");
-    initError |= mosquitto_loop_start(pClient);
-    if (initError) {
-        throw runtime_error("Was not able to initialize mosquitto lib");
+    rc = mosquitto_loop_start(pClient);
+    if (MOSQ_ERR_SUCCESS != rc) {
+        throw runtime_error("Was not able to start mosquitto loop: " + string(mosquitto_strerror(rc)));
     }
 }
 
@@ -162,7 +180,9 @@ MosquittoClient::dispatchMessage(upMqttMessage_t&& msg)
 MosquittoClient::~MosquittoClient() noexcept
 {
     cbs.log->Log(LogLevel::Info, "Deinitializing mosquitto instance");
-    Disconnect();
+    if (IsConnected()) {
+        Disconnect(Mqtt5ReasonCode::SUCCESS);
+    }
     mosquitto_loop_stop(pClient, false);
     messageDispatcherExit = true;
     messageDispatcherMutex.unlock();
@@ -180,41 +200,42 @@ MosquittoClient::~MosquittoClient() noexcept
 }
 
 void
-MosquittoClient::onConnectCb(struct mosquitto* pClient, int rc, int flags, const mosquitto_property* pProps)
+MosquittoClient::onConnectCb(struct mosquitto* pClient, int mqttRc, int flags, const mosquitto_property* pProps)
 {
     (void)pClient;
     (void)flags;
     (void)pProps;
-    cbs.log->Log(LogLevel::Info, "Mosquitto connection to broker: " + string(mosquitto_strerror(rc)));
-    if (rc == MOSQ_ERR_SUCCESS) {
+    auto logLvl{LogLevel::Warning};
+    if (Mqtt5ReasonCode::SUCCESS == static_cast<Mqtt5ReasonCode>(mqttRc)) {
         connected = true;
-        cbs.con->OnConnectionStatusChanged(IMqttConnectionCallbacks::ConnectionStatus::Connected);
+        logLvl    = LogLevel::Info;
     }
+    cbs.log->Log(logLvl, "Mosquitto connected to broker, rc: " + Mqtt5ReasonCodeToStringRepr(mqttRc).first);
+    cbs.con->OnConnectionStatusChanged(IMqttConnectionCallbacks::ConnectionType::CONNECT,
+                                       static_cast<Mqtt5ReasonCode>(mqttRc));
 }
 
 void
-MosquittoClient::onDisconnectCb(struct mosquitto* pClient, int rc, const mosquitto_property* pProps)
+MosquittoClient::onDisconnectCb(struct mosquitto* pClient, int mqttRc, const mosquitto_property* pProps)
 {
     (void)pClient;
     (void)pProps;
-    auto loglvl{IMqttClientCallbacks::LogLevel::Warning};
-    if (rc == MOSQ_ERR_SUCCESS) {
-        loglvl = IMqttClientCallbacks::LogLevel::Info;
-    }
-    cbs.log->Log(loglvl, "Mosquitto Disconnected from broker: " + string(mosquitto_strerror(rc)));
-    if (rc == MOSQ_ERR_SUCCESS) {
-        connected = false;
-        cbs.con->OnConnectionStatusChanged(IMqttConnectionCallbacks::ConnectionStatus::Disconnected);
-    }
+    connected = false;
+    cbs.log->Log(LogLevel::Warning,
+                 "Mosquitto disconnected from broker, rc: " + Mqtt5ReasonCodeToStringRepr(mqttRc).first);
+    cbs.con->OnConnectionStatusChanged(IMqttConnectionCallbacks::ConnectionType::DISCONNECT,
+                                       static_cast<Mqtt5ReasonCode>(mqttRc));
 }
 
 void
-MosquittoClient::onPublishCb(struct mosquitto* pClient, int messageId, int rc, const mosquitto_property* pProps)
+MosquittoClient::onPublishCb(struct mosquitto* pClient, int messageId, int mqttRc, const mosquitto_property* pProps)
 {
     (void)pClient;
     (void)pProps;
-    cbs.log->Log(LogLevel::Debug, "Mosquitto published: " + to_string(rc));
-    cbs.msg->OnPublish(messageId);
+    cbs.log->Log(LogLevel::Debug,
+                 "Mosquitto publish completed for token: " + to_string(messageId) +
+                     ", rc: " + Mqtt5ReasonCodeToStringRepr(mqttRc).first);
+    cbs.msg->OnPublish(messageId, static_cast<Mqtt5ReasonCode>(mqttRc));
 }
 
 void
@@ -230,7 +251,7 @@ MosquittoClient::onMessageCb(struct mosquitto*               pClient,
         pMsg->topic,
         IMqttMessage::payload_t(static_cast<IMqttMessage::payloadRaw_t*>(pMsg->payload),
                                 static_cast<IMqttMessage::payloadRaw_t*>(pMsg->payload) + pMsg->payloadlen),
-        IMqttMessage::intToQos(pMsg->qos),
+        static_cast<IMqttMessage::QOS>(pMsg->qos),
         pMsg->retain)};
     mqttMessage->messageId = pMsg->mid;
 
@@ -284,9 +305,8 @@ MosquittoClient::onMessageCb(struct mosquitto*               pClient,
         uint8_t formatIndicator{0u};
         (void)mosquitto_property_read_byte(pProps, MQTT_PROP_PAYLOAD_FORMAT_INDICATOR, &formatIndicator, false);
         mqttMessage->payloadFormatIndicator =
-            formatIndicator == 1u ? IMqttMessage::FormatIndicator::UTF8 : IMqttMessage::FormatIndicator::Unspecified;
+            formatIndicator == 1u ? IMqttMessage::FormatIndicator::UTF8 : IMqttMessage::FormatIndicator::UNSPECIFIED;
     }
-
 
     dispatchMessage(move(mqttMessage));
 }
@@ -301,8 +321,9 @@ MosquittoClient::onSubscribeCb(struct mosquitto*         pClient,
     (void)pClient;
     (void)pProps;
     for (int i{0}; i < grantedQosCount; i++) {
-        cbs.log->Log(LogLevel::Debug, "Mosquitto Subscribed with QOS: " + to_string(*(pGrantedQos + i)));
+        cbs.log->Log(LogLevel::Debug, "Mosquitto Subscribe completed with QOS: " + to_string(*(pGrantedQos + i)));
     }
+    // TODO: How to get the Mqtt5ReasonCode in order to hand it over to the user
     cbs.msg->OnSubscribe(messageId);
 }
 
@@ -311,7 +332,8 @@ MosquittoClient::onUnSubscribeCb(struct mosquitto* pClient, int messageId, const
 {
     (void)pClient;
     (void)pProps;
-    cbs.log->Log(LogLevel::Debug, "Mosquitto UnSubscribed");
+    cbs.log->Log(LogLevel::Debug, "Mosquitto UnSubscribe completed");
+    // TODO: How to get the Mqtt5ReasonCode in order to hand it over to the user
     cbs.msg->OnUnSubscribe(messageId);
 }
 
@@ -352,36 +374,26 @@ MosquittoClient::GetLibVersion(void) const noexcept
     return libVersion;
 }
 
-void
+ReasonCode
 MosquittoClient::ConnectAsync(void)
 {
     cbs.log->Log(LogLevel::Info, "Connecting to broker async: " + params.hostAddress + ":" + to_string(params.port));
-    int rc{mosquitto_connect_async(pClient, params.hostAddress.c_str(), params.port, params.keepAliveInterval)};
-    if (MOSQ_ERR_SUCCESS != rc) {
-        cbs.log->Log(LogLevel::Fatal,
-                     "Mosquitto_connect_async could not be called: " + string(mosquitto_strerror(rc)) + " (" +
-                         to_string(rc) + ")");
-        throw runtime_error("mosquitto_connect_async could not be called");
-    }
+    return mosqRcToReasonCode(
+        mosquitto_connect_async(pClient, params.hostAddress.c_str(), params.port, params.keepAliveInterval),
+        "mosquitto_connect_async");
 }
 
-void
-MosquittoClient::Disconnect(void)
+ReasonCode
+MosquittoClient::Disconnect(Mqtt5ReasonCode rc)
 {
     cbs.log->Log(LogLevel::Info, "Disconnecting from broker");
-    int rc{mosquitto_disconnect(pClient)};
-    if (MOSQ_ERR_SUCCESS != rc && MOSQ_ERR_NO_CONN != rc) {
-        cbs.log->Log(
-            LogLevel::Fatal,
-            "Mosquitto_Disconnect could not be called: " + string(mosquitto_strerror(rc)) + " (" + to_string(rc) + ")");
-        throw runtime_error("mosquitto_disconnect could not be called");
-    }
+    return mosqRcToReasonCode(mosquitto_disconnect_v5(pClient, static_cast<int>(rc), NULL), "mosquitto_disconnect_v5");
 }
 
-IMqttClient::RetCodes
+ReasonCode
 MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int* token, bool getRetained)
 {
-    cbs.log->Log(LogLevel::Trace, "Subscribing to topic: \"" + topic + "\"");
+    cbs.log->Log(LogLevel::Debug, "Subscribing to topic: \"" + topic + "\"");
     int options{0};
     if (!params.allowLocalTopics) {
         options |= mqtt5_sub_options::MQTT_SUB_OPT_NO_LOCAL;
@@ -389,41 +401,25 @@ MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int*
     if (getRetained == false) {
         options |= mqtt5_sub_options::MQTT_SUB_OPT_SEND_RETAIN_NEVER;
     }
-    switch (mosquitto_subscribe_v5(pClient, token, topic.c_str(), IMqttMessage::qosToInt(qos), options, NULL)) {
-    case MOSQ_ERR_SUCCESS:
-        return IMqttClient::RetCodes::OKAY;
-    case MOSQ_ERR_NO_CONN:
-        return IMqttClient::RetCodes::ERROR_TEMPORARY;
-    default:
-        break;
-    }
-
-    return IMqttClient::RetCodes::ERROR_PERMANENT;
+    return mosqRcToReasonCode(
+        mosquitto_subscribe_v5(pClient, token, topic.c_str(), static_cast<int>(qos), options, NULL),
+        "mosquitto_subscribe_v5");
 }
 
-IMqttClient::RetCodes
+ReasonCode
 MosquittoClient::UnSubscribeAsync(string const& topic, int* token)
 {
-    cbs.log->Log(LogLevel::Trace, "Unsubscribing from topic: \"" + topic + "\"");
-    switch (mosquitto_unsubscribe_v5(pClient, token, topic.c_str(), NULL)) {
-    case MOSQ_ERR_SUCCESS:
-        return IMqttClient::RetCodes::OKAY;
-    case MOSQ_ERR_NO_CONN:
-        return IMqttClient::RetCodes::ERROR_TEMPORARY;
-    default:
-        break;
-    }
-
-    return IMqttClient::RetCodes::ERROR_PERMANENT;
+    cbs.log->Log(LogLevel::Debug, "Unsubscribing from topic: \"" + topic + "\"");
+    return mosqRcToReasonCode(mosquitto_unsubscribe_v5(pClient, token, topic.c_str(), NULL),
+                              "mosquitto_unsubscribe_v5");
 }
 
-IMqttClient::RetCodes
+ReasonCode
 MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
 {
-    cbs.log->Log(LogLevel::Trace, "Publishing to topic: \"" + mqttMsg->getTopic() + "\"");
+    cbs.log->Log(LogLevel::Debug, "Publishing to topic: \"" + mqttMsg->topic + "\"");
 
     auto propertiesOkay{true};
-    auto status{IMqttClient::RetCodes::ERROR_PERMANENT};
 
     mosquitto_property* pProps{nullptr};
     for (auto const& prop : mqttMsg->userProps) {
@@ -463,38 +459,63 @@ MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         propertiesOkay = false;
     }
 
+    auto status{ReasonCode::ERROR_GENERAL};
     if (propertiesOkay) {
-        switch (mosquitto_publish_v5(pClient,
-                                     token,
-                                     mqttMsg->getTopic().c_str(),
-                                     mqttMsg->getPayload().size(),
-                                     mqttMsg->getPayload().data(),
-                                     IMqttMessage::qosToInt(mqttMsg->getQos()),
-                                     mqttMsg->getRetained(),
-                                     pProps)) {
-        case MOSQ_ERR_SUCCESS:
-            status = IMqttClient::RetCodes::OKAY;
-            break;
-        case MOSQ_ERR_NO_CONN:
-            status = IMqttClient::RetCodes::ERROR_TEMPORARY;
-            break;
-        default:
-            status = IMqttClient::RetCodes::ERROR_PERMANENT;
-            break;
-        }
+        status = mosqRcToReasonCode(mosquitto_publish_v5(pClient,
+                                                         token,
+                                                         mqttMsg->topic.c_str(),
+                                                         mqttMsg->payload.size(),
+                                                         mqttMsg->payload.data(),
+                                                         static_cast<int>(mqttMsg->qos),
+                                                         mqttMsg->retain,
+                                                         pProps),
+                                    "mosquitto_publish_v5");
     }
-    if (status != IMqttClient::RetCodes::OKAY) {
+    if (ReasonCode::OKAY != status) {
         cbs.log->Log(LogLevel::Error, "PublishAsync failed - will not retry");
     }
-
     mosquitto_property_free_all(&pProps);
     return status;
 }
 
-IMqttConnectionCallbacks::ConnectionStatus
-MosquittoClient::GetConnectionStatus(void) const noexcept
+bool
+MosquittoClient::IsConnected(void) const noexcept
 {
-    return connected ? ConnectionStatus::Connected : ConnectionStatus::Disconnected;
+    return connected;
+}
+
+ReasonCode
+MosquittoClient::mosqRcToReasonCode(int rc, string const& details) const
+{
+    auto status{ReasonCode::ERROR_GENERAL};
+    auto logLvl{LogLevel::Error};
+    switch (rc) {
+    case MOSQ_ERR_SUCCESS:
+        logLvl = LogLevel::Debug;
+        status = ReasonCode::OKAY;
+        break;
+    case MOSQ_ERR_TLS:
+        [[fallthrough]];
+    case MOSQ_ERR_TLS_HANDSHAKE:
+        logLvl = LogLevel::Error;
+        status = ReasonCode::ERROR_TLS;
+        break;
+    case MOSQ_ERR_CONN_LOST:
+        [[fallthrough]];
+    case MOSQ_ERR_NO_CONN:
+        logLvl = LogLevel::Warning;
+        status = ReasonCode::ERROR_NO_CONNECTION;
+        break;
+    case MOSQ_ERR_AUTH:
+        logLvl = LogLevel::Error;
+        status = ReasonCode::NOT_ALLOWED;
+        break;
+    default:
+        break;
+    }
+    cbs.log->Log(logLvl,
+                 details + ": " + ReasonCodeToStringRepr(status).first + ", Mosq: " + string(mosquitto_strerror(rc)));
+    return status;
 }
 
 unique_ptr<IMqttClient>
@@ -503,4 +524,4 @@ MqttClientFactory::create(IMqttClient::InitializeParameters const& params)
     return unique_ptr<MosquittoClient>(new MosquittoClient(params));
 }
 
-}  // namespace mqttclient
+}  // namespace i_mqtt_client

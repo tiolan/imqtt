@@ -1,9 +1,21 @@
 /**
  * @file PahoClient.h
  * @author Timo Lange
- * @brief
+ * @brief Class definition for Paho library wrapper
  * @date 2020
- * @copyright Timo Lange
+ * @copyright    Copyright 2020 Timo Lange
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
  */
 
 #pragma once
@@ -12,31 +24,40 @@
 #include <mutex>
 #include <random>
 #include <string>
+#include <thread>
 
 #include "IMqttClient.h"
 #include "MQTTAsync.h"
 
-namespace mqttclient {
-class PahoClient : public mqttclient::IMqttClient {
+namespace i_mqtt_client {
+class PahoClient : public IMqttClient {
 private:
-    static std::atomic_uint counter;
-    static std::string      libVersion;
-    static std::mutex       libMutex;
+    struct Context final {
+        PahoClient* pClient;
+        void*       pContext;
+        Context(PahoClient* pClient, void* pContext)
+          : pClient(pClient)
+          , pContext(pContext){};
+    };
+    static std::once_flag initFlag;
+    static std::string    libVersion;
+    static std::mutex     initMutex;
 
     MQTTAsync                         pClient{nullptr};
     IMqttClient::InitializeParameters params;
     std::default_random_engine        rndGenerator{std::random_device()()};
 
-    virtual std::string      GetLibVersion(void) const noexcept override;
-    virtual void             ConnectAsync(void) override;
-    virtual void             Disconnect(void) override;
-    virtual RetCodes         SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
-    virtual RetCodes         UnSubscribeAsync(std::string const&, int*) override;
-    virtual RetCodes         PublishAsync(upMqttMessage_t, int*) override;
-    virtual ConnectionStatus GetConnectionStatus(void) const noexcept override;
+    virtual std::string GetLibVersion(void) const noexcept override;
+    virtual ReasonCode  ConnectAsync(void) override;
+    virtual ReasonCode  Disconnect(Mqtt5ReasonCode) override;
+    virtual ReasonCode  SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
+    virtual ReasonCode  UnSubscribeAsync(std::string const&, int*) override;
+    virtual ReasonCode  PublishAsync(upMqttMessage_t, int*) override;
+    virtual bool        IsConnected(void) const noexcept override;
 
-    void onSuccessCb(MQTTAsync_successData5* data);
-    void onFailureCb(MQTTAsync_failureData5* data);
+    void       printDetailsOnSuccess(std::string const&, MQTTAsync_successData5*);
+    void       printDetailsOnFailure(std::string const&, MQTTAsync_failureData5*);
+    ReasonCode pahoRcToReasonCode(int, std::string const&) const;
 
     int onMessageCb(char*, int, MQTTAsync_message*) const;
 
@@ -44,4 +65,4 @@ public:
     PahoClient(IMqttClient::InitializeParameters const&);
     virtual ~PahoClient() noexcept;
 };
-}  // namespace mqttclient
+}  // namespace i_mqtt_client

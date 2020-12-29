@@ -1,7 +1,7 @@
 /**
- * @file IMqttClient.h
+ * @file MqttMessage.h
  * @author Timo Lange
- * @brief
+ * @brief Class definition for MQTT messages in C++
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -24,17 +24,13 @@
 
 #include "IMqttMessage.h"
 
-namespace mqttclient {
+namespace i_mqtt_client {
 
 class MqttMessage final : public IMqttMessage {
 public:
-    virtual inline std::string const& getTopic(void) const noexcept override;
-    virtual inline payload_t const&   getPayload(void) const noexcept override;
-    virtual inline std::string        getPayloadCastedToString(void) const override;
-    virtual inline bool               getRetained(void) const noexcept override;
-    virtual inline QOS                getQos(void) const noexcept override;
-    virtual inline std::string        toString(void) const noexcept override;
+    virtual inline std::string getPayloadCastedToString(void) const override;
+    virtual inline std::string toString(void) const noexcept override;
 
     MqttMessage(std::string const&, payload_t const&, QOS, bool);
 };
-}  // namespace mqttclient
+}  // namespace i_mqtt_client

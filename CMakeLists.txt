@@ -54,6 +54,7 @@ else()
 endif()
 
 if(${IMQTT_WITH_TLS})
+  message(STATUS "Building with TLS support")
   add_definitions(-DIMQTT_WITH_TLS)
 endif()
 
@@ -98,6 +99,9 @@ if(${IMQTT_USE_PAHO})
     set(EXTERNAL_PROJECT_BUILD_ARGS ${EXTERNAL_PROJECT_BUILD_ARGS}
                                     -DPAHO_HIGH_PERFORMANCE:BOOL=ON)
   endif()
+  if(${IMQTT_WITH_TLS})
+    set(LIB_MQTT_SECURE s)
+  endif()
   set(LIB_MQTT libpaho-mqtt3a${LIB_MQTT_SECURE}${LIB_MQTT_EXT})
 endif()
 
@@ -118,7 +122,7 @@ if(NOT DEFINED LIB_MQTT_PATH)
   set(LIB_MQTT_PATH ${INSTALL_DIR})
 endif()
 
-message(STATUS "Searching MQTT lib in: ${LIB_MQTT_PATH}")
+message(STATUS "Searching MQTT lib \"${LIB_MQTT}\" in: ${LIB_MQTT_PATH}")
 link_directories(${LIB_MQTT_PATH}/lib)
 
 set(IMQTT_LIBRARY IMqttClient)

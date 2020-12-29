@@ -1,7 +1,7 @@
 /**
- * @file IMqttClient.h
+ * @file Main.cpp
  * @author Timo Lange
- * @brief
+ * @brief A sample app showing how to use IMqtt
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -32,7 +32,7 @@
 #include "IMqttClient.h"
 
 using namespace std;
-using namespace mqttclient;
+using namespace i_mqtt_client;
 using namespace chrono;
 using namespace this_thread;
 
@@ -50,14 +50,14 @@ private:
 
     inline static void InterruptHandler(int signal) noexcept;
 
-    void sendMessage(void) const;
+    void sendMessage(IMqttMessage::QOS) const;
 
     virtual void Log(LogLevel, string const&) const override;
     virtual void OnMqttMessage(upMqttMessage_t) const override;
-    virtual void OnConnectionStatusChanged(ConnectionStatus) const override;
+    virtual void OnConnectionStatusChanged(ConnectionType, Mqtt5ReasonCode) const override;
     virtual void OnSubscribe(int) const override;
     virtual void OnUnSubscribe(int) const override;
-    virtual void OnPublish(int) const override;
+    virtual void OnPublish(token_t, Mqtt5ReasonCode) const override;
 
 public:
     Sample(void)
@@ -78,11 +78,11 @@ public:
         params.clientCert = CLIENT_CERT;
         params.privateKey = PRIVATE_KEY;
 #else
-        params.clientCertFilePath = "/src/co/imqtt/cert/user1.crt";
-        params.privateKeyFilePath = "/src/co/imqtt/cert/user1.key";
+        params.clientCertFilePath = "/src/co/tiolan/imqtt/cert/user1.crt";
+        params.privateKeyFilePath = "/src/co/tiolan/imqtt/cert/user1.key";
 #endif
-        params.port = 8883;
-        // params.caFilePath = "/etc/mosquitto/certs/ca.crt";
+        params.port       = 8883;
+        params.caFilePath = "/etc/mosquitto/certs/ca.crt";
 #else
         params.port = 1883;
 #endif
@@ -97,7 +97,7 @@ mutex              Sample::exitRunMutex;
 condition_variable Sample::interrupt;
 
 void
-Sample::OnPublish(int token) const
+Sample::OnPublish(token_t token, Mqtt5ReasonCode) const
 {
     Log(LogLevel::Info, "Message was published for token: " + to_string(token));
 }
@@ -109,16 +109,16 @@ Sample::OnUnSubscribe(int token) const
 }
 
 void
-Sample::sendMessage(void) const
+Sample::sendMessage(IMqttMessage::QOS qos) const
 {
-    auto mqttMessage{MqttMessageFactory::create("pub", {'H', 'E', 'L', 'L', 'O', '\0'}, IMqttMessage::QOS::QOS_0)};
+    auto mqttMessage{MqttMessageFactory::create("pub", {'H', 'E', 'L', 'L', 'O', '\0'}, qos)};
     mqttMessage->userProps.insert({"myKey1", "myValue1"});
     mqttMessage->userProps.insert({"myKey2", "myValue2"});
     mqttMessage->correlationDataProps   = IMqttMessage::correlationDataProps_t({'C', 'O', 'R', 'R', '\0'});
     mqttMessage->responseTopic          = "my/response/topic";
     mqttMessage->payloadFormatIndicator = IMqttMessage::FormatIndicator::UTF8;
     mqttMessage->payloadContentType     = "ASCII";
-    int token{0};
+    int token{-1};
     client->PublishAsync(move(mqttMessage), &token);
     Log(LogLevel::Info, "Publish done for token: " + to_string(token));
 }
@@ -127,17 +127,18 @@ void
 Sample::OnSubscribe(int token) const
 {
     Log(LogLevel::Info, "Subscribe done for token: " + to_string(token));
-    sendMessage();
-    sendMessage();
+    sendMessage(IMqttMessage::QOS::QOS_0);
+    sendMessage(IMqttMessage::QOS::QOS_1);
 }
 
 void
-Sample::OnConnectionStatusChanged(ConnectionStatus status) const
+Sample::OnConnectionStatusChanged(ConnectionType status, Mqtt5ReasonCode reason) const
 {
-    if (status == ConnectionStatus::Connected) {
+    (void)reason;
+    if (status == ConnectionType::CONNECT) {
         Log(LogLevel::Info, "Sample is connected");
         int token{0};
-        client->SubscribeAsync(subscribeTopic, IMqttMessage::QOS::QOS_0, &token);
+        client->SubscribeAsync(subscribeTopic, IMqttMessage::QOS::QOS_1, &token);
         Log(LogLevel::Info, "Subscribe token: " + to_string(token));
     }
     else {

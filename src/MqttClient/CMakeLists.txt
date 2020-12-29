@@ -22,7 +22,7 @@ if(${IMQTT_USE_PAHO})
   list(APPEND CLIENT_SOURCES Paho/PahoClient.cpp)
 endif()
 
-list(APPEND CLIENT_SOURCES MqttMessage.cpp)
+list(APPEND CLIENT_SOURCES MqttMessage.cpp IMqttClient.cpp)
 
 add_library(${IMQTT_LIBRARY} ${IMQTT_LINKAGE} ${CLIENT_SOURCES})
 set_target_properties(${IMQTT_LIBRARY} PROPERTIES PUBLIC_HEADER

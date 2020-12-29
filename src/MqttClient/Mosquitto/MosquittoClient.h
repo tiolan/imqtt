@@ -1,7 +1,7 @@
 /**
- * @file IMqttClient.h
+ * @file MosquitoClient.h
  * @author Timo Lange
- * @brief
+ * @brief Class definition for Mosquitto wrapper
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -30,7 +30,7 @@
 
 #include "IMqttClient.h"
 
-namespace mqttclient {
+namespace i_mqtt_client {
 class MosquittoClient : public IMqttClient {
 private:
     static std::atomic_uint counter;
@@ -48,27 +48,28 @@ private:
     std::condition_variable     messageDispatcherAwaiter;
     std::atomic_bool            messageDispatcherExit{false};
 
-    void messageDispatcherWorker(void);
-    void dispatchMessage(upMqttMessage_t&&);
-    void onConnectCb(struct mosquitto*, int, int, const mosquitto_property* props);
-    void onDisconnectCb(struct mosquitto*, int, const mosquitto_property*);
-    void onPublishCb(struct mosquitto*, int, int, const mosquitto_property*);
-    void onMessageCb(struct mosquitto*, const struct mosquitto_message*, const mosquitto_property*);
-    void onSubscribeCb(struct mosquitto*, int, int, const int*, const mosquitto_property*);
-    void onUnSubscribeCb(struct mosquitto*, int, const mosquitto_property*);
-    void onLog(struct mosquitto*, int, const char*);
+    void       messageDispatcherWorker(void);
+    void       dispatchMessage(upMqttMessage_t&&);
+    void       onConnectCb(struct mosquitto*, int, int, const mosquitto_property* props);
+    void       onDisconnectCb(struct mosquitto*, int, const mosquitto_property*);
+    void       onPublishCb(struct mosquitto*, int, int, const mosquitto_property*);
+    void       onMessageCb(struct mosquitto*, const struct mosquitto_message*, const mosquitto_property*);
+    void       onSubscribeCb(struct mosquitto*, int, int, const int*, const mosquitto_property*);
+    void       onUnSubscribeCb(struct mosquitto*, int, const mosquitto_property*);
+    void       onLog(struct mosquitto*, int, const char*);
+    ReasonCode mosqRcToReasonCode(int, std::string const&) const;
 
-    virtual std::string      GetLibVersion(void) const noexcept override;
-    virtual void             ConnectAsync(void) override;
-    virtual void             Disconnect(void) override;
-    virtual RetCodes         SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
-    virtual RetCodes         UnSubscribeAsync(std::string const&, int*) override;
-    virtual RetCodes         PublishAsync(upMqttMessage_t, int*) override;
-    virtual ConnectionStatus GetConnectionStatus(void) const noexcept override;
+    virtual std::string GetLibVersion(void) const noexcept override;
+    virtual ReasonCode  ConnectAsync(void) override;
+    virtual ReasonCode  Disconnect(Mqtt5ReasonCode) override;
+    virtual ReasonCode  SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
+    virtual ReasonCode  UnSubscribeAsync(std::string const&, int*) override;
+    virtual ReasonCode  PublishAsync(upMqttMessage_t, int*) override;
+    virtual bool        IsConnected(void) const noexcept override;
 
 public:
     MosquittoClient(IMqttClient::InitializeParameters const&);
     virtual ~MosquittoClient() noexcept;
 };
 
-}  // namespace mqttclient
+}  // namespace i_mqtt_client

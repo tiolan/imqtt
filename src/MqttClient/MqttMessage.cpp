@@ -1,7 +1,7 @@
 /**
- * @file IMqttClient.h
+ * @file MqttMessage.cpp
  * @author Timo Lange
- * @brief
+ * @brief Implementation for MQTT messages in C++
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -22,7 +22,7 @@
 
 using namespace std;
 
-namespace mqttclient {
+namespace i_mqtt_client {
 MqttMessage::MqttMessage(string const& topic, payload_t const& payload, QOS qos, bool retain)
   : IMqttMessage(topic, payload, qos, retain)
 {
@@ -31,9 +31,9 @@ MqttMessage::MqttMessage(string const& topic, payload_t const& payload, QOS qos,
 string
 MqttMessage::toString(void) const noexcept
 {
-    string str{"MqttMessage [topic]:\t" + getTopic() + "\n"};
-    str += "MqttMessage [qos]:\t" + to_string(IMqttMessage::qosToInt(getQos())) + "\n";
-    str += "MqttMessage [retain]:\t" + to_string(getRetained()) + "\n";
+    string str{"MqttMessage [topic]:\t" + topic + "\n"};
+    str += "MqttMessage [qos]:\t" + to_string(static_cast<int>(qos)) + "\n";
+    str += "MqttMessage [retain]:\t" + to_string(retain) + "\n";
     str += "MqttMessage [messageId]:\t" + to_string(messageId) + "\n";
     str += "\nMqttMessage[userProps]:\n";
     for (auto const& prop : userProps) {
@@ -43,34 +43,10 @@ MqttMessage::toString(void) const noexcept
     return str;
 }
 
-string const&
-MqttMessage::getTopic(void) const noexcept
-{
-    return topic;
-}
-
-IMqttMessage::payload_t const&
-MqttMessage::getPayload(void) const noexcept
-{
-    return payload;
-}
-
 string
 MqttMessage::getPayloadCastedToString(void) const
 {
     return string(reinterpret_cast<const char*>(payload.data()), static_cast<size_t>(payload.size()));
-}
-
-bool
-MqttMessage::getRetained(void) const noexcept
-{
-    return retain;
-}
-
-IMqttMessage::QOS
-MqttMessage::getQos(void) const noexcept
-{
-    return qos;
 }
 
 upMqttMessage_t
@@ -78,4 +54,4 @@ MqttMessageFactory::create(string const& topic, IMqttMessage::payload_t&& payloa
 {
     return upMqttMessage_t(new MqttMessage(topic, payload, qos, retain));
 }
-}  // namespace mqttclient
+}  // namespace i_mqtt_client

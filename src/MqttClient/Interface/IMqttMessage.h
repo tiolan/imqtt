@@ -1,7 +1,7 @@
 /**
- * @file IMqttClient.h
+ * @file IMqttMessage.h
  * @author Timo Lange
- * @brief
+ * @brief Abstract interface definition for MQTT messages in C++
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -26,43 +26,17 @@
 #include <string>
 #include <vector>
 
-namespace mqttclient {
+#include "IMqttClientDefines.h"
+
+namespace i_mqtt_client {
 class IMqttMessage {
 public:
     using payloadRaw_t           = unsigned char;
     using payload_t              = const std::vector<payloadRaw_t>;
     using userProps_t            = std::map<std::string, std::string>;
     using correlationDataProps_t = std::vector<payloadRaw_t>;
-    enum class FormatIndicator { Unspecified, UTF8 };
-    enum class QOS { QOS_0, QOS_1, QOS_2 };
-    static inline QOS
-    intToQos(int qos)
-    {
-        switch (qos) {
-        case 0:
-            return QOS::QOS_0;
-        case 1:
-            return QOS::QOS_1;
-        case 2:
-            return QOS::QOS_2;
-        default:
-            throw std::runtime_error("provide a valid qos [0,1,2]");
-        }
-    }
-    static inline int
-    qosToInt(QOS qos)
-    {
-        switch (qos) {
-        case QOS::QOS_0:
-            return 0;
-        case QOS::QOS_1:
-            return 1;
-        case QOS::QOS_2:
-            return 2;
-        default:
-            throw std::runtime_error("provide a valid qos [0,1,2]");
-        }
-    }
+    enum class FormatIndicator { UNSPECIFIED, UTF8 };
+    enum class QOS : int { QOS_0 = 0, QOS_1 = 1, QOS_2 = 2 };
 
 private:
     IMqttMessage(const IMqttMessage&) = delete;
@@ -73,7 +47,7 @@ private:
     void* operator new[](size_t) = delete;
 
 protected:
-    IMqttMessage(std::string const& topic, payload_t const& payload, IMqttMessage::QOS qos, bool retain)
+    IMqttMessage(std::string const& topic, payload_t const& payload, QOS qos, bool retain)
       : topic(topic)
       , payload(payload)
       , qos(qos)
@@ -81,29 +55,25 @@ protected:
     {
     }
 
-    /*Mandatory immutable fields, created via Factory*/
-    std::string       topic;
-    payload_t         payload;
-    IMqttMessage::QOS qos;
-    bool              retain;
-
 public:
     virtual ~IMqttMessage() noexcept = default;
 
-    /*Optional fields, publicly accessible*/
+    /*Mandatory immutable fields, created via Factory*/
+    const std::string       topic;
+    const payload_t         payload;
+    const IMqttMessage::QOS qos;
+    const bool              retain;
+
+    /*Optional fields, publicly accessible and settable*/
     int                    messageId{-1};
     userProps_t            userProps{userProps_t()};
     correlationDataProps_t correlationDataProps{correlationDataProps_t()};
     std::string            responseTopic{""};
-    FormatIndicator        payloadFormatIndicator{FormatIndicator::Unspecified};
+    FormatIndicator        payloadFormatIndicator{FormatIndicator::UNSPECIFIED};
     std::string            payloadContentType{""};
 
-    virtual std::string const& getTopic(void) const                 = 0;
-    virtual payload_t const&   getPayload(void) const               = 0;
-    virtual std::string        getPayloadCastedToString(void) const = 0;
-    virtual bool               getRetained(void) const              = 0;
-    virtual IMqttMessage::QOS  getQos(void) const                   = 0;
-    virtual std::string        toString(void) const                 = 0;
+    virtual std::string getPayloadCastedToString(void) const = 0;
+    virtual std::string toString(void) const                 = 0;
 };
 
 using upMqttMessage_t = std::unique_ptr<IMqttMessage>;
@@ -116,4 +86,4 @@ public:
                                   IMqttMessage::QOS               qos,
                                   bool                            retain = false);
 };
-}  // namespace mqttclient
+}  // namespace i_mqtt_client

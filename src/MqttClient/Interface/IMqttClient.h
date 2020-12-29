@@ -1,7 +1,7 @@
 /**
  * @file IMqttClient.h
  * @author Timo Lange
- * @brief
+ * @brief Abstract interface definition for an MqttClient
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -25,7 +25,7 @@
 
 #include "IMqttClientCallbacks.h"
 
-namespace mqttclient {
+namespace i_mqtt_client {
 class IMqttClient : public IMqttClientCallbacks {
 protected:
     MqttClientCallbacks cbs;
@@ -48,7 +48,6 @@ public:
 
     virtual ~IMqttClient() noexcept = default;
 
-    enum class RetCodes { OKAY, ERROR_PERMANENT, ERROR_TEMPORARY };
     struct InitializeParameters final {
         std::string         hostAddress{"localhost"};
         int                 port{1883u};
@@ -82,6 +81,22 @@ public:
         bool exponentialBackoff{false}; /*true on PAHO*/
 #endif
     };
+    using ReasonCodeStringShort_t = const std::string;
+    using ReasonCodeStringLong_t  = const std::string;
+    using ReasonCodeRepr_t        = const std::pair<ReasonCodeStringShort_t, ReasonCodeStringLong_t>;
+    static ReasonCodeRepr_t ReasonCodeToStringRepr(ReasonCode);
+
+    using MqttReasonCodeStringShort_t = const std::string;
+    using MqttReasonCodeStringLong_t  = const std::string;
+    using MqttReasonCodeRepr_t        = const std::pair<MqttReasonCodeStringShort_t, MqttReasonCodeStringLong_t>;
+    static MqttReasonCodeRepr_t MqttReasonCodeToStringRepr(MqttReasonCode);
+    static MqttReasonCodeRepr_t MqttReasonCodeToStringRepr(int);
+
+    using Mqtt5ReasonCodeStringShort_t = const std::string;
+    using Mqtt5ReasonCodeStringLong_t  = const std::string;
+    using Mqtt5ReasonCodeRepr_t        = const std::pair<Mqtt5ReasonCodeStringShort_t, Mqtt5ReasonCodeStringLong_t>;
+    static Mqtt5ReasonCodeRepr_t Mqtt5ReasonCodeToStringRepr(Mqtt5ReasonCode);
+    static Mqtt5ReasonCodeRepr_t Mqtt5ReasonCodeToStringRepr(int);
 
     virtual void
     setCallbacks(MqttClientCallbacks const& callbacks) noexcept
@@ -92,16 +107,16 @@ public:
     }
 
     /*Interface definition*/
-    virtual std::string      GetLibVersion(void) const noexcept                                          = 0;
-    virtual void             ConnectAsync(void)                                                          = 0;
-    virtual void             Disconnect(void)                                                            = 0;
-    virtual RetCodes         SubscribeAsync(std::string const& topic,
-                                            IMqttMessage::QOS  qos,
-                                            int*               token       = nullptr,
-                                            bool               getRetained = true)                                     = 0;
-    virtual RetCodes         UnSubscribeAsync(std::string const& topic, int* token = nullptr)            = 0;
-    virtual RetCodes         PublishAsync(mqttclient::upMqttMessage_t mqttMessage, int* token = nullptr) = 0;
-    virtual ConnectionStatus GetConnectionStatus(void) const noexcept                                    = 0;
+    virtual std::string GetLibVersion(void) const noexcept                                             = 0;
+    virtual ReasonCode  ConnectAsync(void)                                                             = 0;
+    virtual ReasonCode  Disconnect(Mqtt5ReasonCode rc = Mqtt5ReasonCode::SUCCESS)                      = 0;
+    virtual ReasonCode  SubscribeAsync(std::string const& topic,
+                                       IMqttMessage::QOS  qos,
+                                       int*               token       = nullptr,
+                                       bool               getRetained = true)                                        = 0;
+    virtual ReasonCode  UnSubscribeAsync(std::string const& topic, int* token = nullptr)               = 0;
+    virtual ReasonCode  PublishAsync(i_mqtt_client::upMqttMessage_t mqttMessage, int* token = nullptr) = 0;
+    virtual bool        IsConnected(void) const noexcept                                               = 0;
 };
 
 class MqttClientFactory final {
@@ -109,4 +124,4 @@ public:
     static std::unique_ptr<IMqttClient> create(IMqttClient::InitializeParameters const&);
     MqttClientFactory() = delete;
 };
-}  // namespace mqttclient
+}  // namespace i_mqtt_client

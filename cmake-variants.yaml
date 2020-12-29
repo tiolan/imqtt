@@ -12,7 +12,6 @@ mqttlib:
       short: paho
       long: Build using Paho
       settings:
-        IMQTT_EXPERIMENTAL: OFF
         IMQTT_USE_PAHO: ON
         IMQTT_BUILD_SAMPLE: ON
         IMQTT_INSTALL: ON
