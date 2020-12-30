@@ -72,8 +72,8 @@ public:
     FormatIndicator        payloadFormatIndicator{FormatIndicator::UNSPECIFIED};
     std::string            payloadContentType{""};
 
-    virtual std::string getPayloadCastedToString(void) const = 0;
-    virtual std::string toString(void) const                 = 0;
+    virtual std::string GetPayloadCastedToString(void) const = 0;
+    virtual std::string ToString(void) const                 = 0;
 };
 
 using upMqttMessage_t = std::unique_ptr<IMqttMessage>;
@@ -81,7 +81,7 @@ using upMqttMessage_t = std::unique_ptr<IMqttMessage>;
 class MqttMessageFactory final {
 public:
     MqttMessageFactory() = delete;
-    static upMqttMessage_t create(std::string const&              topic,
+    static upMqttMessage_t Create(std::string const&              topic,
                                   IMqttMessage::payload_t const&& payload,
                                   IMqttMessage::QOS               qos,
                                   bool                            retain = false);

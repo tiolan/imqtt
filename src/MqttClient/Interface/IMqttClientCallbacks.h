@@ -26,14 +26,18 @@
 #include "IMqttMessage.h"
 
 namespace i_mqtt_client {
+
 class IMqttLogCallbacks {
+private:
+    static MqttLogInit_t mqttLibLogInitParams;
+
 protected:
     IMqttLogCallbacks(void) = default;
 
 public:
     virtual ~IMqttLogCallbacks() noexcept = default;
-
-    enum class LogLevel { TRACE, DEBUG, INFO, WARNING, ERROR, FATAL };
+    static void                 LogMqttLib(LogLevelLib, std::string const&);
+    static MqttLogInit_t const& InitLogMqttLib(MqttLogInit_t const&);
     /*To be overriden by user, if needed*/
     virtual void Log(LogLevel, std::string const&) const {/*by default, do not log*/};
 };

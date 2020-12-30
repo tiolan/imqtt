@@ -35,6 +35,7 @@ using namespace std;
 using namespace i_mqtt_client;
 using namespace chrono;
 using namespace this_thread;
+using namespace placeholders;
 
 class Sample final : public IMqttClientCallbacks {
 private:
@@ -51,6 +52,7 @@ private:
     inline static void InterruptHandler(int signal) noexcept;
 
     void sendMessage(IMqttMessage::QOS) const;
+    void LogLib(LogLevelLib lvl, string const& txt) const;
 
     virtual void Log(LogLevel, string const&) const override;
     virtual void OnMqttMessage(upMqttMessage_t) const override;
@@ -63,6 +65,9 @@ public:
     Sample(void)
     {
         signal(SIGINT, InterruptHandler);
+        /*set callback for underlying mqtt lib logs with minimum log level*/
+        /*this has to be done before instantiating the first client object and cannot be done a second time*/
+        (void)IMqttClientCallbacks::InitLogMqttLib({bind(&Sample::LogLib, this, _1, _2), LogLevelLib::DEBUG});
         /*create with logs handled by this, messages handled by this, connection info handled by this*/
         params.callbackProvider  = {this, this, this};
         params.clientId          = "myId";
@@ -86,7 +91,7 @@ public:
 #else
         params.port = 1883;
 #endif
-        client = MqttClientFactory::create(params);
+        client = MqttClientFactory::Create(params);
     };
     ~Sample() noexcept = default;
     void Run(void);
@@ -111,7 +116,7 @@ Sample::OnUnSubscribe(int token) const
 void
 Sample::sendMessage(IMqttMessage::QOS qos) const
 {
-    auto mqttMessage{MqttMessageFactory::create("pub", {'H', 'E', 'L', 'L', 'O', '\0'}, qos)};
+    auto mqttMessage{MqttMessageFactory::Create("pub", {'H', 'E', 'L', 'L', 'O', '\0'}, qos)};
     mqttMessage->userProps.insert({"myKey1", "myValue1"});
     mqttMessage->userProps.insert({"myKey2", "myValue2"});
     mqttMessage->correlationDataProps   = IMqttMessage::correlationDataProps_t({'C', 'O', 'R', 'R', '\0'});
@@ -147,6 +152,35 @@ Sample::OnConnectionStatusChanged(ConnectionType type, Mqtt5ReasonCode reason) c
 }
 
 void
+Sample::LogLib(LogLevelLib lvl, string const& txt) const
+{
+    lock_guard<mutex> lock(coutMutex);
+    switch (lvl) {
+    case LogLevelLib::DEBUG:
+        cout << "LIB_D";
+        break;
+    case LogLevelLib::WARNING:
+        cout << "LIB_W";
+        break;
+    case LogLevelLib::ERROR:
+        cout << "LIB_E";
+        break;
+    case LogLevelLib::FATAL:
+        cout << "LIB_F";
+        break;
+    case LogLevelLib::TRACE:
+        cout << "LIB_T";
+        break;
+    case LogLevelLib::INFO:
+        [[fallthrough]];
+    default:
+        cout << "LIB_I";
+        break;
+    }
+    cout << ": " << txt << endl;
+}
+
+void
 Sample::Log(LogLevel lvl, string const& txt) const
 {
     lock_guard<mutex> lock(coutMutex);
@@ -178,7 +212,7 @@ Sample::Log(LogLevel lvl, string const& txt) const
 void
 Sample::OnMqttMessage(upMqttMessage_t msq) const
 {
-    Log(LogLevel::INFO, "Got Mqtt Message: " + msq->toString());
+    Log(LogLevel::INFO, "Got Mqtt Message: " + msq->ToString());
 }
 
 void
@@ -199,7 +233,7 @@ Sample::Run(void)
     Log(LogLevel::INFO, "Unsubscribe token: " + to_string(token));
     /*Some time to allow the unsubscribe happen*/
     sleep_for(milliseconds(500));
-    client->Disconnect();
+    client->DisconnectAsync();
 }
 
 void

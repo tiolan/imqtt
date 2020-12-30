@@ -29,7 +29,7 @@ MqttMessage::MqttMessage(string const& topic, payload_t const& payload, QOS qos,
 }
 
 string
-MqttMessage::toString(void) const noexcept
+MqttMessage::ToString(void) const noexcept
 {
     string str{"MqttMessage [topic]:\t" + topic + "\n"};
     str += "MqttMessage [qos]:\t" + to_string(static_cast<int>(qos)) + "\n";
@@ -44,13 +44,13 @@ MqttMessage::toString(void) const noexcept
 }
 
 string
-MqttMessage::getPayloadCastedToString(void) const
+MqttMessage::GetPayloadCastedToString(void) const
 {
     return string(reinterpret_cast<const char*>(payload.data()), static_cast<size_t>(payload.size()));
 }
 
 upMqttMessage_t
-MqttMessageFactory::create(string const& topic, IMqttMessage::payload_t&& payload, IMqttMessage::QOS qos, bool retain)
+MqttMessageFactory::Create(string const& topic, IMqttMessage::payload_t&& payload, IMqttMessage::QOS qos, bool retain)
 {
     return upMqttMessage_t(new MqttMessage(topic, payload, qos, retain));
 }

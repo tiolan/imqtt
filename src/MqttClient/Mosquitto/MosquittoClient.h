@@ -22,7 +22,6 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <functional>
 #include <mutex>
 #include <queue>
 #include <random>
@@ -61,7 +60,7 @@ private:
 
     virtual std::string GetLibVersion(void) const noexcept override;
     virtual ReasonCode  ConnectAsync(void) override;
-    virtual ReasonCode  Disconnect(Mqtt5ReasonCode) override;
+    virtual ReasonCode  DisconnectAsync(Mqtt5ReasonCode) override;
     virtual ReasonCode  SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
     virtual ReasonCode  UnSubscribeAsync(std::string const&, int*) override;
     virtual ReasonCode  PublishAsync(upMqttMessage_t, int*) override;

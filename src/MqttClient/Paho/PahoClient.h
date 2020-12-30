@@ -41,7 +41,6 @@ private:
     };
     static std::once_flag initFlag;
     static std::string    libVersion;
-    static std::mutex     initMutex;
 
     MQTTAsync                         pClient{nullptr};
     IMqttClient::InitializeParameters params;
@@ -49,14 +48,14 @@ private:
 
     virtual std::string GetLibVersion(void) const noexcept override;
     virtual ReasonCode  ConnectAsync(void) override;
-    virtual ReasonCode  Disconnect(Mqtt5ReasonCode) override;
+    virtual ReasonCode  DisconnectAsync(Mqtt5ReasonCode) override;
     virtual ReasonCode  SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
     virtual ReasonCode  UnSubscribeAsync(std::string const&, int*) override;
     virtual ReasonCode  PublishAsync(upMqttMessage_t, int*) override;
     virtual bool        IsConnected(void) const noexcept override;
 
-    void       printDetailsOnSuccess(std::string const, MQTTAsync_successData5*);
-    void       printDetailsOnFailure(std::string const, MQTTAsync_failureData5*);
+    void       printDetailsOnSuccess(std::string const&, MQTTAsync_successData5*);
+    void       printDetailsOnFailure(std::string const&, MQTTAsync_failureData5*);
     ReasonCode pahoRcToReasonCode(int, std::string const&) const;
 
     int onMessageCb(char*, int, MQTTAsync_message*) const;

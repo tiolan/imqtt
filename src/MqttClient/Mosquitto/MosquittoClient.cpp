@@ -62,6 +62,13 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     cbs.log->Log(LogLevel::INFO, "Broker-Address: " + params.hostAddress + ":" + to_string(params.port));
     pClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
 
+    /*This either disables logging, or gets, what the user already set*/
+    if (IMqttLogCallbacks::InitLogMqttLib({nullptr, LogLevelLib::NONE}).second != LogLevelLib::NONE) {
+        mosquitto_log_callback_set(pClient, [](struct mosquitto* pClient, void* pThis, int logLevel, const char* pTxt) {
+            static_cast<MosquittoClient*>(pThis)->onLog(pClient, logLevel, pTxt);
+        });
+    }
+
     if (!params.mqttUsername.empty()) {
         rc = mosquitto_username_pw_set(pClient, params.mqttUsername.c_str(), params.mqttPassword.c_str());
         if (MOSQ_ERR_SUCCESS != rc) {
@@ -115,9 +122,6 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
         pClient, [](struct mosquitto* pClient, void* pThis, int messageId, const mosquitto_property* pProps) {
             static_cast<MosquittoClient*>(pThis)->onUnSubscribeCb(pClient, messageId, pProps);
         });
-    mosquitto_log_callback_set(pClient, [](struct mosquitto* pClient, void* pThis, int logLevel, const char* pTxt) {
-        static_cast<MosquittoClient*>(pThis)->onLog(pClient, logLevel, pTxt);
-    });
 #ifdef IMQTT_WITH_TLS
     rc = mosquitto_tls_set(pClient,
                            params.caFilePath.empty() ? nullptr : params.caFilePath.c_str(),
@@ -181,7 +185,7 @@ MosquittoClient::~MosquittoClient() noexcept
 {
     cbs.log->Log(LogLevel::INFO, "Deinitializing mosquitto instance");
     if (IsConnected()) {
-        Disconnect(Mqtt5ReasonCode::SUCCESS);
+        DisconnectAsync(Mqtt5ReasonCode::SUCCESS);
     }
     mosquitto_loop_stop(pClient, false);
     messageDispatcherExit = true;
@@ -247,7 +251,7 @@ MosquittoClient::onMessageCb(struct mosquitto*               pClient,
 
     cbs.log->Log(LogLevel::DEBUG, "Mosquitto received message");
 
-    auto mqttMessage{MqttMessageFactory::create(
+    auto mqttMessage{MqttMessageFactory::Create(
         pMsg->topic,
         IMqttMessage::payload_t(static_cast<IMqttMessage::payloadRaw_t*>(pMsg->payload),
                                 static_cast<IMqttMessage::payloadRaw_t*>(pMsg->payload) + pMsg->payloadlen),
@@ -341,13 +345,13 @@ void
 MosquittoClient::onLog(struct mosquitto* pClient, int logLevel, const char* pTxt)
 {
     (void)pClient;
-    auto logLvl{LogLevel::INFO};
+    auto logLvl{LogLevelLib::INFO};
     switch (logLevel) {
     case MOSQ_LOG_WARNING:
-        logLvl = LogLevel::WARNING;
+        logLvl = LogLevelLib::WARNING;
         break;
     case MOSQ_LOG_ERR:
-        logLvl = LogLevel::ERROR;
+        logLvl = LogLevelLib::ERROR;
         break;
     case MOSQ_LOG_SUBSCRIBE:
         [[fallthrough]];
@@ -356,16 +360,16 @@ MosquittoClient::onLog(struct mosquitto* pClient, int logLevel, const char* pTxt
     case MOSQ_LOG_WEBSOCKETS:
         [[fallthrough]];
     case MOSQ_LOG_DEBUG:
-        logLvl = LogLevel::DEBUG;
+        logLvl = LogLevelLib::DEBUG;
         break;
     case MOSQ_LOG_NOTICE:
         [[fallthrough]];
     case MOSQ_LOG_INFO:
         [[fallthrough]];
     default:
-        cbs.log->Log(logLvl, string(pTxt));
         break;
     }
+    IMqttLogCallbacks::LogMqttLib(logLvl, string(pTxt));
 }
 
 std::string
@@ -384,7 +388,7 @@ MosquittoClient::ConnectAsync(void)
 }
 
 ReasonCode
-MosquittoClient::Disconnect(Mqtt5ReasonCode rc)
+MosquittoClient::DisconnectAsync(Mqtt5ReasonCode rc)
 {
     cbs.log->Log(LogLevel::INFO, "Disconnecting from broker");
     return mosqRcToReasonCode(mosquitto_disconnect_v5(pClient, static_cast<int>(rc), NULL), "mosquitto_disconnect_v5");
@@ -519,7 +523,7 @@ MosquittoClient::mosqRcToReasonCode(int rc, string const& details) const
 }
 
 unique_ptr<IMqttClient>
-MqttClientFactory::create(IMqttClient::InitializeParameters const& params)
+MqttClientFactory::Create(IMqttClient::InitializeParameters const& params)
 {
     return unique_ptr<MosquittoClient>(new MosquittoClient(params));
 }

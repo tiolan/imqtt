@@ -2,12 +2,11 @@
 /**
  * @file IMqttClient.cpp
  * @author Timo Lange
- * @brief Implementation for default functionality defined in IMqttClient.h
+ * @brief Implementation for default functionality defined in Interface headers
  * @date 2020
  * @copyright Copyright 2020 Timo Lange
 
-                                              Licensed under the Apache License,
-    Version 2.0(the "License");
+   Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
@@ -23,6 +22,7 @@
 #include "IMqttClient.h"
 
 #include <map>
+#include <mutex>
 
 using namespace std;
 
@@ -136,4 +136,22 @@ IMqttClient::Mqtt5ReasonCodeToStringRepr(Mqtt5ReasonCode rc)
     }
     return {"UNKNOWN", "Unknown MQTT5 reason code"};
 }
+
+MqttLogInit_t IMqttLogCallbacks::mqttLibLogInitParams{nullptr, LogLevelLib::NONE};
+
+MqttLogInit_t const&
+IMqttLogCallbacks::InitLogMqttLib(MqttLogInit_t const& initParam)
+{
+    static once_flag initFlag;
+    call_once(initFlag, [&initParam] { mqttLibLogInitParams = initParam; });
+    return mqttLibLogInitParams;
+}
+
+void
+IMqttLogCallbacks::LogMqttLib(LogLevelLib lvl, std::string const& txt)
+{
+    if (mqttLibLogInitParams.first && lvl >= mqttLibLogInitParams.second) {
+        mqttLibLogInitParams.first(lvl, txt);
+    }
+};
 }  // namespace i_mqtt_client

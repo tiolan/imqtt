@@ -20,6 +20,9 @@
  */
 #pragma once
 
+#include <functional>
+#include <limits>
+
 namespace i_mqtt_client {
 /*When adding ReasonCodes, also add them to the string representation*/
 enum class ReasonCode { OKAY, ERROR_GENERAL, ERROR_NO_CONNECTION, ERROR_TLS, NOT_ALLOWED };
@@ -92,4 +95,26 @@ using MqttReasonCodeRepr_t        = const std::pair<MqttReasonCodeStringShort_t,
 using Mqtt5ReasonCodeStringShort_t = const std::string;
 using Mqtt5ReasonCodeStringLong_t  = const std::string;
 using Mqtt5ReasonCodeRepr_t        = const std::pair<Mqtt5ReasonCodeStringShort_t, Mqtt5ReasonCodeStringLong_t>;
+
+enum class LogLevel : int {
+    TRACE   = 1,
+    DEBUG   = 2,
+    INFO    = 3,
+    WARNING = 4,
+    ERROR   = 5,
+    FATAL   = 6,
+};
+
+enum class LogLevelLib : int {
+    TRACE   = 1,
+    DEBUG   = 2,
+    INFO    = 3,
+    WARNING = 4,
+    ERROR   = 5,
+    FATAL   = 6,
+    NONE    = std::numeric_limits<int>::max(),
+};
+
+using MmqttLibLogCb_t = std::function<void(LogLevelLib, std::string const&)>;
+using MqttLogInit_t   = std::pair<MmqttLibLogCb_t, LogLevelLib>;
 }  // namespace i_mqtt_client

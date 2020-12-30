@@ -36,7 +36,7 @@ protected:
 
     virtual void OnMqttMessage(upMqttMessage_t) const override
     {
-        cbs.log->Log(IMqttLogCallbacks::LogLevel::WARNING, "Got MQTT message, but no handler installed");
+        cbs.log->Log(LogLevel::WARNING, "Got MQTT message, but no handler installed");
     }
 
 public:
@@ -100,7 +100,7 @@ public:
     /*Interface definition*/
     virtual std::string GetLibVersion(void) const noexcept                                             = 0;
     virtual ReasonCode  ConnectAsync(void)                                                             = 0;
-    virtual ReasonCode  Disconnect(Mqtt5ReasonCode rc = Mqtt5ReasonCode::SUCCESS)                      = 0;
+    virtual ReasonCode  DisconnectAsync(Mqtt5ReasonCode rc = Mqtt5ReasonCode::SUCCESS)                 = 0;
     virtual ReasonCode  SubscribeAsync(std::string const& topic,
                                        IMqttMessage::QOS  qos,
                                        int*               token       = nullptr,
@@ -112,7 +112,7 @@ public:
 
 class MqttClientFactory final {
 public:
-    static std::unique_ptr<IMqttClient> create(IMqttClient::InitializeParameters const&);
+    static std::unique_ptr<IMqttClient> Create(IMqttClient::InitializeParameters const&);
     MqttClientFactory() = delete;
 };
 }  // namespace i_mqtt_client
