@@ -33,10 +33,10 @@ namespace i_mqtt_client {
 class PahoClient : public IMqttClient {
 private:
     struct Context final {
-        PahoClient* pClient;
+        PahoClient* pThis;
         void*       pContext;
         Context(PahoClient* pClient, void* pContext)
-          : pClient(pClient)
+          : pThis(pClient)
           , pContext(pContext){};
     };
     static std::once_flag initFlag;
@@ -55,8 +55,8 @@ private:
     virtual ReasonCode  PublishAsync(upMqttMessage_t, int*) override;
     virtual bool        IsConnected(void) const noexcept override;
 
-    void       printDetailsOnSuccess(std::string const&, MQTTAsync_successData5*);
-    void       printDetailsOnFailure(std::string const&, MQTTAsync_failureData5*);
+    void       printDetailsOnSuccess(std::string const, MQTTAsync_successData5*);
+    void       printDetailsOnFailure(std::string const, MQTTAsync_failureData5*);
     ReasonCode pahoRcToReasonCode(int, std::string const&) const;
 
     int onMessageCb(char*, int, MQTTAsync_message*) const;

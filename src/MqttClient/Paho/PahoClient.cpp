@@ -102,19 +102,19 @@ PahoClient::~PahoClient() noexcept
 }
 
 void
-PahoClient::printDetailsOnSuccess(string const& details, MQTTAsync_successData5* data)
+PahoClient::printDetailsOnSuccess(string const details, MQTTAsync_successData5* data)
 {
     cbs.log->Log(LogLevel::Debug,
                  details + ": okay for token: " + to_string(data->token) +
-                     ", MQTT rc: " + string(MQTTReasonCode_toString(data->reasonCode)));
+                     ", MQTT5 rc: " + string(MQTTReasonCode_toString(data->reasonCode)));
 }
 
 void
-PahoClient::printDetailsOnFailure(string const& details, MQTTAsync_failureData5* data)
+PahoClient::printDetailsOnFailure(string const details, MQTTAsync_failureData5* data)
 {
     cbs.log->Log(LogLevel::Error,
                  details + ": failed for token: " + to_string(data->token) +
-                     ", MQTT rc: " + string(MQTTReasonCode_toString(data->reasonCode)) +
+                     ", MQTT5 rc: " + string(MQTTReasonCode_toString(data->reasonCode)) +
                      ", Paho rc: " + string(MQTTAsync_strerror(data->code)));
     if (data->message) {
         cbs.log->Log(
@@ -201,18 +201,26 @@ PahoClient::ConnectAsync(void)
                  "Reconnect delay min: " + to_string(connectOptions.minRetryInterval) + "," +
                      " max: " + to_string(connectOptions.maxRetryInterval));
 
-    auto rcPromise{promise<int>()};
-    /*should be okay to be non-static, as log as we are always waiting for the promise to be set by either onSuccess5 or
-     * onFailure5*/
-    auto ctx{Context(this, &rcPromise)};
+    static auto ctx{Context(this, nullptr)};
+    auto        rcPromise{promise<int>()};
+    ctx.pContext              = &rcPromise;
     connectOptions.context    = &ctx;
     connectOptions.onSuccess5 = [](void* pCtx, MQTTAsync_successData5* data) {
-        static_cast<Context*>(pCtx)->pClient->printDetailsOnSuccess("MQTTAsync_connect", data);
-        static_cast<promise<int>*>(static_cast<Context*>(pCtx)->pContext)->set_value(MQTTASYNC_SUCCESS);
+        static_cast<Context*>(pCtx)->pThis->printDetailsOnSuccess("MQTTAsync_connect", data);
+        try {
+            static_cast<promise<int>*>(static_cast<Context*>(pCtx)->pContext)->set_value(MQTTASYNC_SUCCESS);
+        }
+        catch (const future_error) {
+        }
     };
     connectOptions.onFailure5 = [](void* pCtx, MQTTAsync_failureData5* data) {
-        static_cast<Context*>(pCtx)->pClient->printDetailsOnFailure("MQTTAsync_connect", data);
-        static_cast<promise<int>*>(static_cast<Context*>(pCtx)->pContext)->set_value(data->code);
+        /*This callback sometimes (e.g. with invalid broker url) is called multiple times, so we have to catch here*/
+        static_cast<Context*>(pCtx)->pThis->printDetailsOnFailure("MQTTAsync_connect", data);
+        try {
+            static_cast<promise<int>*>(static_cast<Context*>(pCtx)->pContext)->set_value(data->code);
+        }
+        catch (const future_error) {
+        }
     };
     if (!params.mqttUsername.empty()) {
         connectOptions.username = params.mqttUsername.c_str();
@@ -252,7 +260,7 @@ PahoClient::ConnectAsync(void)
         cbs.log->Log(LogLevel::Error,
                      "MQTTAsync_connect returned MQTT error: " + MqttReasonCodeToStringRepr(reason).first);
     }
-    /*use rc from the callbacks, wait forever because the callback otherwise would dereference invalid ctx*/
+    /*use rc from the callbacks, wait forever because it is assumed one of the callbacks is always called*/
     return pahoRcToReasonCode(rcPromise.get_future().get(), "MQTTAsync_connect");
 }
 
