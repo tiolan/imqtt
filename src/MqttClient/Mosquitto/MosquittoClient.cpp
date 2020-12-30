@@ -45,7 +45,7 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
         lock_guard<mutex> lock(libMutex);
         // Init lib, if nobody ever did
         if (counter.fetch_add(1) == 0) {
-            cbs.log->Log(LogLevel::Info, "Initializing mosquitto lib");
+            cbs.log->Log(LogLevel::INFO, "Initializing mosquitto lib");
             rc = mosquitto_lib_init();
             if (MOSQ_ERR_SUCCESS != rc) {
                 throw runtime_error("Was not able to initialize mosquitto lib: " + string(mosquitto_strerror(rc)));
@@ -58,8 +58,8 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     }  // unlock mutex, from here everything is instance specific
 
     // Init instance
-    cbs.log->Log(LogLevel::Info, "Initializing mosquitto instance");
-    cbs.log->Log(LogLevel::Info, "Broker-Address: " + params.hostAddress + ":" + to_string(params.port));
+    cbs.log->Log(LogLevel::INFO, "Initializing mosquitto instance");
+    cbs.log->Log(LogLevel::INFO, "Broker-Address: " + params.hostAddress + ":" + to_string(params.port));
     pClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
 
     if (!params.mqttUsername.empty()) {
@@ -72,7 +72,7 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     auto reconnMin{
         params.reconnectDelayMin +
         uniform_int_distribution<int>(params.reconnectDelayMinLower, params.reconnectDelayMinUpper)(rndGenerator)};
-    cbs.log->Log(LogLevel::Debug,
+    cbs.log->Log(LogLevel::DEBUG,
                  "Reconnect delay min: " + to_string(reconnMin) + "," + " max: " + to_string(params.reconnectDelayMax));
     rc = mosquitto_reconnect_delay_set(pClient, reconnMin, params.reconnectDelayMax, params.exponentialBackoff);
     if (MOSQ_ERR_SUCCESS != rc) {
@@ -140,7 +140,7 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
         throw runtime_error("Was not able to set TLS options: " + string(mosquitto_strerror(rc)));
     }
 #endif
-    cbs.log->Log(LogLevel::Info, "Starting mosquitto instance");
+    cbs.log->Log(LogLevel::INFO, "Starting mosquitto instance");
     rc = mosquitto_loop_start(pClient);
     if (MOSQ_ERR_SUCCESS != rc) {
         throw runtime_error("Was not able to start mosquitto loop: " + string(mosquitto_strerror(rc)));
@@ -150,11 +150,11 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
 void
 MosquittoClient::messageDispatcherWorker(void)
 {
-    cbs.log->Log(LogLevel::Debug, "Starting MQTT message dispatcher");
+    cbs.log->Log(LogLevel::DEBUG, "Starting MQTT message dispatcher");
     unique_lock<mutex> lock(messageDispatcherMutex);
     while (!messageDispatcherExit) {
         cbs.log->Log(
-            LogLevel::Debug,
+            LogLevel::DEBUG,
             "Number of MQTT messages to be processed: " + to_string(messageDispatcherQueue.size()) + " messages");
         messageDispatcherAwaiter.wait(lock,
                                       [this] { return (messageDispatcherQueue.size() || messageDispatcherExit); });
@@ -165,7 +165,7 @@ MosquittoClient::messageDispatcherWorker(void)
             lock.lock();
         }
     }
-    cbs.log->Log(LogLevel::Info, "Exiting MQTT message dispatcher");
+    cbs.log->Log(LogLevel::INFO, "Exiting MQTT message dispatcher");
 }
 
 void
@@ -179,7 +179,7 @@ MosquittoClient::dispatchMessage(upMqttMessage_t&& msg)
 
 MosquittoClient::~MosquittoClient() noexcept
 {
-    cbs.log->Log(LogLevel::Info, "Deinitializing mosquitto instance");
+    cbs.log->Log(LogLevel::INFO, "Deinitializing mosquitto instance");
     if (IsConnected()) {
         Disconnect(Mqtt5ReasonCode::SUCCESS);
     }
@@ -194,7 +194,7 @@ MosquittoClient::~MosquittoClient() noexcept
     // If no users are left, clean the lib
     lock_guard<mutex> l(libMutex);
     if (counter.fetch_sub(1) == 1) {
-        cbs.log->Log(LogLevel::Info, "Deinitializing mosquitto library");
+        cbs.log->Log(LogLevel::INFO, "Deinitializing mosquitto library");
         mosquitto_lib_cleanup();
     }
 }
@@ -205,10 +205,10 @@ MosquittoClient::onConnectCb(struct mosquitto* pClient, int mqttRc, int flags, c
     (void)pClient;
     (void)flags;
     (void)pProps;
-    auto logLvl{LogLevel::Warning};
+    auto logLvl{LogLevel::WARNING};
     if (Mqtt5ReasonCode::SUCCESS == static_cast<Mqtt5ReasonCode>(mqttRc)) {
         connected = true;
-        logLvl    = LogLevel::Info;
+        logLvl    = LogLevel::INFO;
     }
     cbs.log->Log(logLvl, "Mosquitto connected to broker, rc: " + Mqtt5ReasonCodeToStringRepr(mqttRc).first);
     cbs.con->OnConnectionStatusChanged(IMqttConnectionCallbacks::ConnectionType::CONNECT,
@@ -221,7 +221,7 @@ MosquittoClient::onDisconnectCb(struct mosquitto* pClient, int mqttRc, const mos
     (void)pClient;
     (void)pProps;
     connected = false;
-    cbs.log->Log(LogLevel::Warning,
+    cbs.log->Log(LogLevel::WARNING,
                  "Mosquitto disconnected from broker, rc: " + Mqtt5ReasonCodeToStringRepr(mqttRc).first);
     cbs.con->OnConnectionStatusChanged(IMqttConnectionCallbacks::ConnectionType::DISCONNECT,
                                        static_cast<Mqtt5ReasonCode>(mqttRc));
@@ -232,7 +232,7 @@ MosquittoClient::onPublishCb(struct mosquitto* pClient, int messageId, int mqttR
 {
     (void)pClient;
     (void)pProps;
-    cbs.log->Log(LogLevel::Debug,
+    cbs.log->Log(LogLevel::DEBUG,
                  "Mosquitto publish completed for token: " + to_string(messageId) +
                      ", rc: " + Mqtt5ReasonCodeToStringRepr(mqttRc).first);
     cbs.msg->OnPublish(messageId, static_cast<Mqtt5ReasonCode>(mqttRc));
@@ -245,7 +245,7 @@ MosquittoClient::onMessageCb(struct mosquitto*               pClient,
 {
     (void)pClient;
 
-    cbs.log->Log(LogLevel::Debug, "Mosquitto received message");
+    cbs.log->Log(LogLevel::DEBUG, "Mosquitto received message");
 
     auto mqttMessage{MqttMessageFactory::create(
         pMsg->topic,
@@ -267,7 +267,7 @@ MosquittoClient::onMessageCb(struct mosquitto*               pClient,
             if (key) {
                 auto keyStr = string(key);
                 if (!mqttMessage->userProps.insert(make_pair(keyStr, val ? string(val) : string())).second) {
-                    cbs.log->Log(LogLevel::Error, "Was not able to add user props - ignoring");
+                    cbs.log->Log(LogLevel::ERROR, "Was not able to add user props - ignoring");
                 }
             }
         } while (pUserProps);
@@ -321,7 +321,7 @@ MosquittoClient::onSubscribeCb(struct mosquitto*         pClient,
     (void)pClient;
     (void)pProps;
     for (int i{0}; i < grantedQosCount; i++) {
-        cbs.log->Log(LogLevel::Debug, "Mosquitto Subscribe completed with QOS: " + to_string(*(pGrantedQos + i)));
+        cbs.log->Log(LogLevel::DEBUG, "Mosquitto Subscribe completed with QOS: " + to_string(*(pGrantedQos + i)));
     }
     // TODO: How to get the Mqtt5ReasonCode in order to hand it over to the user
     cbs.msg->OnSubscribe(messageId);
@@ -332,7 +332,7 @@ MosquittoClient::onUnSubscribeCb(struct mosquitto* pClient, int messageId, const
 {
     (void)pClient;
     (void)pProps;
-    cbs.log->Log(LogLevel::Debug, "Mosquitto UnSubscribe completed");
+    cbs.log->Log(LogLevel::DEBUG, "Mosquitto UnSubscribe completed");
     // TODO: How to get the Mqtt5ReasonCode in order to hand it over to the user
     cbs.msg->OnUnSubscribe(messageId);
 }
@@ -341,13 +341,13 @@ void
 MosquittoClient::onLog(struct mosquitto* pClient, int logLevel, const char* pTxt)
 {
     (void)pClient;
-    auto logLvl{LogLevel::Info};
+    auto logLvl{LogLevel::INFO};
     switch (logLevel) {
     case MOSQ_LOG_WARNING:
-        logLvl = LogLevel::Warning;
+        logLvl = LogLevel::WARNING;
         break;
     case MOSQ_LOG_ERR:
-        logLvl = LogLevel::Error;
+        logLvl = LogLevel::ERROR;
         break;
     case MOSQ_LOG_SUBSCRIBE:
         [[fallthrough]];
@@ -356,7 +356,7 @@ MosquittoClient::onLog(struct mosquitto* pClient, int logLevel, const char* pTxt
     case MOSQ_LOG_WEBSOCKETS:
         [[fallthrough]];
     case MOSQ_LOG_DEBUG:
-        logLvl = LogLevel::Debug;
+        logLvl = LogLevel::DEBUG;
         break;
     case MOSQ_LOG_NOTICE:
         [[fallthrough]];
@@ -377,7 +377,7 @@ MosquittoClient::GetLibVersion(void) const noexcept
 ReasonCode
 MosquittoClient::ConnectAsync(void)
 {
-    cbs.log->Log(LogLevel::Info, "Connecting to broker async: " + params.hostAddress + ":" + to_string(params.port));
+    cbs.log->Log(LogLevel::INFO, "Connecting to broker async: " + params.hostAddress + ":" + to_string(params.port));
     return mosqRcToReasonCode(
         mosquitto_connect_async(pClient, params.hostAddress.c_str(), params.port, params.keepAliveInterval),
         "mosquitto_connect_async");
@@ -386,14 +386,14 @@ MosquittoClient::ConnectAsync(void)
 ReasonCode
 MosquittoClient::Disconnect(Mqtt5ReasonCode rc)
 {
-    cbs.log->Log(LogLevel::Info, "Disconnecting from broker");
+    cbs.log->Log(LogLevel::INFO, "Disconnecting from broker");
     return mosqRcToReasonCode(mosquitto_disconnect_v5(pClient, static_cast<int>(rc), NULL), "mosquitto_disconnect_v5");
 }
 
 ReasonCode
 MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int* token, bool getRetained)
 {
-    cbs.log->Log(LogLevel::Debug, "Subscribing to topic: \"" + topic + "\"");
+    cbs.log->Log(LogLevel::DEBUG, "Subscribing to topic: \"" + topic + "\"");
     int options{0};
     if (!params.allowLocalTopics) {
         options |= mqtt5_sub_options::MQTT_SUB_OPT_NO_LOCAL;
@@ -409,7 +409,7 @@ MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int*
 ReasonCode
 MosquittoClient::UnSubscribeAsync(string const& topic, int* token)
 {
-    cbs.log->Log(LogLevel::Debug, "Unsubscribing from topic: \"" + topic + "\"");
+    cbs.log->Log(LogLevel::DEBUG, "Unsubscribing from topic: \"" + topic + "\"");
     return mosqRcToReasonCode(mosquitto_unsubscribe_v5(pClient, token, topic.c_str(), NULL),
                               "mosquitto_unsubscribe_v5");
 }
@@ -417,7 +417,7 @@ MosquittoClient::UnSubscribeAsync(string const& topic, int* token)
 ReasonCode
 MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
 {
-    cbs.log->Log(LogLevel::Debug, "Publishing to topic: \"" + mqttMsg->topic + "\"");
+    cbs.log->Log(LogLevel::DEBUG, "Publishing to topic: \"" + mqttMsg->topic + "\"");
 
     auto propertiesOkay{true};
 
@@ -425,7 +425,7 @@ MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
     for (auto const& prop : mqttMsg->userProps) {
         if (MOSQ_ERR_SUCCESS != mosquitto_property_add_string_pair(
                                     &pProps, MQTT_PROP_USER_PROPERTY, prop.first.c_str(), prop.second.c_str())) {
-            cbs.log->Log(LogLevel::Error, "Invalid MQTT user property - ignoring message");
+            cbs.log->Log(LogLevel::ERROR, "Invalid MQTT user property - ignoring message");
             propertiesOkay = false;
             break;
         }
@@ -435,19 +435,19 @@ MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
                                                           MQTT_PROP_CORRELATION_DATA,
                                                           mqttMsg->correlationDataProps.data(),
                                                           mqttMsg->correlationDataProps.size())) {
-        cbs.log->Log(LogLevel::Error, "Invalid MQTT correlation data property - ignoring message");
+        cbs.log->Log(LogLevel::ERROR, "Invalid MQTT correlation data property - ignoring message");
         propertiesOkay = false;
     }
 
     if (MOSQ_ERR_SUCCESS !=
         mosquitto_property_add_string(&pProps, MQTT_PROP_RESPONSE_TOPIC, mqttMsg->responseTopic.c_str())) {
-        cbs.log->Log(LogLevel::Error, "Invalid MQTT response topic - ignoring message");
+        cbs.log->Log(LogLevel::ERROR, "Invalid MQTT response topic - ignoring message");
         propertiesOkay = false;
     }
 
     if (MOSQ_ERR_SUCCESS !=
         mosquitto_property_add_string(&pProps, MQTT_PROP_CONTENT_TYPE, mqttMsg->payloadContentType.c_str())) {
-        cbs.log->Log(LogLevel::Error, "Invalid MQTT content type - ignoring message");
+        cbs.log->Log(LogLevel::ERROR, "Invalid MQTT content type - ignoring message");
         propertiesOkay = false;
     }
 
@@ -455,7 +455,7 @@ MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         mosquitto_property_add_byte(&pProps,
                                     MQTT_PROP_PAYLOAD_FORMAT_INDICATOR,
                                     mqttMsg->payloadFormatIndicator == IMqttMessage::FormatIndicator::UTF8 ? 1 : 0)) {
-        cbs.log->Log(LogLevel::Error, "Invalid MQTT format indicator - ignoring message");
+        cbs.log->Log(LogLevel::ERROR, "Invalid MQTT format indicator - ignoring message");
         propertiesOkay = false;
     }
 
@@ -472,7 +472,7 @@ MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
                                     "mosquitto_publish_v5");
     }
     if (ReasonCode::OKAY != status) {
-        cbs.log->Log(LogLevel::Error, "PublishAsync failed - will not retry");
+        cbs.log->Log(LogLevel::ERROR, "PublishAsync failed - will not retry");
     }
     mosquitto_property_free_all(&pProps);
     return status;
@@ -488,26 +488,26 @@ ReasonCode
 MosquittoClient::mosqRcToReasonCode(int rc, string const& details) const
 {
     auto status{ReasonCode::ERROR_GENERAL};
-    auto logLvl{LogLevel::Error};
+    auto logLvl{LogLevel::ERROR};
     switch (rc) {
     case MOSQ_ERR_SUCCESS:
-        logLvl = LogLevel::Debug;
+        logLvl = LogLevel::DEBUG;
         status = ReasonCode::OKAY;
         break;
     case MOSQ_ERR_TLS:
         [[fallthrough]];
     case MOSQ_ERR_TLS_HANDSHAKE:
-        logLvl = LogLevel::Error;
+        logLvl = LogLevel::ERROR;
         status = ReasonCode::ERROR_TLS;
         break;
     case MOSQ_ERR_CONN_LOST:
         [[fallthrough]];
     case MOSQ_ERR_NO_CONN:
-        logLvl = LogLevel::Warning;
+        logLvl = LogLevel::WARNING;
         status = ReasonCode::ERROR_NO_CONNECTION;
         break;
     case MOSQ_ERR_AUTH:
-        logLvl = LogLevel::Error;
+        logLvl = LogLevel::ERROR;
         status = ReasonCode::NOT_ALLOWED;
         break;
     default:

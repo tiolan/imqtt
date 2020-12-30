@@ -33,7 +33,7 @@ protected:
 public:
     virtual ~IMqttLogCallbacks() noexcept = default;
 
-    enum class LogLevel { Trace, Debug, Info, Warning, Error, Fatal };
+    enum class LogLevel { TRACE, DEBUG, INFO, WARNING, ERROR, FATAL };
     /*To be overriden by user, if needed*/
     virtual void Log(LogLevel, std::string const&) const {/*by default, do not log*/};
 };

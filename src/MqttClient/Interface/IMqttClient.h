@@ -36,7 +36,7 @@ protected:
 
     virtual void OnMqttMessage(upMqttMessage_t) const override
     {
-        cbs.log->Log(IMqttLogCallbacks::LogLevel::Warning, "Got MQTT message, but no handler installed");
+        cbs.log->Log(IMqttLogCallbacks::LogLevel::WARNING, "Got MQTT message, but no handler installed");
     }
 
 public:
@@ -81,20 +81,11 @@ public:
         bool exponentialBackoff{false}; /*true on PAHO*/
 #endif
     };
-    using ReasonCodeStringShort_t = const std::string;
-    using ReasonCodeStringLong_t  = const std::string;
-    using ReasonCodeRepr_t        = const std::pair<ReasonCodeStringShort_t, ReasonCodeStringLong_t>;
     static ReasonCodeRepr_t ReasonCodeToStringRepr(ReasonCode);
 
-    using MqttReasonCodeStringShort_t = const std::string;
-    using MqttReasonCodeStringLong_t  = const std::string;
-    using MqttReasonCodeRepr_t        = const std::pair<MqttReasonCodeStringShort_t, MqttReasonCodeStringLong_t>;
     static MqttReasonCodeRepr_t MqttReasonCodeToStringRepr(MqttReasonCode);
     static MqttReasonCodeRepr_t MqttReasonCodeToStringRepr(int);
 
-    using Mqtt5ReasonCodeStringShort_t = const std::string;
-    using Mqtt5ReasonCodeStringLong_t  = const std::string;
-    using Mqtt5ReasonCodeRepr_t        = const std::pair<Mqtt5ReasonCodeStringShort_t, Mqtt5ReasonCodeStringLong_t>;
     static Mqtt5ReasonCodeRepr_t Mqtt5ReasonCodeToStringRepr(Mqtt5ReasonCode);
     static Mqtt5ReasonCodeRepr_t Mqtt5ReasonCodeToStringRepr(int);
 

@@ -80,4 +80,16 @@ enum class Mqtt5ReasonCode : int {
     SUBSCRIPTION_IDENTIFIERS_NOT_SUPPORTED = 0xA1, /*SUBACK*/
     WILDCARD_SUBSCRIPTIONS_NOT_SUPPORTED   = 0xA2, /*SUBACK, DISCONNECT*/
 };
+
+using ReasonCodeStringShort_t = const std::string;
+using ReasonCodeStringLong_t  = const std::string;
+using ReasonCodeRepr_t        = const std::pair<ReasonCodeStringShort_t, ReasonCodeStringLong_t>;
+
+using MqttReasonCodeStringShort_t = const std::string;
+using MqttReasonCodeStringLong_t  = const std::string;
+using MqttReasonCodeRepr_t        = const std::pair<MqttReasonCodeStringShort_t, MqttReasonCodeStringLong_t>;
+
+using Mqtt5ReasonCodeStringShort_t = const std::string;
+using Mqtt5ReasonCodeStringLong_t  = const std::string;
+using Mqtt5ReasonCodeRepr_t        = const std::pair<Mqtt5ReasonCodeStringShort_t, Mqtt5ReasonCodeStringLong_t>;
 }  // namespace i_mqtt_client

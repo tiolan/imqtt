@@ -72,7 +72,7 @@ public:
 #ifdef IMQTT_WITH_TLS
 #ifdef IMQTT_USE_PAHO
         params.hostAddress           = "ssl://" + params.hostAddress;
-        params.disableDefaultCaStore = false;
+        params.disableDefaultCaStore = true;
 #endif
 #ifdef IMQTT_EXPERIMENTAL
         params.clientCert = CLIENT_CERT;
@@ -99,13 +99,13 @@ condition_variable Sample::interrupt;
 void
 Sample::OnPublish(token_t token, Mqtt5ReasonCode) const
 {
-    Log(LogLevel::Info, "Message was published for token: " + to_string(token));
+    Log(LogLevel::INFO, "Message was published for token: " + to_string(token));
 }
 
 void
 Sample::OnUnSubscribe(int token) const
 {
-    Log(LogLevel::Info, "Unsubscribe done for token: " + to_string(token));
+    Log(LogLevel::INFO, "Unsubscribe done for token: " + to_string(token));
 }
 
 void
@@ -120,29 +120,29 @@ Sample::sendMessage(IMqttMessage::QOS qos) const
     mqttMessage->payloadContentType     = "ASCII";
     int token{-1};
     client->PublishAsync(move(mqttMessage), &token);
-    Log(LogLevel::Info, "Publish done for token: " + to_string(token));
+    Log(LogLevel::INFO, "Publish done for token: " + to_string(token));
 }
 
 void
 Sample::OnSubscribe(int token) const
 {
-    Log(LogLevel::Info, "Subscribe done for token: " + to_string(token));
+    Log(LogLevel::INFO, "Subscribe done for token: " + to_string(token));
     sendMessage(IMqttMessage::QOS::QOS_0);
     sendMessage(IMqttMessage::QOS::QOS_1);
 }
 
 void
-Sample::OnConnectionStatusChanged(ConnectionType status, Mqtt5ReasonCode reason) const
+Sample::OnConnectionStatusChanged(ConnectionType type, Mqtt5ReasonCode reason) const
 {
-    (void)reason;
-    if (status == ConnectionType::CONNECT) {
-        Log(LogLevel::Info, "Sample is connected");
+    if (type == ConnectionType::CONNECT && reason == Mqtt5ReasonCode::SUCCESS) {
+        Log(LogLevel::INFO, "Sample is connected");
         int token{0};
         client->SubscribeAsync(subscribeTopic, IMqttMessage::QOS::QOS_1, &token);
-        Log(LogLevel::Info, "Subscribe token: " + to_string(token));
+        Log(LogLevel::INFO, "Subscribe token: " + to_string(token));
     }
     else {
-        Log(LogLevel::Info, "Sample is disconnected");
+        Log(LogLevel::INFO,
+            "Sample is disconnected, MQTT5 rc: " + IMqttClient::Mqtt5ReasonCodeToStringRepr(reason).first);
     }
 }
 
@@ -151,22 +151,22 @@ Sample::Log(LogLevel lvl, string const& txt) const
 {
     lock_guard<mutex> lock(coutMutex);
     switch (lvl) {
-    case LogLevel::Debug:
+    case LogLevel::DEBUG:
         cout << "D";
         break;
-    case LogLevel::Warning:
+    case LogLevel::WARNING:
         cout << "W";
         break;
-    case LogLevel::Error:
+    case LogLevel::ERROR:
         cout << "E";
         break;
-    case LogLevel::Fatal:
+    case LogLevel::FATAL:
         cout << "D";
         break;
-    case LogLevel::Trace:
+    case LogLevel::TRACE:
         cout << "T";
         break;
-    case LogLevel::Info:
+    case LogLevel::INFO:
         [[fallthrough]];
     default:
         cout << "I";
@@ -178,7 +178,7 @@ Sample::Log(LogLevel lvl, string const& txt) const
 void
 Sample::OnMqttMessage(upMqttMessage_t msq) const
 {
-    Log(LogLevel::Info, "Got Mqtt Message: " + msq->toString());
+    Log(LogLevel::INFO, "Got Mqtt Message: " + msq->toString());
 }
 
 void
@@ -189,14 +189,14 @@ Sample::Run(void)
     client->setCallbacks({nullptr, this, this});
     /* enable logs */
     client->setCallbacks({this, this, this});
-    Log(LogLevel::Info, "Using lib version: " + client->GetLibVersion());
+    Log(LogLevel::INFO, "Using lib version: " + client->GetLibVersion());
     client->ConnectAsync();
 
     // Block
     interrupt.wait(lock, [] { return exitRun; });
     int token{0};
     client->UnSubscribeAsync(subscribeTopic, &token);
-    Log(LogLevel::Info, "Unsubscribe token: " + to_string(token));
+    Log(LogLevel::INFO, "Unsubscribe token: " + to_string(token));
     /*Some time to allow the unsubscribe happen*/
     sleep_for(milliseconds(500));
     client->Disconnect();

@@ -28,14 +28,14 @@ using namespace std;
 
 namespace i_mqtt_client {
 
-static const map<ReasonCode, IMqttClient::ReasonCodeRepr_t> reasonCodeToString{
+static const map<ReasonCode, ReasonCodeRepr_t> reasonCodeToString{
     {ReasonCode::OKAY, {"OKAY", "The operation was successful"}},
     {ReasonCode::ERROR_GENERAL, {"ERROR_GENERAL", "A general error occured"}},
     {ReasonCode::ERROR_NO_CONNECTION, {"ERROR_NO_CONNECTION", "No connection to the broker"}},
     {ReasonCode::ERROR_TLS, {"ERROR_TLS", "A TLS error occured"}},
     {ReasonCode::NOT_ALLOWED, {"NOT_ALLOWED", "The broker refused the connection"}}};
 
-IMqttClient::ReasonCodeRepr_t
+ReasonCodeRepr_t
 IMqttClient::ReasonCodeToStringRepr(ReasonCode rc)
 {
     auto repr{reasonCodeToString.find(rc)};
@@ -45,7 +45,7 @@ IMqttClient::ReasonCodeToStringRepr(ReasonCode rc)
     return {"UNKNOWN", "The provided reason code is unknown"};
 }
 
-static const map<MqttReasonCode, IMqttClient::MqttReasonCodeRepr_t> mqttReasonCodeToString{
+static const map<MqttReasonCode, MqttReasonCodeRepr_t> mqttReasonCodeToString{
     {MqttReasonCode::ACCEPTED, {"ACCEPTED", "Connection accepted"}},
     {MqttReasonCode::UNACCEPTABLE_PROTOCOL_VERSION, {"UNACCEPTABLE_PROTOCOL_VERSION", "Unacceptable protocol version"}},
     {MqttReasonCode::IDENTIFIER_REJECTED, {"IDENTIFIER_REJECTED", "Identifier rejected"}},
@@ -53,13 +53,13 @@ static const map<MqttReasonCode, IMqttClient::MqttReasonCodeRepr_t> mqttReasonCo
     {MqttReasonCode::BAD_USERNAME_OR_PASSWORD, {"BAD_USERNAME_OR_PASSWORD", "Bad user name or password"}},
     {MqttReasonCode::NOT_AUTHORIZED, {"NOT_AUTHORIZED", "Not authorized"}}};
 
-IMqttClient::ReasonCodeRepr_t
+ReasonCodeRepr_t
 IMqttClient::MqttReasonCodeToStringRepr(int rc)
 {
     return MqttReasonCodeToStringRepr(static_cast<MqttReasonCode>(rc));
 }
 
-IMqttClient::ReasonCodeRepr_t
+ReasonCodeRepr_t
 IMqttClient::MqttReasonCodeToStringRepr(MqttReasonCode rc)
 {
     auto repr{mqttReasonCodeToString.find(rc)};
@@ -69,7 +69,7 @@ IMqttClient::MqttReasonCodeToStringRepr(MqttReasonCode rc)
     return {"UNKNOWN", "Unknown MQTT reason code"};
 }
 
-const static map<Mqtt5ReasonCode, IMqttClient::Mqtt5ReasonCodeRepr_t> mqtt5ReasonCodeToString{
+const static map<Mqtt5ReasonCode, Mqtt5ReasonCodeRepr_t> mqtt5ReasonCodeToString{
     {Mqtt5ReasonCode::SUCCESS, {"SUCCESS", "Success"}},
     {Mqtt5ReasonCode::GRANTED_QOS_1, {"GRANTED_QOS_1", "Granted QoS 1"}},
     {Mqtt5ReasonCode::GRANTED_QOS_2, {"GRANTED_QOS_2", "Granted QoS 2 "}},
@@ -119,13 +119,13 @@ const static map<Mqtt5ReasonCode, IMqttClient::Mqtt5ReasonCodeRepr_t> mqtt5Reaso
      {"WILDCARD_SUBSCRIPTIONS_NOT_SUPPORTED", "Wildcard Subscription not supported"}},
 };
 
-IMqttClient::ReasonCodeRepr_t
+ReasonCodeRepr_t
 IMqttClient::Mqtt5ReasonCodeToStringRepr(int rc)
 {
     return Mqtt5ReasonCodeToStringRepr(static_cast<Mqtt5ReasonCode>(rc));
 }
 
-IMqttClient::ReasonCodeRepr_t
+ReasonCodeRepr_t
 IMqttClient::Mqtt5ReasonCodeToStringRepr(Mqtt5ReasonCode rc)
 {
     // TODO: Once https://github.com/eclipse/mosquitto/issues/1984 is understood, back to
