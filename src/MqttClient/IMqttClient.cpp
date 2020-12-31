@@ -1,4 +1,3 @@
-
 /**
  * @file IMqttClient.cpp
  * @author Timo Lange

@@ -57,8 +57,7 @@ private:
     void       printDetailsOnSuccess(std::string const&, MQTTAsync_successData5*);
     void       printDetailsOnFailure(std::string const&, MQTTAsync_failureData5*);
     ReasonCode pahoRcToReasonCode(int, std::string const&) const;
-
-    int onMessageCb(char*, int, MQTTAsync_message*) const;
+    int        onMessageCb(char*, int, MQTTAsync_message*) const;
 
 public:
     PahoClient(IMqttClient::InitializeParameters const&);

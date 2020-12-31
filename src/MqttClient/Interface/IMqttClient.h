@@ -30,10 +30,11 @@ class IMqttClient : public IMqttClientCallbacks {
 protected:
     MqttClientCallbacks cbs;
     IMqttClient(void)
-      : cbs({this, this, this})
+      : cbs({this, this, this, this})
     {
     }
 
+    // TODO: Return bool in order to indicate accept / reject message?
     virtual void OnMqttMessage(upMqttMessage_t) const override
     {
         cbs.log->Log(LogLevel::WARNING, "Got MQTT message, but no handler installed");
@@ -52,7 +53,7 @@ public:
         std::string         hostAddress{"localhost"};
         int                 port{1883u};
         std::string         clientId{"clientId"};
-        MqttClientCallbacks callbackProvider{MqttClientCallbacks(nullptr, nullptr, nullptr)};
+        MqttClientCallbacks callbackProvider{MqttClientCallbacks(nullptr, nullptr, nullptr, nullptr)};
         std::string         mqttUsername{""};
         std::string         mqttPassword{""};
         bool                cleanSession{true};
@@ -95,6 +96,7 @@ public:
         cbs.log = callbacks.log ? callbacks.log : this;
         cbs.msg = callbacks.msg ? callbacks.msg : this;
         cbs.con = callbacks.con ? callbacks.con : this;
+        cbs.cmd = callbacks.cmd ? callbacks.cmd : this;
     }
 
     /*Interface definition*/

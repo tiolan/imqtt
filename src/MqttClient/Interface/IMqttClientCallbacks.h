@@ -33,11 +33,11 @@ private:
 
 protected:
     IMqttLogCallbacks(void) = default;
+    static void                 LogMqttLib(LogLevelLib, std::string const&);
+    static MqttLogInit_t const& InitLogMqttLib(MqttLogInit_t const&);
 
 public:
     virtual ~IMqttLogCallbacks() noexcept = default;
-    static void                 LogMqttLib(LogLevelLib, std::string const&);
-    static MqttLogInit_t const& InitLogMqttLib(MqttLogInit_t const&);
     /*To be overriden by user, if needed*/
     virtual void Log(LogLevel, std::string const&) const {/*by default, do not log*/};
 };
@@ -62,10 +62,19 @@ protected:
 
 public:
     virtual ~IMqttMessageCallbacks() noexcept = default;
-    using token_t                             = int;
 
     /*To be overriden by user*/
     virtual void OnMqttMessage(upMqttMessage_t mqttMessage) const = 0;
+};
+
+class IMqttCommandCallbacks {
+protected:
+    IMqttCommandCallbacks(void) = default;
+    using token_t               = int;
+
+public:
+    virtual ~IMqttCommandCallbacks() noexcept = default;
+
     /*To be overriden by user, if needed*/
     virtual void OnSubscribe(token_t) const {
         /*by default, do nothing*/
@@ -79,7 +88,10 @@ public:
     };
 };
 
-class IMqttClientCallbacks : public IMqttLogCallbacks, public IMqttMessageCallbacks, public IMqttConnectionCallbacks {
+class IMqttClientCallbacks : public IMqttLogCallbacks,
+                             public IMqttMessageCallbacks,
+                             public IMqttConnectionCallbacks,
+                             public IMqttCommandCallbacks {
 protected:
     IMqttClientCallbacks(void) = default;
 
@@ -90,15 +102,19 @@ public:
 struct MqttClientCallbacks final {
     MqttClientCallbacks(IMqttLogCallbacks const*        log,
                         IMqttMessageCallbacks const*    msg,
-                        IMqttConnectionCallbacks const* con)
+                        IMqttConnectionCallbacks const* con,
+                        IMqttCommandCallbacks const*    cmd)
+      // TODO: This is non-sense
       : log(log ? log : nullptr)
       , msg(msg ? msg : nullptr)
       , con(con ? con : nullptr)
+      , cmd(cmd ? cmd : nullptr)
     {
     }
     IMqttLogCallbacks const*        log;
     IMqttMessageCallbacks const*    msg;
     IMqttConnectionCallbacks const* con;
+    IMqttCommandCallbacks const*    cmd;
 };
 
 

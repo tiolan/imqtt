@@ -29,6 +29,7 @@ namespace i_mqtt_client {
 class MqttMessage final : public IMqttMessage {
 public:
     virtual inline std::string GetPayloadCastedToString(void) const override;
+    virtual inline std::string GetCorrelationDataCastedToString(void) const override;
     virtual inline std::string ToString(void) const noexcept override;
 
     MqttMessage(std::string const&, payload_t const&, QOS, bool);

@@ -43,8 +43,7 @@ private:
     IMqttMessage(IMqttMessage&&)      = delete;
     IMqttMessage& operator=(const IMqttMessage&) = delete;
     IMqttMessage& operator=(IMqttMessage&&) = delete;
-
-    void* operator new[](size_t) = delete;
+    void*         operator new[](size_t)    = delete;
 
 protected:
     IMqttMessage(std::string const& topic, payload_t const& payload, QOS qos, bool retain)
@@ -72,8 +71,9 @@ public:
     FormatIndicator        payloadFormatIndicator{FormatIndicator::UNSPECIFIED};
     std::string            payloadContentType{""};
 
-    virtual std::string GetPayloadCastedToString(void) const = 0;
-    virtual std::string ToString(void) const                 = 0;
+    virtual std::string GetPayloadCastedToString(void) const         = 0;
+    virtual std::string GetCorrelationDataCastedToString(void) const = 0;
+    virtual std::string ToString(void) const                         = 0;
 };
 
 using upMqttMessage_t = std::unique_ptr<IMqttMessage>;

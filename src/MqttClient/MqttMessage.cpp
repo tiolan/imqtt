@@ -31,16 +31,35 @@ MqttMessage::MqttMessage(string const& topic, payload_t const& payload, QOS qos,
 string
 MqttMessage::ToString(void) const noexcept
 {
-    string str{"MqttMessage [topic]:\t" + topic + "\n"};
-    str += "MqttMessage [qos]:\t" + to_string(static_cast<int>(qos)) + "\n";
-    str += "MqttMessage [retain]:\t" + to_string(retain) + "\n";
-    str += "MqttMessage [messageId]:\t" + to_string(messageId) + "\n";
-    str += "\nMqttMessage[userProps]:\n";
-    for (auto const& prop : userProps) {
-        str += "\t[" + prop.first + "]:" + prop.second + "\n";
+    string str;
+    /*to avoid some reallocations*/
+    str.reserve(300);
+    str += "~~~\n[topic]:\t" + topic + "\n";
+    str += "[qos]:\t\t" + to_string(static_cast<int>(qos)) + "\n";
+    str += "[retain]:\t" + to_string(retain) + "\n";
+    if (messageId >= 0) {
+        str += "[messageId]:\t" + to_string(messageId) + "\n";
     }
+    for (auto const& prop : userProps) {
+        str += "[userProps]:\t" + prop.first + ":" + prop.second + "\n";
+    }
+    if (!correlationDataProps.empty()) {
+        str += "[correlData]:\t" + GetCorrelationDataCastedToString() + "\n";
+    }
+    if (payloadFormatIndicator == FormatIndicator::UTF8) {
+        str += "[formatInd]:\tUTF8\n";
+    }
+    if (!payloadContentType.empty()) {
+        str += "[contentType]:\t" + payloadContentType + "\n";
+    }
+    return str + "~~~";
+}
 
-    return str;
+string
+MqttMessage::GetCorrelationDataCastedToString(void) const
+{
+    return string(reinterpret_cast<const char*>(correlationDataProps.data()),
+                  static_cast<size_t>(correlationDataProps.size()));
 }
 
 string

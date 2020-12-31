@@ -29,6 +29,7 @@
 #include "certs.h"
 #endif
 
+#include "IDispatchQueue.h"
 #include "IMqttClient.h"
 
 using namespace std;
@@ -48,6 +49,7 @@ private:
 
     IMqttClient::InitializeParameters params;
     unique_ptr<IMqttClient>           client;
+    unique_ptr<IDispatchQueue>        dispatcher;
 
     inline static void InterruptHandler(int signal) noexcept;
 
@@ -57,19 +59,21 @@ private:
     virtual void Log(LogLevel, string const&) const override;
     virtual void OnMqttMessage(upMqttMessage_t) const override;
     virtual void OnConnectionStatusChanged(ConnectionType, Mqtt5ReasonCode) const override;
-    virtual void OnSubscribe(int) const override;
-    virtual void OnUnSubscribe(int) const override;
+    virtual void OnSubscribe(token_t) const override;
+    virtual void OnUnSubscribe(token_t) const override;
     virtual void OnPublish(token_t, Mqtt5ReasonCode) const override;
 
 public:
     Sample(void)
+      /*create a queue with logging provided by this*/
+      : dispatcher(DispatchQueueFactory::Create(this, *this))
     {
         signal(SIGINT, InterruptHandler);
         /*set callback for underlying mqtt lib logs with minimum log level*/
         /*this has to be done before instantiating the first client object and cannot be done a second time*/
         (void)IMqttClientCallbacks::InitLogMqttLib({bind(&Sample::LogLib, this, _1, _2), LogLevelLib::DEBUG});
-        /*create with logs handled by this, messages handled by this, connection info handled by this*/
-        params.callbackProvider  = {this, this, this};
+        /*create with logs handled by this, messages handled by the DispatchQueue, connection info handled by this*/
+        params.callbackProvider  = {this, dispatcher.get(), this, this};
         params.clientId          = "myId";
         params.hostAddress       = "localhost";
         params.cleanSession      = true;
@@ -108,7 +112,7 @@ Sample::OnPublish(token_t token, Mqtt5ReasonCode) const
 }
 
 void
-Sample::OnUnSubscribe(int token) const
+Sample::OnUnSubscribe(token_t token) const
 {
     Log(LogLevel::INFO, "Unsubscribe done for token: " + to_string(token));
 }
@@ -123,13 +127,13 @@ Sample::sendMessage(IMqttMessage::QOS qos) const
     mqttMessage->responseTopic          = "my/response/topic";
     mqttMessage->payloadFormatIndicator = IMqttMessage::FormatIndicator::UTF8;
     mqttMessage->payloadContentType     = "ASCII";
-    int token{-1};
+    token_t token{-1};
     client->PublishAsync(move(mqttMessage), &token);
     Log(LogLevel::INFO, "Publish done for token: " + to_string(token));
 }
 
 void
-Sample::OnSubscribe(int token) const
+Sample::OnSubscribe(token_t token) const
 {
     Log(LogLevel::INFO, "Subscribe done for token: " + to_string(token));
     sendMessage(IMqttMessage::QOS::QOS_0);
@@ -141,7 +145,7 @@ Sample::OnConnectionStatusChanged(ConnectionType type, Mqtt5ReasonCode reason) c
 {
     if (type == ConnectionType::CONNECT && reason == Mqtt5ReasonCode::SUCCESS) {
         Log(LogLevel::INFO, "Sample is connected");
-        int token{0};
+        token_t token{0};
         client->SubscribeAsync(subscribeTopic, IMqttMessage::QOS::QOS_1, &token);
         Log(LogLevel::INFO, "Subscribe token: " + to_string(token));
     }
@@ -212,7 +216,16 @@ Sample::Log(LogLevel lvl, string const& txt) const
 void
 Sample::OnMqttMessage(upMqttMessage_t msq) const
 {
-    Log(LogLevel::INFO, "Got Mqtt Message: " + msq->ToString());
+#ifndef NDEBUG
+    Log(LogLevel::INFO, "Got Mqtt Message: \n" + msq->ToString());
+#else
+    Log(LogLevel::INFO, "Got Mqtt Message");
+#endif
+    if (params.callbackProvider.msg != this) {
+        Log(LogLevel::INFO, "Simulating long message processing");
+        sleep_for(seconds(1));
+        Log(LogLevel::INFO, "Done with message processing");
+    }
 }
 
 void
@@ -220,15 +233,15 @@ Sample::Run(void)
 {
     unique_lock<mutex> lock(exitRunMutex);
     /* disable logs */
-    client->setCallbacks({nullptr, this, this});
+    // client->setCallbacks({nullptr, this, this, this});
     /* enable logs */
-    client->setCallbacks({this, this, this});
+    // client->setCallbacks({this, this, this, this});
     Log(LogLevel::INFO, "Using lib version: " + client->GetLibVersion());
     client->ConnectAsync();
 
     // Block
     interrupt.wait(lock, [] { return exitRun; });
-    int token{0};
+    token_t token{0};
     client->UnSubscribeAsync(subscribeTopic, &token);
     Log(LogLevel::INFO, "Unsubscribe token: " + to_string(token));
     /*Some time to allow the unsubscribe happen*/

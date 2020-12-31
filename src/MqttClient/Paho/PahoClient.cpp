@@ -189,7 +189,9 @@ PahoClient::onMessageCb(char* pTopic, int topicLen, MQTTAsync_message* msg) cons
         IMqttMessage::payload_t(static_cast<IMqttMessage::payloadRaw_t*>(msg->payload),
                                 static_cast<IMqttMessage::payloadRaw_t*>(msg->payload) + msg->payloadlen),
         static_cast<IMqttMessage::QOS>(msg->qos),
-        msg->retained == 0 ? false : true)};
+        msg->retained != 0)};
+
+    internalMessage->messageId = msg->msgid;
 
     for (auto prop{0}; prop < msg->properties.count; prop++) {
         switch (msg->properties.array[prop].identifier) {
@@ -346,7 +348,7 @@ PahoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int* toke
     callOptions.context    = this;
     callOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnSuccess("MQTTAsync_subscribe", data);
-        static_cast<PahoClient*>(pThis)->cbs.msg->OnSubscribe(data->token);
+        static_cast<PahoClient*>(pThis)->cbs.cmd->OnSubscribe(data->token);
     };
     callOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnFailure("MQTTAsync_subscribe", data);
@@ -372,7 +374,7 @@ PahoClient::UnSubscribeAsync(string const& topic, int* token)
     callOptions.context    = this;
     callOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnSuccess("MQTTAsync_unsubscribe", data);
-        static_cast<PahoClient*>(pThis)->cbs.msg->OnUnSubscribe(data->token);
+        static_cast<PahoClient*>(pThis)->cbs.cmd->OnUnSubscribe(data->token);
     };
     callOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnFailure("MQTTAsync_unsubscribe", data);
@@ -395,14 +397,14 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
     callOptions.context    = this;
     callOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnFailure("MQTTAsync_sendMessage", data);
-        static_cast<PahoClient*>(pThis)->cbs.msg->OnPublish(data->token,
+        static_cast<PahoClient*>(pThis)->cbs.cmd->OnPublish(data->token,
                                                             static_cast<Mqtt5ReasonCode>(data->reasonCode));
     };
     callOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnSuccess("MQTTAsync_sendMessage", data);
         static_cast<PahoClient*>(pThis)->cbs.log->Log(LogLevel::DEBUG,
                                                       "Paho Publish finished for token: " + to_string(data->token));
-        static_cast<PahoClient*>(pThis)->cbs.msg->OnPublish(data->token,
+        static_cast<PahoClient*>(pThis)->cbs.cmd->OnPublish(data->token,
                                                             static_cast<Mqtt5ReasonCode>(data->reasonCode));
     };
 

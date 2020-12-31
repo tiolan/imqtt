@@ -25,7 +25,6 @@
 #include "openssl/ssl.h"
 #endif
 
-#include <iostream>
 #include <stdexcept>
 
 using namespace std;
@@ -37,7 +36,6 @@ mutex       MosquittoClient::libMutex;
 
 MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parameters)
   : params(parameters)
-  , messageDispatcherThread(&MosquittoClient::messageDispatcherWorker, this)
 {
     auto rc{static_cast<int>(MOSQ_ERR_SUCCESS)};
     setCallbacks(params.callbackProvider);
@@ -151,36 +149,6 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     }
 }
 
-void
-MosquittoClient::messageDispatcherWorker(void)
-{
-    cbs.log->Log(LogLevel::DEBUG, "Starting MQTT message dispatcher");
-    unique_lock<mutex> lock(messageDispatcherMutex);
-    while (!messageDispatcherExit) {
-        cbs.log->Log(
-            LogLevel::DEBUG,
-            "Number of MQTT messages to be processed: " + to_string(messageDispatcherQueue.size()) + " messages");
-        messageDispatcherAwaiter.wait(lock,
-                                      [this] { return (messageDispatcherQueue.size() || messageDispatcherExit); });
-        if (!messageDispatcherExit && messageDispatcherQueue.size()) {
-            lock.unlock();
-            cbs.msg->OnMqttMessage(move(messageDispatcherQueue.front()));
-            messageDispatcherQueue.pop();
-            lock.lock();
-        }
-    }
-    cbs.log->Log(LogLevel::INFO, "Exiting MQTT message dispatcher");
-}
-
-void
-MosquittoClient::dispatchMessage(upMqttMessage_t&& msg)
-{
-    unique_lock<mutex> lock(messageDispatcherMutex);
-    messageDispatcherQueue.push(move(msg));
-    lock.unlock();
-    messageDispatcherAwaiter.notify_one();
-}
-
 MosquittoClient::~MosquittoClient() noexcept
 {
     cbs.log->Log(LogLevel::INFO, "Deinitializing mosquitto instance");
@@ -188,12 +156,6 @@ MosquittoClient::~MosquittoClient() noexcept
         DisconnectAsync(Mqtt5ReasonCode::SUCCESS);
     }
     mosquitto_loop_stop(pClient, false);
-    messageDispatcherExit = true;
-    messageDispatcherMutex.unlock();
-    messageDispatcherAwaiter.notify_all();
-    if (messageDispatcherThread.joinable()) {
-        messageDispatcherThread.join();
-    }
     mosquitto_destroy(pClient);
     // If no users are left, clean the lib
     lock_guard<mutex> l(libMutex);
@@ -239,7 +201,7 @@ MosquittoClient::onPublishCb(struct mosquitto* pClient, int messageId, int mqttR
     cbs.log->Log(LogLevel::DEBUG,
                  "Mosquitto publish completed for token: " + to_string(messageId) +
                      ", rc: " + Mqtt5ReasonCodeToStringRepr(mqttRc).first);
-    cbs.msg->OnPublish(messageId, static_cast<Mqtt5ReasonCode>(mqttRc));
+    cbs.cmd->OnPublish(messageId, static_cast<Mqtt5ReasonCode>(mqttRc));
 }
 
 void
@@ -312,7 +274,7 @@ MosquittoClient::onMessageCb(struct mosquitto*               pClient,
             formatIndicator == 1u ? IMqttMessage::FormatIndicator::UTF8 : IMqttMessage::FormatIndicator::UNSPECIFIED;
     }
 
-    dispatchMessage(move(mqttMessage));
+    cbs.msg->OnMqttMessage(move(mqttMessage));
 }
 
 void
@@ -328,7 +290,7 @@ MosquittoClient::onSubscribeCb(struct mosquitto*         pClient,
         cbs.log->Log(LogLevel::DEBUG, "Mosquitto Subscribe completed with QOS: " + to_string(*(pGrantedQos + i)));
     }
     // TODO: How to get the Mqtt5ReasonCode in order to hand it over to the user
-    cbs.msg->OnSubscribe(messageId);
+    cbs.cmd->OnSubscribe(messageId);
 }
 
 void
@@ -338,7 +300,7 @@ MosquittoClient::onUnSubscribeCb(struct mosquitto* pClient, int messageId, const
     (void)pProps;
     cbs.log->Log(LogLevel::DEBUG, "Mosquitto UnSubscribe completed");
     // TODO: How to get the Mqtt5ReasonCode in order to hand it over to the user
-    cbs.msg->OnUnSubscribe(messageId);
+    cbs.cmd->OnUnSubscribe(messageId);
 }
 
 void

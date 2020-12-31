@@ -21,11 +21,8 @@
 #include <mosquitto.h>
 
 #include <atomic>
-#include <condition_variable>
 #include <mutex>
-#include <queue>
 #include <random>
-#include <thread>
 
 #include "IMqttClient.h"
 
@@ -41,14 +38,6 @@ private:
     IMqttClient::InitializeParameters params;
     std::default_random_engine        rndGenerator{std::random_device()()};
 
-    std::mutex                  messageDispatcherMutex;
-    std::thread                 messageDispatcherThread;
-    std::queue<upMqttMessage_t> messageDispatcherQueue;
-    std::condition_variable     messageDispatcherAwaiter;
-    std::atomic_bool            messageDispatcherExit{false};
-
-    void       messageDispatcherWorker(void);
-    void       dispatchMessage(upMqttMessage_t&&);
     void       onConnectCb(struct mosquitto*, int, int, const mosquitto_property* props);
     void       onDisconnectCb(struct mosquitto*, int, const mosquitto_property*);
     void       onPublishCb(struct mosquitto*, int, int, const mosquitto_property*);
