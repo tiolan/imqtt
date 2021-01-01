@@ -25,7 +25,11 @@ option(IMQTT_BUILD_DOC "Build documentation" ON)
 option(BUILD_SHARED_LIBS "build and link MQTT library as shared lib" OFF)
 
 if(${IMQTT_USE_PAHO} AND ${IMQTT_USE_MOSQ})
-  message(FATAL_ERROR "more than one MQTT lib at a time is not supported")
+  message(FATAL_ERROR "More than one MQTT lib at a time is not supported")
+endif()
+
+if(NOT IMQTT_USE_PAHO AND NOT IMQTT_USE_MOSQ)
+  message(FATAL_ERROR "At least one MQTT lib has to be chosen")
 endif()
 
 find_package(Threads REQUIRED)
@@ -81,7 +85,7 @@ if(${IMQTT_USE_MOSQ})
   if(${BUILD_STATIC_LIBS})
     set(LIB_MQTT_STATIC _static)
   endif()
-  set(LIB_MQTT libmosquitto${LIB_MQTT_STATIC}${LIB_MQTT_EXT})
+  set(LIB_MQTT mosquitto${LIB_MQTT_STATIC}${LIB_MQTT_EXT})
 endif()
 
 if(${IMQTT_USE_PAHO})
@@ -103,7 +107,14 @@ if(${IMQTT_USE_PAHO})
   if(${IMQTT_WITH_TLS})
     set(LIB_MQTT_SECURE s)
   endif()
-  set(LIB_MQTT libpaho-mqtt3a${LIB_MQTT_SECURE}${LIB_MQTT_EXT})
+  if(MSVC AND ${BUILD_STATIC_LIBS})
+    set(LIB_MQTT_STATIC -static)
+  endif()
+  set(LIB_MQTT paho-mqtt3a${LIB_MQTT_SECURE}${LIB_MQTT_STATIC}${LIB_MQTT_EXT})
+endif()
+
+if(NOT MSVC)
+  set(LIB_MQTT lib${LIB_MQTT})
 endif()
 
 if(NOT DEFINED LIB_MQTT_PATH)
@@ -148,15 +159,15 @@ if(${IMQTT_INSTALL})
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Development
     BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime)
-  # TODO: rework this to also work for Windows and for external_projects
-  if(${BUILD_SHARED_LIBS})
-    install(
-      DIRECTORY ${LIB_MQTT_PATH}/lib
-      DESTINATION ${CMAKE_INSTALL_PREFIX}
-      FILES_MATCHING
-      PATTERN "${LIB_MQTT}*"
-      PATTERN "pkgconfig" EXCLUDE)
-  endif()
+  install(
+    DIRECTORY ${LIB_MQTT_PATH}/lib
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    COMPONENT Development
+    FILES_MATCHING
+    PATTERN "${LIB_MQTT}*"
+    PATTERN "pkgconfig" EXCLUDE
+    PATTERN "cmake" EXCLUDE)
+
   write_basic_package_version_file(
     "${PROJECT_NAME}ConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}

@@ -4,6 +4,17 @@ IMqtt is a (by far not fully complete) C++ wrapper around existing MQTT librarie
 The idea is to provide an abstract C++ interface to make the underlaying MQTT library exchangeable quite easy.
 Target for now is to support [Paho](https://github.com/eclipse/paho.mqtt.c) (written in C) and [Mosquitto](https://github.com/eclipse/mosquitto) (written in C).
 
+# API Reference
+The (not yet) complete API Reference can be found here: https://tiolan.github.io/imqtt/
+
+# Maturity
+IMqtt is in development.
+- It is not ready for production.
+- There are no (automated) tests done yet and no testing-framework is setup currently.
+- There are no releases done regularly (yet), take master as is.
+
+In case the community is interested, the project might be driven further.
+
 ## Currently Supported:
 - MQTTv5 user fields for publishing messages
 - MQTTv5 correlationData field for publishing messages
@@ -48,15 +59,3 @@ In order to make it find the CMake package IMqtt, the target `install` has to be
 
 ## CMake subdirectory
 Add Imqtt as CMake subdirectory using `add_subdirectory` and `target_link_libraries(${PROJECT_NAME} PRIVATE IMqttClient)` or `target_link_libraries(${PROJECT_NAME} PRIVATE IMqttClientInterface)` as shown here: [CMakeLists.txt](src/Sample/CMakeLists.txt).
-
-
-## API Reference
-The (not yet) complete API Reference can be found here: https://tiolan.github.io/imqtt/
-
-# Maturity
-IMqtt is in development.
-- It is not ready for production.
-- There are no (automated) tests done yet and no testing-framework is setup currently.
-- There are no releases done regularly (yet), take master as is.
-
-In case the community is interested, the project might be driven further.
