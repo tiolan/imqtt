@@ -120,20 +120,22 @@ CMake arguments for building IMqtt</h2>
 </table>
 <h1><a class="anchor" id="autotoc_md6"></a>
 Usage</h1>
-<p>An example app can be found here: <a href="src/Sample/Main.cpp">Main.cpp</a> </p>
+<p>An example app can be found here: <a href="src/Sample/Main.cpp">Main.cpp</a>. When building with <code>-DIMQTT_BUILD_SAMPLE:BOOL=ON</code> the provided sample is built as CMake subdirectory. </p>
 <h2><a class="anchor" id="autotoc_md7"></a>
 CMake find_package</h2>
 <p>There is a CMake target <code>imqttsample_external</code> provided, that builds the example app using IMqtt with CMake <code>find_package</code> in this <a href="src/Sample/CMakeLists.txt">CMakeLists.txt</a>.</p>
 <p>In order to make it find the CMake package IMqtt, the target <code>install</code> has to be built already.</p>
 <h2><a class="anchor" id="autotoc_md8"></a>
 CMake subdirectory</h2>
-<p>When building with <code>-DIMQTT_BUILD_SAMPLE:BOOL=ON</code> the provided sample is built as CMake subdirectory, see <a href="src/Sample/CMakeLists.txt">CMakeLists.txt</a>.</p>
-<h1><a class="anchor" id="autotoc_md9"></a>
+<p>Add Imqtt as CMake subdirectory using <code>add_subdirectory</code> and <code>target_link_libraries(${PROJECT_NAME} PRIVATE IMqttClient)</code> or <code>target_link_libraries(${PROJECT_NAME} PRIVATE IMqttClientInterface)</code> as shown here: <a href="src/Sample/CMakeLists.txt">CMakeLists.txt</a>.</p>
+<h2><a class="anchor" id="autotoc_md9"></a>
+API Reference</h2>
+<p>The (not yet) complete API Reference can be found here: <a href="https://tiolan.github.io/imqtt/">https://tiolan.github.io/imqtt/</a></p>
+<h1><a class="anchor" id="autotoc_md10"></a>
 Maturity</h1>
 <p>IMqtt is in development.</p><ul>
 <li>It is not ready for production.</li>
 <li>There are no (automated) tests done yet and no testing-framework is setup currently.</li>
-<li>There is currently no further documentation than this Readme.</li>
 <li>There are no releases done regularly (yet), take master as is.</li>
 </ul>
 <p>In case the community is interested, the project might be driven further. </p>
