@@ -39,20 +39,24 @@ make -j$(nproc) install
 | `CMAKE_INSTALL_PREFIX:PATH` | When `IMQTT_INSTALL` is set, artifacts will be installed to this path                                                                             | -       |
 
 # Usage
-An example app can be found here: [Main.cpp](src/Sample/Main.cpp)
+An example app can be found here: [Main.cpp](src/Sample/Main.cpp).
+When building with `-DIMQTT_BUILD_SAMPLE:BOOL=ON` the provided sample is built as CMake subdirectory.
 ## CMake find_package
 There is a CMake target `imqttsample_external` provided, that builds the example app using IMqtt with CMake `find_package` in this [CMakeLists.txt](src/Sample/CMakeLists.txt).
 
 In order to make it find the CMake package IMqtt, the target `install` has to be built already.
 
 ## CMake subdirectory
-When building with `-DIMQTT_BUILD_SAMPLE:BOOL=ON` the provided sample is built as CMake subdirectory, see [CMakeLists.txt](src/Sample/CMakeLists.txt).
+Add Imqtt as CMake subdirectory using `add_subdirectory` and `target_link_libraries(${PROJECT_NAME} PRIVATE IMqttClient)` or `target_link_libraries(${PROJECT_NAME} PRIVATE IMqttClientInterface)` as shown here: [CMakeLists.txt](src/Sample/CMakeLists.txt).
+
+
+## API Reference
+The (not yet) complete API Reference can be found here: https://tiolan.github.io/imqtt/
 
 # Maturity
 IMqtt is in development.
 - It is not ready for production.
--  There are no (automated) tests done yet and no testing-framework is setup currently.
-- There is currently no further documentation than this Readme.
+- There are no (automated) tests done yet and no testing-framework is setup currently.
 - There are no releases done regularly (yet), take master as is.
 
 In case the community is interested, the project might be driven further.
