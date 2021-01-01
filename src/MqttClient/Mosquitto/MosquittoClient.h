@@ -1,5 +1,5 @@
 /**
- * @file MosquitoClient.h
+ * @file MosquittoClient.h
  * @author Timo Lange
  * @brief Class definition for Mosquitto wrapper
  * @date 2020

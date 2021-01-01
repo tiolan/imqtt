@@ -21,6 +21,7 @@ option(IMQTT_BUILD_SAMPLE "build the sample code" OFF)
 option(IMQTT_INSTALL "install generated artifacts" OFF)
 option(IMQTT_WITH_TLS "enable TLS configurations" OFF)
 option(IMQTT_EXPERIMENTAL "enable experimental features" OFF)
+option(IMQTT_BUILD_DOC "Build documentation" ON)
 option(BUILD_SHARED_LIBS "build and link MQTT library as shared lib" OFF)
 
 if(${IMQTT_USE_PAHO} AND ${IMQTT_USE_MOSQ})
@@ -133,6 +134,11 @@ if(${IMQTT_BUILD_SAMPLE})
   add_subdirectory(src/Sample)
 endif()
 
+if(${IMQTT_BUILD_DOC})
+  set(DOXYGEN_MAIN_PAGE ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+  add_subdirectory(docs)
+endif()
+
 if(${IMQTT_INSTALL})
   install(
     TARGETS ${IMQTT_LIBRARY} ${IMQTT_INTERFACE}
@@ -175,6 +181,6 @@ ExternalProject_Add(
   imqttsample_external
   EXCLUDE_FROM_ALL ON
   DOWNLOAD_COMMAND ""
-  SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/Sample
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/Sample
   CMAKE_ARGS -DCMAKE_PREFIX_PATH:PATH=${CMAKE_INSTALL_PREFIX}
              -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX})
