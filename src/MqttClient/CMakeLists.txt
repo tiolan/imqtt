@@ -8,7 +8,9 @@ target_include_directories(
 set(IMQTT_INTERFACE_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttClient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttClientCallbacks.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttMessage.h)
+    ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttMessage.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IDispatchQueue.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Interface/IMqttClientDefines.h)
 
 # target_sources(${IMQTT_INTERFACE} INTERFACE
 # $<BUILD_INTERFACE:${IMQTT_INTERFACE_HEADERS}>)

@@ -1,0 +1,12 @@
+<map id="src/MqttClient/Interface/IMqttClientCallbacks.h" name="src/MqttClient/Interface/IMqttClientCallbacks.h">
+<area shape="rect" id="node1" title="Callback definitions for an abstract MqttClient." alt="" coords="14,5,189,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,169,56,196"/>
+<area shape="rect" id="node3" title=" " alt="" coords="80,169,139,196"/>
+<area shape="rect" id="node4" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="139,95,266,121"/>
+<area shape="rect" id="node5" title=" " alt="" coords="429,169,507,196"/>
+<area shape="rect" id="node6" title=" " alt="" coords="531,169,618,196"/>
+<area shape="rect" id="node7" title=" " alt="" coords="163,169,226,196"/>
+<area shape="rect" id="node8" href="$IMqttClientDefines_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="251,169,405,196"/>
+<area shape="rect" id="node9" title=" " alt="" coords="235,244,322,271"/>
+<area shape="rect" id="node10" title=" " alt="" coords="347,244,405,271"/>
+</map>

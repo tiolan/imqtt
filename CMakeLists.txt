@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.0)
 
+project(
+  IMqtt
+  VERSION 0.1.0
+  DESCRIPTION
+    "An abstract interface wrapper written in C++ for MQTT libraries written in C"
+  HOMEPAGE_URL https://github.com/tiolan/imqtt
+  LANGUAGES CXX C)
+
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   # building not as subdir, so set some compile options
-  project(
-    IMqtt
-    VERSION 0.1.0
-    DESCRIPTION
-      "An abstract interface wrapper written in C++ for MQTT libraries written in C"
-    HOMEPAGE_URL https://github.com/tiolan/imqtt
-    LANGUAGES CXX C)
-
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_EXTENSIONS OFF)
@@ -136,7 +136,7 @@ endif()
 
 if(${IMQTT_BUILD_DOC})
   set(DOXYGEN_MAIN_PAGE ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
-  add_subdirectory(docs)
+  add_subdirectory(src/Docs)
 endif()
 
 if(${IMQTT_INSTALL})
@@ -148,6 +148,7 @@ if(${IMQTT_INSTALL})
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Development
     BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime)
+  # TODO: rework this to also work for Windows and for external_projects
   if(${BUILD_SHARED_LIBS})
     install(
       DIRECTORY ${LIB_MQTT_PATH}/lib

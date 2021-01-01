@@ -11,6 +11,6 @@ add_custom_target(
   VERBATIM)
 
 if(${IMQTT_INSTALL})
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
+  install(DIRECTORY ${PROJECT_SOURCE_DIR}/docs/html/
           DESTINATION ${CMAKE_INSTALL_PREFIX}/docs)
 endif()

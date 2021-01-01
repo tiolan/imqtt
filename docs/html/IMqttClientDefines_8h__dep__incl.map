@@ -1,0 +1,16 @@
+<map id="src/MqttClient/Interface/IMqttClientDefines.h" name="src/MqttClient/Interface/IMqttClientDefines.h">
+<area shape="rect" id="node1" title="Abstract interface definition for an MqttClient." alt="" coords="263,5,438,47"/>
+<area shape="rect" id="node2" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="263,95,438,136"/>
+<area shape="rect" id="node3" href="$DispatchQueue_8h.html" title="Class definition for DispatchQueue." alt="" coords="13,370,241,397"/>
+<area shape="rect" id="node5" href="$IMqttClientCallbacks_8h.html" title="Callback definitions for an abstract MqttClient." alt="" coords="263,184,438,225"/>
+<area shape="rect" id="node13" href="$MqttMessage_8h.html" title="Class definition for MQTT messages in C++." alt="" coords="515,191,733,218"/>
+<area shape="rect" id="node4" href="$DispatchQueue_8cpp.html" title="Implementation of a queue for storing incoming MQTT messages, to not black callbacks." alt="" coords="5,459,248,486"/>
+<area shape="rect" id="node6" href="$IDispatchQueue_8h.html" title="Abstract interface definition for DispatchQueue." alt="" coords="165,273,339,315"/>
+<area shape="rect" id="node7" href="$IMqttClient_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="363,273,538,315"/>
+<area shape="rect" id="node8" href="$IMqttClient_8cpp.html" title="Implementation for default functionality defined in Interface headers." alt="" coords="265,370,481,397"/>
+<area shape="rect" id="node9" href="$MosquittoClient_8h.html" title="Class definition for Mosquitto wrapper." alt="" coords="506,363,689,404"/>
+<area shape="rect" id="node11" href="$PahoClient_8h.html" title="Class definition for Paho library wrapper." alt="" coords="713,363,861,404"/>
+<area shape="rect" id="node10" href="$MosquittoClient_8cpp.html" title="Implementation of wrapper for mosquitto library." alt="" coords="506,452,689,493"/>
+<area shape="rect" id="node12" href="$PahoClient_8cpp.html" title="Implementation for Paho library wrapper." alt="" coords="713,452,861,493"/>
+<area shape="rect" id="node14" href="$MqttMessage_8cpp.html" title="Implementation for MQTT messages in C++." alt="" coords="563,281,795,307"/>
+</map>

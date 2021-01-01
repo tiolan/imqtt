@@ -2,10 +2,9 @@ PROJECT_NAME           = "@PROJECT_NAME@"
 PROJECT_NUMBER         = @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@
 STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@ \
                          @PROJECT_BINARY_DIR@
-OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@
-INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/../README.md \
-                         @CMAKE_CURRENT_SOURCE_DIR@/../src/MqttClient \
-                         @CMAKE_CURRENT_SOURCE_DIR@/
+OUTPUT_DIRECTORY       = @PROJECT_SOURCE_DIR@/docs
+INPUT                  = @PROJECT_SOURCE_DIR@/README.md \
+                         @PROJECT_SOURCE_DIR@/src/MqttClient
 FILE_PATTERNS          = *.h \
                          *.cpp
 RECURSIVE              = YES

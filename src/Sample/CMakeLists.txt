@@ -8,6 +8,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   include(GNUInstallDirs)
 
   find_package(Threads REQUIRED)
+  find_package(OpenSSL REQUIRED)
   find_package(IMqtt CONFIG REQUIRED)
 
   # -DCMAKE_PREFIX_PATH:PATH is set from outside
