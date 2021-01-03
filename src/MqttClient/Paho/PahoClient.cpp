@@ -51,9 +51,9 @@ PahoClient::PahoClient(InitializeParameters const& parameters)
                 auto logLvl{LogLevelLib::INFO};
                 switch (lvl) {
                 case MQTTASYNC_TRACE_LEVELS::MQTTASYNC_TRACE_MINIMUM:
-                    [[fallthrough]];
+                    /*fallthrough*/
                 case MQTTASYNC_TRACE_LEVELS::MQTTASYNC_TRACE_MEDIUM:
-                    [[fallthrough]];
+                    /*fallthrough*/
                 case MQTTASYNC_TRACE_LEVELS::MQTTASYNC_TRACE_MAXIMUM:
                     logLvl = LogLevelLib::TRACE;
                     break;
@@ -61,7 +61,7 @@ PahoClient::PahoClient(InitializeParameters const& parameters)
                     logLvl = LogLevelLib::DEBUG;
                     break;
                 case MQTTASYNC_TRACE_LEVELS::MQTTASYNC_TRACE_ERROR:
-                    [[fallthrough]];
+                    /*fallthrough*/
                 case MQTTASYNC_TRACE_LEVELS::MQTTASYNC_TRACE_SEVERE:
                     logLvl = LogLevelLib::ERROR;
                     break;
@@ -88,11 +88,11 @@ PahoClient::PahoClient(InitializeParameters const& parameters)
                 MQTTAsync_setTraceCallback(NULL);
                 break;
             case LogLevelLib::INFO:
-                [[fallthrough]];
+                /*fallthrough*/
             case LogLevelLib::WARNING:
-                [[fallthrough]];
+                /*fallthrough*/
             case LogLevelLib::ERROR:
-                [[fallthrough]];
+                /*fallthrough*/
             default:
                 MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_LEVELS::MQTTASYNC_TRACE_ERROR);
                 break;

@@ -316,18 +316,18 @@ MosquittoClient::onLog(struct mosquitto* pClient, int logLevel, const char* pTxt
         logLvl = LogLevelLib::ERROR;
         break;
     case MOSQ_LOG_SUBSCRIBE:
-        [[fallthrough]];
+        /*fallthrough*/
     case MOSQ_LOG_UNSUBSCRIBE:
-        [[fallthrough]];
+        /*fallthrough*/
     case MOSQ_LOG_WEBSOCKETS:
-        [[fallthrough]];
+        /*fallthrough*/
     case MOSQ_LOG_DEBUG:
         logLvl = LogLevelLib::DEBUG;
         break;
     case MOSQ_LOG_NOTICE:
-        [[fallthrough]];
+        /*fallthrough*/
     case MOSQ_LOG_INFO:
-        [[fallthrough]];
+        /*fallthrough*/
     default:
         break;
     }
@@ -461,13 +461,13 @@ MosquittoClient::mosqRcToReasonCode(int rc, string const& details) const
         status = ReasonCode::OKAY;
         break;
     case MOSQ_ERR_TLS:
-        [[fallthrough]];
+        /*fallthrough*/
     case MOSQ_ERR_TLS_HANDSHAKE:
         logLvl = LogLevel::ERROR;
         status = ReasonCode::ERROR_TLS;
         break;
     case MOSQ_ERR_CONN_LOST:
-        [[fallthrough]];
+        /*fallthrough*/
     case MOSQ_ERR_NO_CONN:
         logLvl = LogLevel::WARNING;
         status = ReasonCode::ERROR_NO_CONNECTION;
