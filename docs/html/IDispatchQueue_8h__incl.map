@@ -1,0 +1,13 @@
+<map id="src/MqttClient/Interface/IDispatchQueue.h" name="src/MqttClient/Interface/IDispatchQueue.h">
+<area shape="rect" id="node1" title="Abstract interface definition for DispatchQueue." alt="" coords="251,5,426,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,244,83,271"/>
+<area shape="rect" id="node3" href="$IMqttClientCallbacks_8h.html" title="Callback definitions for an abstract MqttClient." alt="" coords="355,95,525,121"/>
+<area shape="rect" id="node4" title=" " alt="" coords="485,244,536,271"/>
+<area shape="rect" id="node5" title=" " alt="" coords="560,244,619,271"/>
+<area shape="rect" id="node6" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="346,169,473,196"/>
+<area shape="rect" id="node7" title=" " alt="" coords="374,244,461,271"/>
+<area shape="rect" id="node8" title=" " alt="" coords="107,244,170,271"/>
+<area shape="rect" id="node9" href="$IMqttClientDefines_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="195,244,349,271"/>
+<area shape="rect" id="node10" title=" " alt="" coords="179,319,266,345"/>
+<area shape="rect" id="node11" title=" " alt="" coords="291,319,349,345"/>
+</map>

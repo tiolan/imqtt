@@ -1,0 +1,10 @@
+<map id="i_mqtt_client::IMqttClient::InitializeParameters" name="i_mqtt_client::IMqttClient::InitializeParameters">
+<area shape="rect" id="node1" title=" " alt="" coords="665,192,852,233"/>
+<area shape="rect" id="node2" href="$structi__mqtt__client_1_1MqttClientCallbacks.html" title=" " alt="" coords="321,136,504,177"/>
+<area shape="rect" id="node3" href="$classi__mqtt__client_1_1IMqttCommandCallbacks.html" title=" " alt="" coords="15,5,231,47"/>
+<area shape="rect" id="node4" href="$classi__mqtt__client_1_1IMqttConnectionCallbacks.html" title=" " alt="" coords="11,71,234,112"/>
+<area shape="rect" id="node5" href="$classi__mqtt__client_1_1IMqttMessageCallbacks.html" title=" " alt="" coords="19,136,226,177"/>
+<area shape="rect" id="node6" href="$classi__mqtt__client_1_1IMqttLogCallbacks.html" title=" " alt="" coords="5,202,240,229"/>
+<area shape="rect" id="node7" title="STL class." alt="" coords="369,257,456,283"/>
+<area shape="rect" id="node8" title="STL class." alt="" coords="53,253,192,295"/>
+</map>

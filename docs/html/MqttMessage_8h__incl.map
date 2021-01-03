@@ -1,0 +1,12 @@
+<map id="src/MqttClient/MqttMessage.h" name="src/MqttClient/MqttMessage.h">
+<area shape="rect" id="node1" title="Class definition for MQTT messages in C++." alt="" coords="10,5,227,32"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,155,64,181"/>
+<area shape="rect" id="node3" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="138,80,265,107"/>
+<area shape="rect" id="node4" title=" " alt="" coords="88,155,139,181"/>
+<area shape="rect" id="node5" title=" " alt="" coords="163,155,240,181"/>
+<area shape="rect" id="node6" title=" " alt="" coords="265,155,351,181"/>
+<area shape="rect" id="node7" title=" " alt="" coords="375,155,438,181"/>
+<area shape="rect" id="node8" href="$IMqttClientDefines_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="463,155,617,181"/>
+<area shape="rect" id="node9" title=" " alt="" coords="447,229,534,256"/>
+<area shape="rect" id="node10" title=" " alt="" coords="559,229,617,256"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="src/MqttClient/Interface/IMqttClientCallbacks.h" name="src/MqttClient/Interface/IMqttClientCallbacks.h">
+<area shape="rect" id="node1" title="Callback definitions for an abstract MqttClient." alt="" coords="274,5,449,47"/>
+<area shape="rect" id="node2" href="$IDispatchQueue_8h.html" title="Abstract interface definition for DispatchQueue." alt="" coords="175,95,350,136"/>
+<area shape="rect" id="node5" href="$IMqttClient_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="398,95,573,136"/>
+<area shape="rect" id="node3" href="$DispatchQueue_8h.html" title="Class definition for DispatchQueue." alt="" coords="13,191,241,218"/>
+<area shape="rect" id="node4" href="$DispatchQueue_8cpp.html" title="Implementation of a queue for storing incoming MQTT messages, to not black callbacks." alt="" coords="5,281,248,307"/>
+<area shape="rect" id="node6" href="$IMqttClient_8cpp.html" title="Implementation for default functionality defined in Interface headers." alt="" coords="265,191,481,218"/>
+<area shape="rect" id="node7" href="$MosquittoClient_8h.html" title="Class definition for Mosquitto wrapper." alt="" coords="506,184,689,225"/>
+<area shape="rect" id="node9" href="$PahoClient_8h.html" title="Class definition for Paho library wrapper." alt="" coords="713,184,861,225"/>
+<area shape="rect" id="node8" href="$MosquittoClient_8cpp.html" title="Implementation of wrapper for mosquitto library." alt="" coords="506,273,689,315"/>
+<area shape="rect" id="node10" href="$PahoClient_8cpp.html" title="Implementation for Paho library wrapper." alt="" coords="713,273,861,315"/>
+</map>
