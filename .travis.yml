@@ -4,14 +4,13 @@ addons:
   sonarcloud:
     organization: "tiolan"
     token:
-      secure: $SONAR_TOKEN
+      secure: ${SONAR_TOKEN}
 
 language: cpp
 
 script:
   # Prepare the build system
   - mkdir build
-  - ls -la
   - cd build
   - cmake -DIMQTT_USE_MOSQ:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=OFF -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=OFF -DBUILD_SHARED_LIBS=OFF ..
   - cd ..
