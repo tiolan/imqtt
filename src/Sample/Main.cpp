@@ -261,10 +261,12 @@ int
 main(void)
 {
     /*for testing sonar*/
+    /*
     char tmp[2] = {
         0,
     };
     tmp[4] = 'a';
+    */
     Sample s;
     s.Run();
     return 0;
