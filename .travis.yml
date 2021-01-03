@@ -3,8 +3,6 @@ sudo: false
 addons:
   sonarcloud:
     organization: "tiolan"
-    token:
-      secure: ${SONAR_TOKEN}
 
 language: cpp
 
