@@ -176,7 +176,7 @@ Sample::LogLib(LogLevelLib lvl, string const& txt) const
         cout << "LIB_T";
         break;
     case LogLevelLib::INFO:
-        [[fallthrough]];
+        /*fallthrough*/
     default:
         cout << "LIB_I";
         break;
@@ -205,7 +205,7 @@ Sample::Log(LogLevel lvl, string const& txt) const
         cout << "T";
         break;
     case LogLevel::INFO:
-        [[fallthrough]];
+        /*fallthrough*/
     default:
         cout << "I";
         break;
@@ -260,6 +260,13 @@ Sample::InterruptHandler(int signal) noexcept
 int
 main(void)
 {
+    /*for testing sonar*/
+    /*
+    char tmp[2] = {
+        0,
+    };
+    tmp[4] = 'a';
+    */
     Sample s;
     s.Run();
     return 0;

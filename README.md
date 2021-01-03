@@ -7,6 +7,9 @@ Target for now is to support [Paho](https://github.com/eclipse/paho.mqtt.c) (wri
 # API Reference
 The (not yet) complete API Reference can be found here: https://tiolan.github.io/imqtt/
 
+# Status
+[![Build Status](https://www.travis-ci.com/tiolan/imqtt.svg?branch=master)](https://www.travis-ci.com/tiolan/imqtt)
+
 # Maturity
 IMqtt is in development.
 - It is not ready for production.
