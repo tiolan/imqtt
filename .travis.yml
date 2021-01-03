@@ -20,7 +20,7 @@ script:
   - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/ -j ${NUMBER_OF_PROCESSORS}
   # And finally run the SonarQube analysis - read the "sonar-project.properties"
   # file to see the specific configuration
-  - sonar-scanner -Dsonar.verbose=true -X -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
+  - sonar-scanner -Dsonar.login=${SONAR_TOKEN} -Dsonar.verbose=true -X -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
 
 cache:
   directories:
