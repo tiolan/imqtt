@@ -21,24 +21,31 @@
 #pragma once
 
 #include <memory>
+#include <random>
 #include <string>
 
 #include "IMqttClientCallbacks.h"
 
 namespace i_mqtt_client {
 class IMqttClient : public IMqttClientCallbacks {
-protected:
-    MqttClientCallbacks cbs;
-    IMqttClient(void)
-      : cbs({this, this, this, this})
-    {
-    }
-
+private:
     // TODO: Return bool in order to indicate accept / reject message?
     virtual void OnMqttMessage(upMqttMessage_t) const override
     {
-        cbs.log->Log(LogLevel::WARNING, "Got MQTT message, but no handler installed");
+        logCb->Log(LogLevel::WARNING, "Got MQTT message, but no handler installed");
     }
+
+protected:
+    static std::string              libVersion;
+    std::default_random_engine      rndGenerator{std::random_device()()};
+    IMqttLogCallbacks const*        logCb;
+    IMqttCommandCallbacks const*    cmdCb;
+    IMqttMessageCallbacks const*    msgCb;
+    IMqttConnectionCallbacks const* conCb;
+    IMqttClient(IMqttLogCallbacks const*        log,
+                IMqttCommandCallbacks const*    cmd,
+                IMqttMessageCallbacks const*    msg,
+                IMqttConnectionCallbacks const* con);
 
 public:
     IMqttClient(const IMqttClient&) = delete;
@@ -50,19 +57,18 @@ public:
     virtual ~IMqttClient() noexcept = default;
 
     struct InitializeParameters final {
-        std::string         hostAddress{"localhost"};
-        int                 port{1883u};
-        std::string         clientId{"clientId"};
-        MqttClientCallbacks callbackProvider{MqttClientCallbacks(nullptr, nullptr, nullptr, nullptr)};
-        std::string         mqttUsername{""};
-        std::string         mqttPassword{""};
-        bool                cleanSession{true};
-        int                 keepAliveInterval{10 /*seconds*/};
-        int                 reconnectDelayMin{1 /*seconds*/};
-        int                 reconnectDelayMinLower{0 /*seconds*/};
-        int                 reconnectDelayMinUpper{0 /*seconds*/};
-        int                 reconnectDelayMax{30 /*seconds*/};
-        bool                allowLocalTopics{false};
+        std::string hostAddress{"localhost"};
+        int         port{1883u};
+        std::string clientId{"clientId"};
+        std::string mqttUsername{""};
+        std::string mqttPassword{""};
+        bool        cleanSession{true};
+        int         keepAliveInterval{10 /*seconds*/};
+        int         reconnectDelayMin{1 /*seconds*/};
+        int         reconnectDelayMinLower{0 /*seconds*/};
+        int         reconnectDelayMinUpper{0 /*seconds*/};
+        int         reconnectDelayMax{30 /*seconds*/};
+        bool        allowLocalTopics{false};
 #ifdef IMQTT_WITH_TLS
         std::string caFilePath{""};
         std::string caDirPath{""};
@@ -82,39 +88,34 @@ public:
         bool exponentialBackoff{false}; /*true on PAHO*/
 #endif
     };
-    static ReasonCodeRepr_t ReasonCodeToStringRepr(ReasonCode);
-
-    static MqttReasonCodeRepr_t MqttReasonCodeToStringRepr(MqttReasonCode);
-    static MqttReasonCodeRepr_t MqttReasonCodeToStringRepr(int);
-
+    /*Interface definition*/
+    static ReasonCodeRepr_t      ReasonCodeToStringRepr(ReasonCode);
+    static MqttReasonCodeRepr_t  MqttReasonCodeToStringRepr(MqttReasonCode);
+    static MqttReasonCodeRepr_t  MqttReasonCodeToStringRepr(int);
     static Mqtt5ReasonCodeRepr_t Mqtt5ReasonCodeToStringRepr(Mqtt5ReasonCode);
     static Mqtt5ReasonCodeRepr_t Mqtt5ReasonCodeToStringRepr(int);
 
-    virtual void
-    setCallbacks(MqttClientCallbacks const& callbacks) noexcept
-    {
-        cbs.log = callbacks.log ? callbacks.log : this;
-        cbs.msg = callbacks.msg ? callbacks.msg : this;
-        cbs.con = callbacks.con ? callbacks.con : this;
-        cbs.cmd = callbacks.cmd ? callbacks.cmd : this;
-    }
-
-    /*Interface definition*/
-    virtual std::string GetLibVersion(void) const noexcept                                             = 0;
-    virtual ReasonCode  ConnectAsync(void)                                                             = 0;
-    virtual ReasonCode  DisconnectAsync(Mqtt5ReasonCode rc = Mqtt5ReasonCode::SUCCESS)                 = 0;
-    virtual ReasonCode  SubscribeAsync(std::string const& topic,
-                                       IMqttMessage::QOS  qos,
-                                       int*               token       = nullptr,
-                                       bool               getRetained = true)                                        = 0;
-    virtual ReasonCode  UnSubscribeAsync(std::string const& topic, int* token = nullptr)               = 0;
-    virtual ReasonCode  PublishAsync(i_mqtt_client::upMqttMessage_t mqttMessage, int* token = nullptr) = 0;
-    virtual bool        IsConnected(void) const noexcept                                               = 0;
+    template <class TPtr>
+    void               SetCallbacks(TPtr const* ptr = nullptr) noexcept;
+    std::string        GetLibVersion(void) const noexcept;
+    virtual ReasonCode ConnectAsync(void)                                                             = 0;
+    virtual ReasonCode DisconnectAsync(Mqtt5ReasonCode rc = Mqtt5ReasonCode::SUCCESS)                 = 0;
+    virtual ReasonCode SubscribeAsync(std::string const& topic,
+                                      IMqttMessage::QOS  qos,
+                                      int*               token       = nullptr,
+                                      bool               getRetained = true)                                        = 0;
+    virtual ReasonCode UnSubscribeAsync(std::string const& topic, int* token = nullptr)               = 0;
+    virtual ReasonCode PublishAsync(i_mqtt_client::upMqttMessage_t mqttMessage, int* token = nullptr) = 0;
+    virtual bool       IsConnected(void) const noexcept                                               = 0;
 };
 
 class MqttClientFactory final {
 public:
-    static std::unique_ptr<IMqttClient> Create(IMqttClient::InitializeParameters const&);
+    static std::unique_ptr<IMqttClient> Create(IMqttClient::InitializeParameters const&,
+                                               IMqttMessageCallbacks const*    msg,
+                                               IMqttLogCallbacks const*        log = nullptr,
+                                               IMqttCommandCallbacks const*    cmd = nullptr,
+                                               IMqttConnectionCallbacks const* con = nullptr);
     MqttClientFactory() = delete;
 };
 }  // namespace i_mqtt_client

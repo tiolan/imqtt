@@ -26,15 +26,18 @@ using namespace std;
 
 namespace i_mqtt_client {
 once_flag PahoClient::initFlag;
-string    PahoClient::libVersion;
 
-PahoClient::PahoClient(InitializeParameters const& parameters)
-  : params(parameters)
+PahoClient::PahoClient(InitializeParameters const&     parameters,
+                       IMqttMessageCallbacks const*    msg,
+                       IMqttLogCallbacks const*        log,
+                       IMqttCommandCallbacks const*    cmd,
+                       IMqttConnectionCallbacks const* con)
+  : IMqttClient(log, cmd, msg, con)
+  , params(parameters)
 {
-    setCallbacks(params.callbackProvider);
     // Init lib, if nobody ever did
     call_once(initFlag, [this] {
-        cbs.log->Log(LogLevel::INFO, "Initializing paho lib");
+        logCb->Log(LogLevel::INFO, "Initializing paho lib");
         MQTTAsync_init_options initOptions MQTTAsync_init_options_initializer;
         /*For now let paho init openssl*/
         initOptions.do_openssl_init = 1;
@@ -98,12 +101,12 @@ PahoClient::PahoClient(InitializeParameters const& parameters)
                 break;
             }
         }
-        libVersion = "libpaho " + string(MQTTAsync_getVersionInfo()[1].value);
+        IMqttClient::libVersion = "libpaho " + string(MQTTAsync_getVersionInfo()[1].value);
     });
 
-    cbs.log->Log(LogLevel::INFO, "Initializing paho instance");
+    logCb->Log(LogLevel::INFO, "Initializing paho instance");
     auto brokerAddress{params.hostAddress + ":" + to_string(params.port)};
-    cbs.log->Log(LogLevel::INFO, "Broker-Address: " + brokerAddress);
+    logCb->Log(LogLevel::INFO, "Broker-Address: " + brokerAddress);
     MQTTAsync_createOptions createOptions MQTTAsync_createOptions_initializer5;
 
     auto rc{MQTTASYNC_SUCCESS};
@@ -116,9 +119,9 @@ PahoClient::PahoClient(InitializeParameters const& parameters)
         pClient,
         this,
         [](void* pThis, char*) {
-            static_cast<PahoClient*>(pThis)->cbs.log->Log(LogLevel::WARNING, "Paho disconnected from broker");
-            static_cast<PahoClient*>(pThis)->cbs.con->OnConnectionStatusChanged(ConnectionType::DISCONNECT,
-                                                                                Mqtt5ReasonCode::SUCCESS);
+            static_cast<PahoClient*>(pThis)->logCb->Log(LogLevel::WARNING, "Paho disconnected from broker");
+            static_cast<PahoClient*>(pThis)->conCb->OnConnectionStatusChanged(ConnectionType::DISCONNECT,
+                                                                              Mqtt5ReasonCode::SUCCESS);
         },
         [](void* pThis, char* topicName, int topicLen, MQTTAsync_message* message) -> int {
             return static_cast<PahoClient*>(pThis)->onMessageCb(topicName, topicLen, message);
@@ -128,18 +131,18 @@ PahoClient::PahoClient(InitializeParameters const& parameters)
         throw runtime_error("Was not able to set paho callbacks: " + string(MQTTAsync_strerror(rc)));
     }
     rc = MQTTAsync_setDisconnected(pClient, this, [](void* pThis, MQTTProperties*, MQTTReasonCodes reason) {
-        static_cast<PahoClient*>(pThis)->cbs.log->Log(
+        static_cast<PahoClient*>(pThis)->logCb->Log(
             LogLevel::WARNING, "Paho disconnected from broker, rc: " + Mqtt5ReasonCodeToStringRepr(reason).first);
-        static_cast<PahoClient*>(pThis)->cbs.con->OnConnectionStatusChanged(ConnectionType::DISCONNECT,
-                                                                            static_cast<Mqtt5ReasonCode>(reason));
+        static_cast<PahoClient*>(pThis)->conCb->OnConnectionStatusChanged(ConnectionType::DISCONNECT,
+                                                                          static_cast<Mqtt5ReasonCode>(reason));
     });
     if (MQTTASYNC_SUCCESS != rc) {
         throw runtime_error("Was not able to set paho disconnected callback: " + string(MQTTAsync_strerror(rc)));
     }
     rc = MQTTAsync_setConnected(pClient, this, [](void* pThis, char*) {
-        static_cast<PahoClient*>(pThis)->cbs.log->Log(LogLevel::INFO, "Paho connected to broker");
-        static_cast<PahoClient*>(pThis)->cbs.con->OnConnectionStatusChanged(ConnectionType::CONNECT,
-                                                                            Mqtt5ReasonCode::SUCCESS);
+        static_cast<PahoClient*>(pThis)->logCb->Log(LogLevel::INFO, "Paho connected to broker");
+        static_cast<PahoClient*>(pThis)->conCb->OnConnectionStatusChanged(ConnectionType::CONNECT,
+                                                                          Mqtt5ReasonCode::SUCCESS);
     });
     if (MQTTASYNC_SUCCESS != rc) {
         throw runtime_error("Was not able to set paho connected callback: " + string(MQTTAsync_strerror(rc)));
@@ -148,7 +151,7 @@ PahoClient::PahoClient(InitializeParameters const& parameters)
 
 PahoClient::~PahoClient() noexcept
 {
-    cbs.log->Log(LogLevel::INFO, "Deinitializing paho instance");
+    logCb->Log(LogLevel::INFO, "Deinitializing paho instance");
     if (IsConnected()) {
         DisconnectAsync(Mqtt5ReasonCode::SUCCESS);
     }
@@ -158,20 +161,20 @@ PahoClient::~PahoClient() noexcept
 void
 PahoClient::printDetailsOnSuccess(string const& details, MQTTAsync_successData5* data)
 {
-    cbs.log->Log(LogLevel::DEBUG,
-                 details + ": okay for token: " + to_string(data->token) +
-                     ", MQTT5 rc: " + string(MQTTReasonCode_toString(data->reasonCode)));
+    logCb->Log(LogLevel::DEBUG,
+               details + ": okay for token: " + to_string(data->token) +
+                   ", MQTT5 rc: " + string(MQTTReasonCode_toString(data->reasonCode)));
 }
 
 void
 PahoClient::printDetailsOnFailure(string const& details, MQTTAsync_failureData5* data)
 {
-    cbs.log->Log(LogLevel::ERROR,
-                 details + ": failed for token: " + to_string(data->token) +
-                     ", MQTT5 rc: " + string(MQTTReasonCode_toString(data->reasonCode)) +
-                     ", Paho rc: " + string(MQTTAsync_strerror(data->code)));
+    logCb->Log(LogLevel::ERROR,
+               details + ": failed for token: " + to_string(data->token) +
+                   ", MQTT5 rc: " + string(MQTTReasonCode_toString(data->reasonCode)) +
+                   ", Paho rc: " + string(MQTTAsync_strerror(data->code)));
     if (data->message) {
-        cbs.log->Log(
+        logCb->Log(
             LogLevel::ERROR,
             details + ": failed for token: " + to_string(data->token) + ", Paho description: " + string(data->message));
     }
@@ -180,7 +183,7 @@ PahoClient::printDetailsOnFailure(string const& details, MQTTAsync_failureData5*
 int
 PahoClient::onMessageCb(char* pTopic, int topicLen, MQTTAsync_message* msg) const
 {
-    cbs.log->Log(LogLevel::TRACE, "Paho received message");
+    logCb->Log(LogLevel::TRACE, "Paho received message");
 
     bool acceptMsg{true};
 
@@ -200,7 +203,7 @@ PahoClient::onMessageCb(char* pTopic, int topicLen, MQTTAsync_message* msg) cons
             auto value{
                 string(msg->properties.array[prop].value.value.data, msg->properties.array[prop].value.value.len)};
             if (!internalMessage->userProps.insert(make_pair(key, value)).second) {
-                cbs.log->Log(LogLevel::ERROR, "Received invalid user properties - ignoring");
+                logCb->Log(LogLevel::ERROR, "Received invalid user properties - ignoring");
             }
         } break;
         case MQTTPROPERTY_CODE_CORRELATION_DATA: {
@@ -225,7 +228,7 @@ PahoClient::onMessageCb(char* pTopic, int topicLen, MQTTAsync_message* msg) cons
         }
     }
 
-    cbs.msg->OnMqttMessage(move(internalMessage));
+    msgCb->OnMqttMessage(move(internalMessage));
 
     if (acceptMsg) {
         MQTTAsync_freeMessage(&msg);
@@ -235,16 +238,10 @@ PahoClient::onMessageCb(char* pTopic, int topicLen, MQTTAsync_message* msg) cons
     return 0;
 }
 
-string
-PahoClient::GetLibVersion(void) const noexcept
-{
-    return libVersion;
-}
-
 ReasonCode
 PahoClient::ConnectAsync(void)
 {
-    cbs.log->Log(LogLevel::INFO, "Start connecting to broker");
+    logCb->Log(LogLevel::INFO, "Start connecting to broker");
     MQTTAsync_connectOptions connectOptions MQTTAsync_connectOptions_initializer5;
     connectOptions.keepAliveInterval  = params.keepAliveInterval;
     connectOptions.automaticReconnect = params.autoReconnect ? 1 : 0;
@@ -253,9 +250,9 @@ PahoClient::ConnectAsync(void)
     connectOptions.minRetryInterval =
         params.reconnectDelayMin +
         uniform_int_distribution<int>(params.reconnectDelayMinLower, params.reconnectDelayMinUpper)(rndGenerator);
-    cbs.log->Log(LogLevel::DEBUG,
-                 "Reconnect delay min: " + to_string(connectOptions.minRetryInterval) + "," +
-                     " max: " + to_string(connectOptions.maxRetryInterval));
+    logCb->Log(LogLevel::DEBUG,
+               "Reconnect delay min: " + to_string(connectOptions.minRetryInterval) + "," +
+                   " max: " + to_string(connectOptions.maxRetryInterval));
 
     static auto ctx{Context(this, nullptr)};
     auto        rcPromise{promise<int>()};
@@ -306,15 +303,15 @@ PahoClient::ConnectAsync(void)
     connectOptions.ssl->enableServerCertAuth = 1;
     connectOptions.ssl->ssl_error_context    = this;
     connectOptions.ssl->ssl_error_cb         = [](const char* str, size_t len, void* pThis) -> int {
-        static_cast<PahoClient*>(pThis)->cbs.log->Log(LogLevel::ERROR, string(str, len));
+        static_cast<PahoClient*>(pThis)->logCb->Log(LogLevel::ERROR, string(str, len));
         return 0;
     };
 #endif
     auto reason{MqttReasonCode::ACCEPTED};
     if ((reason = static_cast<MqttReasonCode>(MQTTAsync_connect(pClient, &connectOptions))) >
         MqttReasonCode::ACCEPTED) {
-        cbs.log->Log(LogLevel::ERROR,
-                     "MQTTAsync_connect returned MQTT error: " + MqttReasonCodeToStringRepr(reason).first);
+        logCb->Log(LogLevel::ERROR,
+                   "MQTTAsync_connect returned MQTT error: " + MqttReasonCodeToStringRepr(reason).first);
     }
     /*use rc from the callbacks, wait forever because it is assumed one of the callbacks is always called*/
     return pahoRcToReasonCode(rcPromise.get_future().get(), "MQTTAsync_connect");
@@ -323,7 +320,7 @@ PahoClient::ConnectAsync(void)
 ReasonCode
 PahoClient::DisconnectAsync(Mqtt5ReasonCode rc)
 {
-    cbs.log->Log(LogLevel::INFO, "Disconnecting from broker");
+    logCb->Log(LogLevel::INFO, "Disconnecting from broker");
     MQTTAsync_disconnectOptions disconnectOptions MQTTAsync_disconnectOptions_initializer5;
     disconnectOptions.timeout    = 10 /*ms*/;
     disconnectOptions.reasonCode = static_cast<MQTTReasonCodes>(rc);
@@ -343,12 +340,12 @@ PahoClient::DisconnectAsync(Mqtt5ReasonCode rc)
 ReasonCode
 PahoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int* token, bool getRetained)
 {
-    cbs.log->Log(LogLevel::TRACE, "Subscribing to topic: \"" + topic + "\"");
+    logCb->Log(LogLevel::TRACE, "Subscribing to topic: \"" + topic + "\"");
     MQTTAsync_callOptions callOptions MQTTAsync_callOptions_initializer;
     callOptions.context    = this;
     callOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnSuccess("MQTTAsync_subscribe", data);
-        static_cast<PahoClient*>(pThis)->cbs.cmd->OnSubscribe(data->token);
+        static_cast<PahoClient*>(pThis)->cmdCb->OnSubscribe(data->token);
     };
     callOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnFailure("MQTTAsync_subscribe", data);
@@ -369,12 +366,12 @@ PahoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int* toke
 ReasonCode
 PahoClient::UnSubscribeAsync(string const& topic, int* token)
 {
-    cbs.log->Log(LogLevel::TRACE, "Unsubscribing from topic: \"" + topic + "\"");
+    logCb->Log(LogLevel::TRACE, "Unsubscribing from topic: \"" + topic + "\"");
     MQTTAsync_callOptions callOptions MQTTAsync_callOptions_initializer;
     callOptions.context    = this;
     callOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnSuccess("MQTTAsync_unsubscribe", data);
-        static_cast<PahoClient*>(pThis)->cbs.cmd->OnUnSubscribe(data->token);
+        static_cast<PahoClient*>(pThis)->cmdCb->OnUnSubscribe(data->token);
     };
     callOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnFailure("MQTTAsync_unsubscribe", data);
@@ -392,20 +389,18 @@ PahoClient::UnSubscribeAsync(string const& topic, int* token)
 ReasonCode
 PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
 {
-    cbs.log->Log(LogLevel::DEBUG, "Publishing to topic: \"" + mqttMsg->topic + "\"");
+    logCb->Log(LogLevel::DEBUG, "Publishing to topic: \"" + mqttMsg->topic + "\"");
     MQTTAsync_callOptions callOptions MQTTAsync_callOptions_initializer;
     callOptions.context    = this;
     callOptions.onFailure5 = [](void* pThis, MQTTAsync_failureData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnFailure("MQTTAsync_sendMessage", data);
-        static_cast<PahoClient*>(pThis)->cbs.cmd->OnPublish(data->token,
-                                                            static_cast<Mqtt5ReasonCode>(data->reasonCode));
+        static_cast<PahoClient*>(pThis)->cmdCb->OnPublish(data->token, static_cast<Mqtt5ReasonCode>(data->reasonCode));
     };
     callOptions.onSuccess5 = [](void* pThis, MQTTAsync_successData5* data) {
         static_cast<PahoClient*>(pThis)->printDetailsOnSuccess("MQTTAsync_sendMessage", data);
-        static_cast<PahoClient*>(pThis)->cbs.log->Log(LogLevel::DEBUG,
-                                                      "Paho Publish finished for token: " + to_string(data->token));
-        static_cast<PahoClient*>(pThis)->cbs.cmd->OnPublish(data->token,
-                                                            static_cast<Mqtt5ReasonCode>(data->reasonCode));
+        static_cast<PahoClient*>(pThis)->logCb->Log(LogLevel::DEBUG,
+                                                    "Paho Publish finished for token: " + to_string(data->token));
+        static_cast<PahoClient*>(pThis)->cmdCb->OnPublish(data->token, static_cast<Mqtt5ReasonCode>(data->reasonCode));
     };
 
     MQTTAsync_message msg MQTTAsync_message_initializer;
@@ -425,7 +420,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         prop.value.value.len  = static_cast<int>(userProp.second.size());
 
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
-            cbs.log->Log(LogLevel::ERROR, "Was not able to add user property, ignoring message");
+            logCb->Log(LogLevel::ERROR, "Was not able to add user property, ignoring message");
             propertiesOkay = false;
         }
     }
@@ -435,7 +430,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         prop.value.data.data = const_cast<char*>(mqttMsg->responseTopic.c_str());
         prop.value.data.len  = static_cast<int>(mqttMsg->responseTopic.size());
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
-            cbs.log->Log(LogLevel::ERROR, "Was not able to add reponse topic, ignoring message");
+            logCb->Log(LogLevel::ERROR, "Was not able to add reponse topic, ignoring message");
             propertiesOkay = false;
         }
     }
@@ -445,7 +440,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         prop.value.data.data = reinterpret_cast<char*>(mqttMsg->correlationDataProps.data());
         prop.value.data.len  = static_cast<int>(mqttMsg->correlationDataProps.size());
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
-            cbs.log->Log(LogLevel::ERROR, "Was not able to add correlation data, ignoring message");
+            logCb->Log(LogLevel::ERROR, "Was not able to add correlation data, ignoring message");
             propertiesOkay = false;
         }
     }
@@ -454,7 +449,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         prop.identifier = MQTTPROPERTY_CODE_PAYLOAD_FORMAT_INDICATOR;
         prop.value.byte = mqttMsg->payloadFormatIndicator == IMqttMessage::FormatIndicator::UTF8 ? 1u : 0u;
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
-            cbs.log->Log(LogLevel::ERROR, "Was not able to add format indicator, ignoring message");
+            logCb->Log(LogLevel::ERROR, "Was not able to add format indicator, ignoring message");
             propertiesOkay = false;
         }
     }
@@ -464,7 +459,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         prop.value.data.data = const_cast<char*>(mqttMsg->payloadContentType.c_str());
         prop.value.data.len  = static_cast<int>(mqttMsg->payloadContentType.size());
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
-            cbs.log->Log(LogLevel::ERROR, "Was not able to add content type, ignoring message");
+            logCb->Log(LogLevel::ERROR, "Was not able to add content type, ignoring message");
             propertiesOkay = false;
         }
     }
@@ -504,14 +499,18 @@ PahoClient::pahoRcToReasonCode(int rc, string const& details) const
     default:
         break;
     }
-    cbs.log->Log(logLvl,
-                 details + ": " + ReasonCodeToStringRepr(status).first + ", Paho: " + string(MQTTAsync_strerror(rc)));
+    logCb->Log(logLvl,
+               details + ": " + ReasonCodeToStringRepr(status).first + ", Paho: " + string(MQTTAsync_strerror(rc)));
     return status;
 }
 
 unique_ptr<IMqttClient>
-MqttClientFactory::Create(IMqttClient::InitializeParameters const& params)
+MqttClientFactory::Create(IMqttClient::InitializeParameters const& params,
+                          IMqttMessageCallbacks const*             msg,
+                          IMqttLogCallbacks const*                 log,
+                          IMqttCommandCallbacks const*             cmd,
+                          IMqttConnectionCallbacks const*          con)
 {
-    return unique_ptr<PahoClient>(new PahoClient(params));
+    return unique_ptr<PahoClient>(new PahoClient(params, msg, log, cmd, con));
 }
 }  // namespace i_mqtt_client

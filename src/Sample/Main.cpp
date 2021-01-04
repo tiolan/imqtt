@@ -65,15 +65,19 @@ private:
 
 public:
     Sample(void)
-      /*create a queue with logging provided by this*/
+      /* Create a dispatcher queue with logging provided by this and messages handed over to this */
       : dispatcher(DispatchQueueFactory::Create(this, *this))
     {
         signal(SIGINT, InterruptHandler);
-        /*set callback for underlying mqtt lib logs with minimum log level*/
-        /*this has to be done before instantiating the first client object and cannot be done a second time*/
-        (void)IMqttClientCallbacks::InitLogMqttLib({bind(&Sample::LogLib, this, _1, _2), LogLevelLib::DEBUG});
-        /*create with logs handled by this, messages handled by the DispatchQueue, connection info handled by this*/
-        params.callbackProvider  = {this, dispatcher.get(), this, this};
+        /*In debug we might want to get more logs from the underlying MQTT lib*/
+#ifdef NDEBUG
+        auto mqttLibLogLvl{LogLevelLib::INFO};
+#else
+        auto mqttLibLogLvl{LogLevelLib::DEBUG};
+#endif
+        /* Set log callback for underlying mqtt lib logs with minimum log level. This has to be done before
+         * instantiating the first client object and cannot be done a second time */
+        (void)IMqttClientCallbacks::InitLogMqttLib({bind(&Sample::LogLib, this, _1, _2), mqttLibLogLvl});
         params.clientId          = "myId";
         params.hostAddress       = "localhost";
         params.cleanSession      = true;
@@ -95,7 +99,16 @@ public:
 #else
         params.port = 1883;
 #endif
-        client = MqttClientFactory::Create(params);
+        /* Finally create the client with received messages handled by dispatcher queue, logs by this, command callbacks
+         * and connection change callbacks not handled (for demo purpose done in two steps)*/
+        client = MqttClientFactory::Create(params, dispatcher.get(), this, nullptr, nullptr);
+        /* Also set command and connection callbacks handled by this */
+        client->SetCallbacks<IMqttConnectionCallbacks>(this);
+        client->SetCallbacks<IMqttCommandCallbacks>(this);
+        /* Disable logging */
+        client->SetCallbacks<IMqttLogCallbacks>();
+        /* Enable logging */
+        client->SetCallbacks<IMqttLogCallbacks>(this);
     };
     ~Sample() noexcept = default;
     void Run(void);
@@ -216,26 +229,21 @@ Sample::Log(LogLevel lvl, string const& txt) const
 void
 Sample::OnMqttMessage(upMqttMessage_t msq) const
 {
+    /*such printing should not be done in production - it is intentionally not guarded in IMqtt*/
 #ifndef NDEBUG
     Log(LogLevel::INFO, "Got Mqtt Message: \n" + msq->ToString());
 #else
     Log(LogLevel::INFO, "Got Mqtt Message");
 #endif
-    if (params.callbackProvider.msg != this) {
-        Log(LogLevel::INFO, "Simulating long message processing");
-        sleep_for(seconds(1));
-        Log(LogLevel::INFO, "Done with message processing");
-    }
+    Log(LogLevel::INFO, "Simulating long message processing");
+    sleep_for(seconds(1));
+    Log(LogLevel::INFO, "Done with message processing");
 }
 
 void
 Sample::Run(void)
 {
     unique_lock<mutex> lock(exitRunMutex);
-    /* disable logs */
-    // client->setCallbacks({nullptr, this, this, this});
-    /* enable logs */
-    // client->setCallbacks({this, this, this, this});
     Log(LogLevel::INFO, "Using lib version: " + client->GetLibVersion());
     client->ConnectAsync();
 

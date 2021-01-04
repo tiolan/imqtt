@@ -30,13 +30,11 @@ namespace i_mqtt_client {
 class MosquittoClient : public IMqttClient {
 private:
     static std::atomic_uint counter;
-    static std::string      libVersion;
     static std::mutex       libMutex;
 
     std::atomic_bool                  connected{false};
     mosquitto*                        pClient{nullptr};
     IMqttClient::InitializeParameters params;
-    std::default_random_engine        rndGenerator{std::random_device()()};
 
     void       onConnectCb(struct mosquitto*, int, int, const mosquitto_property* props);
     void       onDisconnectCb(struct mosquitto*, int, const mosquitto_property*);
@@ -47,7 +45,6 @@ private:
     void       onLog(struct mosquitto*, int, const char*);
     ReasonCode mosqRcToReasonCode(int, std::string const&) const;
 
-    virtual std::string GetLibVersion(void) const noexcept override;
     virtual ReasonCode  ConnectAsync(void) override;
     virtual ReasonCode  DisconnectAsync(Mqtt5ReasonCode) override;
     virtual ReasonCode  SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
@@ -56,7 +53,11 @@ private:
     virtual bool        IsConnected(void) const noexcept override;
 
 public:
-    MosquittoClient(IMqttClient::InitializeParameters const&);
+    MosquittoClient(IMqttClient::InitializeParameters const&,
+                    IMqttMessageCallbacks const*,
+                    IMqttLogCallbacks const*,
+                    IMqttCommandCallbacks const*,
+                    IMqttConnectionCallbacks const*);
     virtual ~MosquittoClient() noexcept;
 };
 
