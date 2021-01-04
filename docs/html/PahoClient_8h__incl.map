@@ -1,13 +1,13 @@
 <map id="src/MqttClient/Paho/PahoClient.h" name="src/MqttClient/Paho/PahoClient.h">
-<area shape="rect" id="node1" title="Class definition for Paho library wrapper." alt="" coords="473,5,621,47"/>
-<area shape="rect" id="node2" title=" " alt="" coords="219,95,285,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="309,95,373,121"/>
-<area shape="rect" id="node4" title=" " alt="" coords="397,95,469,121"/>
-<area shape="rect" id="node5" title=" " alt="" coords="559,319,617,345"/>
-<area shape="rect" id="node6" title=" " alt="" coords="675,95,739,121"/>
-<area shape="rect" id="node7" href="$IMqttClient_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="493,95,600,121"/>
+<area shape="rect" id="node1" title="Class definition for Paho library wrapper." alt="" coords="518,5,666,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="315,95,381,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="405,95,469,121"/>
+<area shape="rect" id="node4" title=" " alt="" coords="559,319,617,345"/>
+<area shape="rect" id="node5" title=" " alt="" coords="675,95,739,121"/>
+<area shape="rect" id="node6" href="$IMqttClient_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="493,95,600,121"/>
 <area shape="rect" id="node17" title=" " alt="" coords="763,95,874,121"/>
-<area shape="rect" id="node8" title=" " alt="" coords="5,319,83,345"/>
+<area shape="rect" id="node7" title=" " alt="" coords="5,319,83,345"/>
+<area shape="rect" id="node8" title=" " alt="" coords="283,169,355,196"/>
 <area shape="rect" id="node9" href="$IMqttClientCallbacks_8h.html" title="Callback definitions for an abstract MqttClient." alt="" coords="379,169,549,196"/>
 <area shape="rect" id="node10" title=" " alt="" coords="484,319,535,345"/>
 <area shape="rect" id="node11" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="319,244,446,271"/>

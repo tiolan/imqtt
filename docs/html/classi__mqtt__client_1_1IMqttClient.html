@@ -72,6 +72,7 @@ $(function() {
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pro-static-attribs">Static Protected Attributes</a> &#124;
 <a href="classi__mqtt__client_1_1IMqttClient-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">i_mqtt_client::IMqttClient Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -97,13 +98,14 @@ Collaboration diagram for i_mqtt_client::IMqttClient:</div>
 <div class="dyncontent">
 <div class="center"><img src="classi__mqtt__client_1_1IMqttClient__coll__graph.png" border="0" usemap="#i__mqtt__client_1_1IMqttClient_coll__map" alt="Collaboration graph"/></div>
 <map name="i__mqtt__client_1_1IMqttClient_coll__map" id="i__mqtt__client_1_1IMqttClient_coll__map">
-<area shape="rect" title=" " alt="" coords="583,130,769,157"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttClientCallbacks.html" title=" " alt="" coords="321,88,508,130"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttLogCallbacks.html" title=" " alt="" coords="5,9,240,36"/>
-<area shape="rect" href="structi__mqtt__client_1_1MqttClientCallbacks.html" title=" " alt="" coords="323,156,506,198"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html" title=" " alt="" coords="19,231,226,272"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html" title=" " alt="" coords="11,143,234,184"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html" title=" " alt="" coords="15,66,231,107"/>
+<area shape="rect" title=" " alt="" coords="593,144,780,171"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttClientCallbacks.html" title=" " alt="" coords="289,106,476,147"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttLogCallbacks.html" title=" " alt="" coords="5,5,240,32"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html" title=" " alt="" coords="19,57,226,98"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html" title=" " alt="" coords="11,211,234,253"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html" title=" " alt="" coords="15,123,231,165"/>
+<area shape="rect" title="STL class." alt="" coords="339,299,426,325"/>
+<area shape="rect" title="STL class." alt="" coords="53,291,192,333"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -129,12 +131,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2f114cb1e0bdc669fd77b0d42170d6de"><td class="memItemLeft" align="right" valign="top"><a id="a2f114cb1e0bdc669fd77b0d42170d6de"></a>
 void *&#160;</td><td class="memItemRight" valign="bottom"><b>operator new[]</b> (size_t)=delete</td></tr>
 <tr class="separator:a2f114cb1e0bdc669fd77b0d42170d6de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adcccc2bbcfc62d2e15988f2536711882"><td class="memItemLeft" align="right" valign="top"><a id="adcccc2bbcfc62d2e15988f2536711882"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setCallbacks</b> (<a class="el" href="structi__mqtt__client_1_1MqttClientCallbacks.html">MqttClientCallbacks</a> const &amp;callbacks) noexcept</td></tr>
-<tr class="separator:adcccc2bbcfc62d2e15988f2536711882"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38a8718634da284e0bca5fe118b4689e"><td class="memItemLeft" align="right" valign="top"><a id="a38a8718634da284e0bca5fe118b4689e"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetLibVersion</b> (void) const noexcept=0</td></tr>
-<tr class="separator:a38a8718634da284e0bca5fe118b4689e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4e036c33107946ab5a10243ac3ea30a"><td class="memTemplParams" colspan="2"><a id="ad4e036c33107946ab5a10243ac3ea30a"></a>
+template&lt;class TPtr &gt; </td></tr>
+<tr class="memitem:ad4e036c33107946ab5a10243ac3ea30a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SetCallbacks</b> (TPtr const *ptr=nullptr) noexcept</td></tr>
+<tr class="separator:ad4e036c33107946ab5a10243ac3ea30a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac764e0f05376b56b740d7883087206d9"><td class="memItemLeft" align="right" valign="top"><a id="ac764e0f05376b56b740d7883087206d9"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetLibVersion</b> (void) const noexcept</td></tr>
+<tr class="separator:ac764e0f05376b56b740d7883087206d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff00caac25d704c6d7cac4e1ef5822ae"><td class="memItemLeft" align="right" valign="top"><a id="aff00caac25d704c6d7cac4e1ef5822ae"></a>
 virtual ReasonCode&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectAsync</b> (void)=0</td></tr>
 <tr class="separator:aff00caac25d704c6d7cac4e1ef5822ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,6 +156,22 @@ virtual ReasonCode&#160;</td><td class="memItemRight" valign="bottom"><b>Publish
 <tr class="memitem:a37ece94ff63a5de923406727516faf9f"><td class="memItemLeft" align="right" valign="top"><a id="a37ece94ff63a5de923406727516faf9f"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsConnected</b> (void) const noexcept=0</td></tr>
 <tr class="separator:a37ece94ff63a5de923406727516faf9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2f6cca36a774ddc484e59ca778a5039"><td class="memItemLeft" align="right" valign="top"><a id="ac2f6cca36a774ddc484e59ca778a5039"></a>
+template&lt;&gt; </td></tr>
+<tr class="memitem:ac2f6cca36a774ddc484e59ca778a5039"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SetCallbacks</b> (<a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const *ptr) noexcept</td></tr>
+<tr class="separator:ac2f6cca36a774ddc484e59ca778a5039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a840923d694ca0469dc237a624966c0ea"><td class="memItemLeft" align="right" valign="top"><a id="a840923d694ca0469dc237a624966c0ea"></a>
+template&lt;&gt; </td></tr>
+<tr class="memitem:a840923d694ca0469dc237a624966c0ea"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SetCallbacks</b> (<a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const *ptr) noexcept</td></tr>
+<tr class="separator:a840923d694ca0469dc237a624966c0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af51b97b07d3a3cee2acc75802cb1bbd9"><td class="memItemLeft" align="right" valign="top"><a id="af51b97b07d3a3cee2acc75802cb1bbd9"></a>
+template&lt;&gt; </td></tr>
+<tr class="memitem:af51b97b07d3a3cee2acc75802cb1bbd9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SetCallbacks</b> (<a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> const *ptr) noexcept</td></tr>
+<tr class="separator:af51b97b07d3a3cee2acc75802cb1bbd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee41c800a87a6e7b0b31a87eac4766a9"><td class="memItemLeft" align="right" valign="top"><a id="aee41c800a87a6e7b0b31a87eac4766a9"></a>
+template&lt;&gt; </td></tr>
+<tr class="memitem:aee41c800a87a6e7b0b31a87eac4766a9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SetCallbacks</b> (<a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> const *ptr) noexcept</td></tr>
+<tr class="separator:aee41c800a87a6e7b0b31a87eac4766a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classi__mqtt__client_1_1IMqttLogCallbacks"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classi__mqtt__client_1_1IMqttLogCallbacks')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">i_mqtt_client::IMqttLogCallbacks</a></td></tr>
 <tr class="memitem:aabdd76efb83f8734e2fe4935a9c57eac inherit pub_methods_classi__mqtt__client_1_1IMqttLogCallbacks"><td class="memItemLeft" align="right" valign="top"><a id="aabdd76efb83f8734e2fe4935a9c57eac"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Log</b> (LogLevel, std::string const &amp;) const</td></tr>
@@ -192,15 +211,33 @@ static Mqtt5ReasonCodeRepr_t&#160;</td><td class="memItemRight" valign="bottom">
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a8ba1a4bea89dcf7cc6f07e58ed7273b9"><td class="memItemLeft" align="right" valign="top"><a id="a8ba1a4bea89dcf7cc6f07e58ed7273b9"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnMqttMessage</b> (upMqttMessage_t) const override</td></tr>
-<tr class="separator:a8ba1a4bea89dcf7cc6f07e58ed7273b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3e79ee77cf8420b779cb3dedc979a0"><td class="memItemLeft" align="right" valign="top"><a id="a1a3e79ee77cf8420b779cb3dedc979a0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>IMqttClient</b> (<a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const *log, <a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> const *cmd, <a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const *msg, <a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> const *con)</td></tr>
+<tr class="separator:a1a3e79ee77cf8420b779cb3dedc979a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:acf3539edd9380d437375631197cc001a"><td class="memItemLeft" align="right" valign="top"><a id="acf3539edd9380d437375631197cc001a"></a>
-<a class="el" href="structi__mqtt__client_1_1MqttClientCallbacks.html">MqttClientCallbacks</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cbs</b></td></tr>
-<tr class="separator:acf3539edd9380d437375631197cc001a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adda2b22d5eb508e54fe8012d8b2cbe2a"><td class="memItemLeft" align="right" valign="top"><a id="adda2b22d5eb508e54fe8012d8b2cbe2a"></a>
+std::default_random_engine&#160;</td><td class="memItemRight" valign="bottom"><b>rndGenerator</b> {std::random_device()()}</td></tr>
+<tr class="separator:adda2b22d5eb508e54fe8012d8b2cbe2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3dd440893131013a2d50006e760f14e"><td class="memItemLeft" align="right" valign="top"><a id="ae3dd440893131013a2d50006e760f14e"></a>
+<a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><b>logCb</b></td></tr>
+<tr class="separator:ae3dd440893131013a2d50006e760f14e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2080d0bbdd4b86934cfea77d36ad009c"><td class="memItemLeft" align="right" valign="top"><a id="a2080d0bbdd4b86934cfea77d36ad009c"></a>
+<a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><b>cmdCb</b></td></tr>
+<tr class="separator:a2080d0bbdd4b86934cfea77d36ad009c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50f214584341ab121d59ac15c7fab9e4"><td class="memItemLeft" align="right" valign="top"><a id="a50f214584341ab121d59ac15c7fab9e4"></a>
+<a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><b>msgCb</b></td></tr>
+<tr class="separator:a50f214584341ab121d59ac15c7fab9e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a770642c873a5b3e1269df55366afd0f0"><td class="memItemLeft" align="right" valign="top"><a id="a770642c873a5b3e1269df55366afd0f0"></a>
+<a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><b>conCb</b></td></tr>
+<tr class="separator:a770642c873a5b3e1269df55366afd0f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-attribs"></a>
+Static Protected Attributes</h2></td></tr>
+<tr class="memitem:a39c85197b9174c5513fd2e2f7aef32ec"><td class="memItemLeft" align="right" valign="top"><a id="a39c85197b9174c5513fd2e2f7aef32ec"></a>
+static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>libVersion</b> {&quot;UNKNOWN&quot;}</td></tr>
+<tr class="separator:a39c85197b9174c5513fd2e2f7aef32ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>

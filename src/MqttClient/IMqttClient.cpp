@@ -26,6 +26,7 @@
 using namespace std;
 
 namespace i_mqtt_client {
+string IMqttClient::libVersion{"UNKNOWN"};
 
 static const map<ReasonCode, ReasonCodeRepr_t> reasonCodeToString{
     {ReasonCode::OKAY, {"OKAY", "The operation was successful"}},
@@ -152,5 +153,54 @@ IMqttLogCallbacks::LogMqttLib(LogLevelLib lvl, std::string const& txt)
     if (mqttLibLogInitParams.first && lvl >= mqttLibLogInitParams.second) {
         mqttLibLogInitParams.first(lvl, txt);
     }
-};
+}
+
+template <>
+void
+IMqttClient::SetCallbacks<IMqttLogCallbacks>(IMqttLogCallbacks const* ptr) noexcept
+{
+    logCb = ptr ? ptr : this;
+}
+
+template <>
+void
+IMqttClient::SetCallbacks<IMqttMessageCallbacks>(IMqttMessageCallbacks const* ptr) noexcept
+{
+    msgCb = ptr ? ptr : this;
+}
+
+template <>
+void
+IMqttClient::SetCallbacks<IMqttConnectionCallbacks>(IMqttConnectionCallbacks const* ptr) noexcept
+{
+    conCb = ptr ? ptr : this;
+}
+
+template <>
+void
+IMqttClient::SetCallbacks<IMqttCommandCallbacks>(IMqttCommandCallbacks const* ptr) noexcept
+{
+    cmdCb = ptr ? ptr : this;
+}
+
+IMqttClient::IMqttClient(IMqttLogCallbacks const*        log,
+                         IMqttCommandCallbacks const*    cmd,
+                         IMqttMessageCallbacks const*    msg,
+                         IMqttConnectionCallbacks const* con)
+  : logCb(this)
+  , cmdCb(this)
+  , msgCb(this)
+  , conCb(this)
+{
+    SetCallbacks(log);
+    SetCallbacks(cmd);
+    SetCallbacks(msg);
+    SetCallbacks(con);
+}
+
+string
+IMqttClient::GetLibVersion(void) const noexcept
+{
+    return IMqttClient::libVersion;
+}
 }  // namespace i_mqtt_client

@@ -75,53 +75,57 @@ $(function() {
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;atomic&gt;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;mutex&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;random&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="IMqttClient_8h.html">IMqttClient.h</a>&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;MQTTAsync.h&quot;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">namespace </span>i_mqtt_client {</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classi__mqtt__client_1_1PahoClient.html">   33</a></span>&#160;<span class="keyword">class </span><a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a> : <span class="keyword">public</span> <a class="code" href="classi__mqtt__client_1_1IMqttClient.html">IMqttClient</a> {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">struct </span>Context final {</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a>* pThis;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keywordtype">void</span>*       pContext;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        Context(<a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a>* pClient, <span class="keywordtype">void</span>* pContext)</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;          : pThis(pClient)</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          , pContext(pContext){};</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    };</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">static</span> std::once_flag initFlag;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">static</span> std::string    libVersion;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    MQTTAsync                         pClient{<span class="keyword">nullptr</span>};</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="structi__mqtt__client_1_1IMqttClient_1_1InitializeParameters.html">IMqttClient::InitializeParameters</a> params;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    std::default_random_engine        rndGenerator{std::random_device()()};</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">virtual</span> std::string GetLibVersion(<span class="keywordtype">void</span>) <span class="keyword">const</span> noexcept <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">virtual</span> ReasonCode  ConnectAsync(<span class="keywordtype">void</span>) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">virtual</span> ReasonCode  DisconnectAsync(Mqtt5ReasonCode) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">virtual</span> ReasonCode  SubscribeAsync(std::string <span class="keyword">const</span>&amp;, IMqttMessage::QOS, <span class="keywordtype">int</span>*, <span class="keywordtype">bool</span>) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">virtual</span> ReasonCode  UnSubscribeAsync(std::string <span class="keyword">const</span>&amp;, <span class="keywordtype">int</span>*) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">virtual</span> ReasonCode  PublishAsync(upMqttMessage_t, <span class="keywordtype">int</span>*) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span>        IsConnected(<span class="keywordtype">void</span>) <span class="keyword">const</span> noexcept <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">void</span>       printDetailsOnSuccess(std::string <span class="keyword">const</span>&amp;, MQTTAsync_successData5*);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">void</span>       printDetailsOnFailure(std::string <span class="keyword">const</span>&amp;, MQTTAsync_failureData5*);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    ReasonCode pahoRcToReasonCode(<span class="keywordtype">int</span>, std::string <span class="keyword">const</span>&amp;) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">int</span>        onMessageCb(<span class="keywordtype">char</span>*, <span class="keywordtype">int</span>, MQTTAsync_message*) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a>(<a class="code" href="structi__mqtt__client_1_1IMqttClient_1_1InitializeParameters.html">IMqttClient::InitializeParameters</a> <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="IMqttClient_8h.html">IMqttClient.h</a>&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;MQTTAsync.h&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace </span>i_mqtt_client {</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classi__mqtt__client_1_1PahoClient.html">   32</a></span>&#160;<span class="keyword">class </span><a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a> : <span class="keyword">public</span> <a class="code" href="classi__mqtt__client_1_1IMqttClient.html">IMqttClient</a> {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">struct </span>Context final {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a>* pThis;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keywordtype">void</span>*       pContext;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        Context(<a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a>* pClient, <span class="keywordtype">void</span>* pContext)</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          : pThis(pClient)</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;          , pContext(pContext){};</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    };</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">static</span> std::once_flag initFlag;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    InitializeParameters params;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    MQTTAsync            pClient{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">virtual</span> ReasonCode ConnectAsync(<span class="keywordtype">void</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">virtual</span> ReasonCode DisconnectAsync(Mqtt5ReasonCode) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">virtual</span> ReasonCode SubscribeAsync(std::string <span class="keyword">const</span>&amp;, IMqttMessage::QOS, <span class="keywordtype">int</span>*, <span class="keywordtype">bool</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">virtual</span> ReasonCode UnSubscribeAsync(std::string <span class="keyword">const</span>&amp;, <span class="keywordtype">int</span>*) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">virtual</span> ReasonCode PublishAsync(upMqttMessage_t, <span class="keywordtype">int</span>*) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span>       IsConnected(<span class="keywordtype">void</span>) <span class="keyword">const</span> noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">void</span>       printDetailsOnSuccess(std::string <span class="keyword">const</span>&amp;, MQTTAsync_successData5*);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">void</span>       printDetailsOnFailure(std::string <span class="keyword">const</span>&amp;, MQTTAsync_failureData5*);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    ReasonCode pahoRcToReasonCode(<span class="keywordtype">int</span>, std::string <span class="keyword">const</span>&amp;) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">int</span>        onMessageCb(<span class="keywordtype">char</span>*, <span class="keywordtype">int</span>, MQTTAsync_message*) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a>(<a class="code" href="structi__mqtt__client_1_1IMqttClient_1_1InitializeParameters.html">IMqttClient::InitializeParameters</a> <span class="keyword">const</span>&amp;,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;               <a class="code" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> <span class="keyword">const</span>*,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;               <a class="code" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> <span class="keyword">const</span>*,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;               <a class="code" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> <span class="keyword">const</span>*,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;               <a class="code" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> <span class="keyword">const</span>*);</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classi__mqtt__client_1_1PahoClient.html">PahoClient</a>() noexcept;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;};</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}  <span class="comment">// namespace i_mqtt_client</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructi__mqtt__client_1_1IMqttClient_1_1InitializeParameters_html"><div class="ttname"><a href="structi__mqtt__client_1_1IMqttClient_1_1InitializeParameters.html">i_mqtt_client::IMqttClient::InitializeParameters</a></div><div class="ttdef"><b>Definition:</b> IMqttClient.h:52</div></div>
-<div class="ttc" id="aclassi__mqtt__client_1_1IMqttClient_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttClient.html">i_mqtt_client::IMqttClient</a></div><div class="ttdef"><b>Definition:</b> IMqttClient.h:29</div></div>
-<div class="ttc" id="aclassi__mqtt__client_1_1PahoClient_html"><div class="ttname"><a href="classi__mqtt__client_1_1PahoClient.html">i_mqtt_client::PahoClient</a></div><div class="ttdef"><b>Definition:</b> PahoClient.h:33</div></div>
+<div class="ttc" id="aclassi__mqtt__client_1_1IMqttMessageCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">i_mqtt_client::IMqttMessageCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:59</div></div>
+<div class="ttc" id="astructi__mqtt__client_1_1IMqttClient_1_1InitializeParameters_html"><div class="ttname"><a href="structi__mqtt__client_1_1IMqttClient_1_1InitializeParameters.html">i_mqtt_client::IMqttClient::InitializeParameters</a></div><div class="ttdef"><b>Definition:</b> IMqttClient.h:59</div></div>
+<div class="ttc" id="aclassi__mqtt__client_1_1IMqttConnectionCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">i_mqtt_client::IMqttConnectionCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:45</div></div>
+<div class="ttc" id="aclassi__mqtt__client_1_1IMqttClient_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttClient.html">i_mqtt_client::IMqttClient</a></div><div class="ttdef"><b>Definition:</b> IMqttClient.h:30</div></div>
+<div class="ttc" id="aclassi__mqtt__client_1_1PahoClient_html"><div class="ttname"><a href="classi__mqtt__client_1_1PahoClient.html">i_mqtt_client::PahoClient</a></div><div class="ttdef"><b>Definition:</b> PahoClient.h:32</div></div>
 <div class="ttc" id="aIMqttClient_8h_html"><div class="ttname"><a href="IMqttClient_8h.html">IMqttClient.h</a></div><div class="ttdoc">Abstract interface definition for an MqttClient.</div></div>
+<div class="ttc" id="aclassi__mqtt__client_1_1IMqttCommandCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">i_mqtt_client::IMqttCommandCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:70</div></div>
+<div class="ttc" id="aclassi__mqtt__client_1_1IMqttLogCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttLogCallbacks.html">i_mqtt_client::IMqttLogCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:30</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

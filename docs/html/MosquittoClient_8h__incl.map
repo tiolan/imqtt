@@ -1,18 +1,18 @@
 <map id="src/MqttClient/Mosquitto/MosquittoClient.h" name="src/MqttClient/Mosquitto/MosquittoClient.h">
-<area shape="rect" id="node1" title="Class definition for Mosquitto wrapper." alt="" coords="181,5,363,47"/>
-<area shape="rect" id="node2" title=" " alt="" coords="25,95,125,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="149,95,216,121"/>
-<area shape="rect" id="node4" title=" " alt="" coords="240,95,304,121"/>
-<area shape="rect" id="node5" title=" " alt="" coords="328,95,400,121"/>
-<area shape="rect" id="node6" href="$IMqttClient_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="424,95,531,121"/>
-<area shape="rect" id="node7" title=" " alt="" coords="5,319,83,345"/>
-<area shape="rect" id="node8" title=" " alt="" coords="560,319,619,345"/>
-<area shape="rect" id="node9" href="$IMqttClientCallbacks_8h.html" title="Callback definitions for an abstract MqttClient." alt="" coords="393,169,562,196"/>
-<area shape="rect" id="node10" title=" " alt="" coords="485,319,536,345"/>
-<area shape="rect" id="node11" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="334,244,461,271"/>
-<area shape="rect" id="node12" title=" " alt="" coords="374,319,461,345"/>
-<area shape="rect" id="node13" title=" " alt="" coords="107,319,170,345"/>
-<area shape="rect" id="node14" href="$IMqttClientDefines_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="195,319,349,345"/>
-<area shape="rect" id="node15" title=" " alt="" coords="179,393,266,420"/>
-<area shape="rect" id="node16" title=" " alt="" coords="291,393,349,420"/>
+<area shape="rect" id="node1" title="Class definition for Mosquitto wrapper." alt="" coords="161,5,344,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,95,105,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="130,95,197,121"/>
+<area shape="rect" id="node4" title=" " alt="" coords="221,95,285,121"/>
+<area shape="rect" id="node5" title=" " alt="" coords="286,169,358,196"/>
+<area shape="rect" id="node6" href="$IMqttClient_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="359,95,466,121"/>
+<area shape="rect" id="node7" title=" " alt="" coords="271,319,349,345"/>
+<area shape="rect" id="node8" title=" " alt="" coords="825,319,883,345"/>
+<area shape="rect" id="node9" href="$IMqttClientCallbacks_8h.html" title="Callback definitions for an abstract MqttClient." alt="" coords="448,169,617,196"/>
+<area shape="rect" id="node10" title=" " alt="" coords="373,319,423,345"/>
+<area shape="rect" id="node11" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="484,244,611,271"/>
+<area shape="rect" id="node12" title=" " alt="" coords="627,319,713,345"/>
+<area shape="rect" id="node13" title=" " alt="" coords="737,319,800,345"/>
+<area shape="rect" id="node14" href="$IMqttClientDefines_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="447,319,602,345"/>
+<area shape="rect" id="node15" title=" " alt="" coords="432,393,519,420"/>
+<area shape="rect" id="node16" title=" " alt="" coords="543,393,602,420"/>
 </map>

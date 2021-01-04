@@ -98,24 +98,4 @@ protected:
 public:
     virtual ~IMqttClientCallbacks() noexcept = default;
 };
-
-struct MqttClientCallbacks final {
-    MqttClientCallbacks(IMqttLogCallbacks const*        log,
-                        IMqttMessageCallbacks const*    msg,
-                        IMqttConnectionCallbacks const* con,
-                        IMqttCommandCallbacks const*    cmd)
-      // TODO: This is non-sense
-      : log(log ? log : nullptr)
-      , msg(msg ? msg : nullptr)
-      , con(con ? con : nullptr)
-      , cmd(cmd ? cmd : nullptr)
-    {
-    }
-    IMqttLogCallbacks const*        log;
-    IMqttMessageCallbacks const*    msg;
-    IMqttConnectionCallbacks const* con;
-    IMqttCommandCallbacks const*    cmd;
-};
-
-
 }  // namespace i_mqtt_client

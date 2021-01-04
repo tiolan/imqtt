@@ -1,10 +1,11 @@
 <map id="i_mqtt_client::PahoClient" name="i_mqtt_client::PahoClient">
-<area shape="rect" id="node1" title=" " alt="" coords="819,130,1003,157"/>
-<area shape="rect" id="node2" href="$classi__mqtt__client_1_1IMqttClient.html" title=" " alt="" coords="583,130,769,157"/>
-<area shape="rect" id="node3" href="$classi__mqtt__client_1_1IMqttClientCallbacks.html" title=" " alt="" coords="321,88,508,130"/>
-<area shape="rect" id="node4" href="$classi__mqtt__client_1_1IMqttLogCallbacks.html" title=" " alt="" coords="5,9,240,36"/>
-<area shape="rect" id="node8" href="$structi__mqtt__client_1_1MqttClientCallbacks.html" title=" " alt="" coords="323,156,506,198"/>
-<area shape="rect" id="node5" href="$classi__mqtt__client_1_1IMqttMessageCallbacks.html" title=" " alt="" coords="19,231,226,272"/>
-<area shape="rect" id="node6" href="$classi__mqtt__client_1_1IMqttConnectionCallbacks.html" title=" " alt="" coords="11,143,234,184"/>
-<area shape="rect" id="node7" href="$classi__mqtt__client_1_1IMqttCommandCallbacks.html" title=" " alt="" coords="15,66,231,107"/>
+<area shape="rect" id="node1" title=" " alt="" coords="829,144,1013,171"/>
+<area shape="rect" id="node2" href="$classi__mqtt__client_1_1IMqttClient.html" title=" " alt="" coords="593,144,780,171"/>
+<area shape="rect" id="node3" href="$classi__mqtt__client_1_1IMqttClientCallbacks.html" title=" " alt="" coords="289,106,476,147"/>
+<area shape="rect" id="node4" href="$classi__mqtt__client_1_1IMqttLogCallbacks.html" title=" " alt="" coords="5,5,240,32"/>
+<area shape="rect" id="node5" href="$classi__mqtt__client_1_1IMqttMessageCallbacks.html" title=" " alt="" coords="19,57,226,98"/>
+<area shape="rect" id="node6" href="$classi__mqtt__client_1_1IMqttConnectionCallbacks.html" title=" " alt="" coords="11,211,234,253"/>
+<area shape="rect" id="node7" href="$classi__mqtt__client_1_1IMqttCommandCallbacks.html" title=" " alt="" coords="15,123,231,165"/>
+<area shape="rect" id="node8" title="STL class." alt="" coords="339,299,426,325"/>
+<area shape="rect" id="node9" title="STL class." alt="" coords="53,291,192,333"/>
 </map>

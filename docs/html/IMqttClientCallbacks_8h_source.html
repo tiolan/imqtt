@@ -151,32 +151,11 @@ $(function() {
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classi__mqtt__client_1_1IMqttClientCallbacks.html">IMqttClientCallbacks</a>() noexcept = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;};</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="structi__mqtt__client_1_1MqttClientCallbacks.html">  102</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structi__mqtt__client_1_1MqttClientCallbacks.html">MqttClientCallbacks</a> final {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="structi__mqtt__client_1_1MqttClientCallbacks.html">MqttClientCallbacks</a>(<a class="code" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> <span class="keyword">const</span>*        log,</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                        <a class="code" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> <span class="keyword">const</span>*    msg,</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                        <a class="code" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> <span class="keyword">const</span>* con,</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                        <a class="code" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> <span class="keyword">const</span>*    cmd)</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      <span class="comment">// TODO: This is non-sense</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      : log(log ? log : <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      , msg(msg ? msg : <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      , con(con ? con : <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      , cmd(cmd ? cmd : <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    }</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <a class="code" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> <span class="keyword">const</span>*        log;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <a class="code" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> <span class="keyword">const</span>*    msg;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <a class="code" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> <span class="keyword">const</span>* con;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <a class="code" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> <span class="keyword">const</span>*    cmd;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;};</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160; </div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}  <span class="comment">// namespace i_mqtt_client</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}  <span class="comment">// namespace i_mqtt_client</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassi__mqtt__client_1_1IMqttMessageCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">i_mqtt_client::IMqttMessageCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:59</div></div>
 <div class="ttc" id="aclassi__mqtt__client_1_1IMqttConnectionCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">i_mqtt_client::IMqttConnectionCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:45</div></div>
 <div class="ttc" id="aclassi__mqtt__client_1_1IMqttClientCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttClientCallbacks.html">i_mqtt_client::IMqttClientCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:91</div></div>
-<div class="ttc" id="astructi__mqtt__client_1_1MqttClientCallbacks_html"><div class="ttname"><a href="structi__mqtt__client_1_1MqttClientCallbacks.html">i_mqtt_client::MqttClientCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:102</div></div>
 <div class="ttc" id="aclassi__mqtt__client_1_1IMqttCommandCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">i_mqtt_client::IMqttCommandCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:70</div></div>
 <div class="ttc" id="aIMqttMessage_8h_html"><div class="ttname"><a href="IMqttMessage_8h.html">IMqttMessage.h</a></div><div class="ttdoc">Abstract interface definition for MQTT messages in C++.</div></div>
 <div class="ttc" id="aclassi__mqtt__client_1_1IMqttLogCallbacks_html"><div class="ttname"><a href="classi__mqtt__client_1_1IMqttLogCallbacks.html">i_mqtt_client::IMqttLogCallbacks</a></div><div class="ttdef"><b>Definition:</b> IMqttClientCallbacks.h:30</div></div>

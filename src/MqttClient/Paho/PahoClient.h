@@ -22,7 +22,6 @@
 
 #include <atomic>
 #include <mutex>
-#include <random>
 #include <string>
 #include <thread>
 
@@ -40,19 +39,16 @@ private:
           , pContext(pContext){};
     };
     static std::once_flag initFlag;
-    static std::string    libVersion;
 
-    MQTTAsync                         pClient{nullptr};
-    IMqttClient::InitializeParameters params;
-    std::default_random_engine        rndGenerator{std::random_device()()};
+    InitializeParameters params;
+    MQTTAsync            pClient{nullptr};
 
-    virtual std::string GetLibVersion(void) const noexcept override;
-    virtual ReasonCode  ConnectAsync(void) override;
-    virtual ReasonCode  DisconnectAsync(Mqtt5ReasonCode) override;
-    virtual ReasonCode  SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
-    virtual ReasonCode  UnSubscribeAsync(std::string const&, int*) override;
-    virtual ReasonCode  PublishAsync(upMqttMessage_t, int*) override;
-    virtual bool        IsConnected(void) const noexcept override;
+    virtual ReasonCode ConnectAsync(void) override;
+    virtual ReasonCode DisconnectAsync(Mqtt5ReasonCode) override;
+    virtual ReasonCode SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
+    virtual ReasonCode UnSubscribeAsync(std::string const&, int*) override;
+    virtual ReasonCode PublishAsync(upMqttMessage_t, int*) override;
+    virtual bool       IsConnected(void) const noexcept override;
 
     void       printDetailsOnSuccess(std::string const&, MQTTAsync_successData5*);
     void       printDetailsOnFailure(std::string const&, MQTTAsync_failureData5*);
@@ -60,7 +56,11 @@ private:
     int        onMessageCb(char*, int, MQTTAsync_message*) const;
 
 public:
-    PahoClient(IMqttClient::InitializeParameters const&);
+    PahoClient(IMqttClient::InitializeParameters const&,
+               IMqttMessageCallbacks const*,
+               IMqttLogCallbacks const*,
+               IMqttCommandCallbacks const*,
+               IMqttConnectionCallbacks const*);
     virtual ~PahoClient() noexcept;
 };
 }  // namespace i_mqtt_client
