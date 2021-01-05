@@ -50,8 +50,8 @@ private:
     virtual ReasonCode PublishAsync(upMqttMessage_t, int*) override;
     virtual bool       IsConnected(void) const noexcept override;
 
-    void       printDetailsOnSuccess(std::string const&, MQTTAsync_successData5*);
-    void       printDetailsOnFailure(std::string const&, MQTTAsync_failureData5*);
+    void       printDetailsOnSuccess(std::string const&, MQTTAsync_successData5 const*) const;
+    void       printDetailsOnFailure(std::string const&, MQTTAsync_failureData5 const*) const;
     ReasonCode pahoRcToReasonCode(int, std::string const&) const;
     int        onMessageCb(char*, int, MQTTAsync_message*) const;
 

@@ -46,7 +46,7 @@ PahoClient::PahoClient(InitializeParameters const&     parameters,
         auto logInfo{IMqttLogCallbacks::InitLogMqttLib({nullptr, LogLevelLib::NONE})};
         if (logInfo.second == LogLevelLib::NONE) {
             /*disable logs*/
-            MQTTAsync_setTraceCallback(NULL);
+            MQTTAsync_setTraceCallback(nullptr);
         }
         else {
             /*user wants to log, provide callback to Paho*/
@@ -88,14 +88,8 @@ PahoClient::PahoClient(InitializeParameters const&     parameters,
                 MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_LEVELS::MQTTASYNC_TRACE_FATAL);
                 break;
             case LogLevelLib::NONE:
-                MQTTAsync_setTraceCallback(NULL);
+                MQTTAsync_setTraceCallback(nullptr);
                 break;
-            case LogLevelLib::INFO:
-                /*fallthrough*/
-            case LogLevelLib::WARNING:
-                /*fallthrough*/
-            case LogLevelLib::ERROR:
-                /*fallthrough*/
             default:
                 MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_LEVELS::MQTTASYNC_TRACE_ERROR);
                 break;
@@ -111,7 +105,7 @@ PahoClient::PahoClient(InitializeParameters const&     parameters,
 
     auto rc{MQTTASYNC_SUCCESS};
     rc = MQTTAsync_createWithOptions(
-        &pClient, brokerAddress.c_str(), params.clientId.c_str(), MQTTCLIENT_PERSISTENCE_NONE, NULL, &createOptions);
+        &pClient, brokerAddress.c_str(), params.clientId.c_str(), MQTTCLIENT_PERSISTENCE_NONE, nullptr, &createOptions);
     if (MQTTASYNC_SUCCESS != rc) {
         throw runtime_error("Was not able to create paho client: " + string(MQTTAsync_strerror(rc)));
     }
@@ -123,10 +117,10 @@ PahoClient::PahoClient(InitializeParameters const&     parameters,
             static_cast<PahoClient*>(pThis)->conCb->OnConnectionStatusChanged(ConnectionType::DISCONNECT,
                                                                               Mqtt5ReasonCode::SUCCESS);
         },
-        [](void* pThis, char* topicName, int topicLen, MQTTAsync_message* message) -> int {
+        [](void* pThis, char* topicName, int topicLen, MQTTAsync_message* message) {
             return static_cast<PahoClient*>(pThis)->onMessageCb(topicName, topicLen, message);
         },
-        NULL);
+        nullptr);
     if (MQTTASYNC_SUCCESS != rc) {
         throw runtime_error("Was not able to set paho callbacks: " + string(MQTTAsync_strerror(rc)));
     }
@@ -159,7 +153,7 @@ PahoClient::~PahoClient() noexcept
 }
 
 void
-PahoClient::printDetailsOnSuccess(string const& details, MQTTAsync_successData5* data)
+PahoClient::printDetailsOnSuccess(string const& details, MQTTAsync_successData5 const* data) const
 {
     logCb->Log(LogLevel::DEBUG,
                details + ": okay for token: " + to_string(data->token) +
@@ -167,7 +161,7 @@ PahoClient::printDetailsOnSuccess(string const& details, MQTTAsync_successData5*
 }
 
 void
-PahoClient::printDetailsOnFailure(string const& details, MQTTAsync_failureData5* data)
+PahoClient::printDetailsOnFailure(string const& details, MQTTAsync_failureData5 const* data) const
 {
     logCb->Log(LogLevel::ERROR,
                details + ": failed for token: " + to_string(data->token) +
@@ -264,6 +258,7 @@ PahoClient::ConnectAsync(void)
             static_cast<promise<int>*>(static_cast<Context*>(pCtx)->pContext)->set_value(MQTTASYNC_SUCCESS);
         }
         catch (future_error const&) {
+            /*Nothing to be done here*/
         }
     };
     connectOptions.onFailure5 = [](void* pCtx, MQTTAsync_failureData5* data) {
@@ -273,6 +268,7 @@ PahoClient::ConnectAsync(void)
             static_cast<promise<int>*>(static_cast<Context*>(pCtx)->pContext)->set_value(data->code);
         }
         catch (future_error const&) {
+            /*Nothing to be done here*/
         }
     };
     if (!params.mqttUsername.empty()) {
@@ -447,7 +443,7 @@ PahoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
     {
         MQTTProperty prop;
         prop.identifier = MQTTPROPERTY_CODE_PAYLOAD_FORMAT_INDICATOR;
-        prop.value.byte = mqttMsg->payloadFormatIndicator == IMqttMessage::FormatIndicator::UTF8 ? 1u : 0u;
+        prop.value.byte = mqttMsg->payloadFormatIndicator == IMqttMessage::FormatIndicator::UTF8 ? 1U : 0U;
         if (MQTTASYNC_SUCCESS != MQTTProperties_add(&msg.properties, &prop)) {
             logCb->Log(LogLevel::ERROR, "Was not able to add format indicator, ignoring message");
             propertiesOkay = false;
