@@ -30,7 +30,7 @@
 using namespace std;
 
 namespace i_mqtt_client {
-atomic_uint MosquittoClient::counter{0ul};
+atomic_uint MosquittoClient::counter{0UL};
 mutex       MosquittoClient::libMutex;
 
 MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parameters,
@@ -51,27 +51,30 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
             if (MOSQ_ERR_SUCCESS != rc) {
                 throw runtime_error("Was not able to initialize mosquitto lib: " + string(mosquitto_strerror(rc)));
             }
-            int major = 0, minor = 0, patch = 0;
+            int major{0};
+            int minor{0};
+            int patch{0};
             int vers   = mosquitto_lib_version(&major, &minor, &patch);
             libVersion = "libmosquitto " + to_string(major) + "." + to_string(minor) + "." + to_string(patch) + " (" +
                          to_string(vers) + ")";
-        };
+        }
     }  // unlock mutex, from here everything is instance specific
 
     // Init instance
     logCb->Log(LogLevel::INFO, "Initializing mosquitto instance");
     logCb->Log(LogLevel::INFO, "Broker-Address: " + params.hostAddress + ":" + to_string(params.port));
-    pClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
+    pMosqClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
 
     /*This either disables logging, or gets, what the user already set*/
     if (IMqttLogCallbacks::InitLogMqttLib({nullptr, LogLevelLib::NONE}).second != LogLevelLib::NONE) {
-        mosquitto_log_callback_set(pClient, [](struct mosquitto* pClient, void* pThis, int logLevel, const char* pTxt) {
-            static_cast<MosquittoClient*>(pThis)->onLog(pClient, logLevel, pTxt);
-        });
+        mosquitto_log_callback_set(pMosqClient,
+                                   [](struct mosquitto* pClient, void* pThis, int logLevel, const char* pTxt) {
+                                       static_cast<MosquittoClient*>(pThis)->onLog(pClient, logLevel, pTxt);
+                                   });
     }
 
     if (!params.mqttUsername.empty()) {
-        rc = mosquitto_username_pw_set(pClient, params.mqttUsername.c_str(), params.mqttPassword.c_str());
+        rc = mosquitto_username_pw_set(pMosqClient, params.mqttUsername.c_str(), params.mqttPassword.c_str());
         if (MOSQ_ERR_SUCCESS != rc) {
             throw runtime_error("Was not able to set MQTT credentials: " + string(mosquitto_strerror(rc)));
         }
@@ -82,34 +85,35 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
         uniform_int_distribution<int>(params.reconnectDelayMinLower, params.reconnectDelayMinUpper)(rndGenerator)};
     logCb->Log(LogLevel::DEBUG,
                "Reconnect delay min: " + to_string(reconnMin) + "," + " max: " + to_string(params.reconnectDelayMax));
-    rc = mosquitto_reconnect_delay_set(pClient, reconnMin, params.reconnectDelayMax, params.exponentialBackoff);
+    rc = mosquitto_reconnect_delay_set(pMosqClient, reconnMin, params.reconnectDelayMax, params.exponentialBackoff);
     if (MOSQ_ERR_SUCCESS != rc) {
         throw runtime_error("Was not able to set reconnect delay: " + string(mosquitto_strerror(rc)));
     }
-    rc = mosquitto_int_option(pClient, MOSQ_OPT_PROTOCOL_VERSION, MQTT_PROTOCOL_V5);
+    rc = mosquitto_int_option(pMosqClient, MOSQ_OPT_PROTOCOL_VERSION, MQTT_PROTOCOL_V5);
     if (MOSQ_ERR_SUCCESS != rc) {
         throw runtime_error("Was not able to set MQTT version: " + string(mosquitto_strerror(rc)));
     }
     mosquitto_connect_v5_callback_set(
-        pClient, [](struct mosquitto* pClient, void* pThis, int rc, int flags, const mosquitto_property* pProps) {
+        pMosqClient, [](struct mosquitto* pClient, void* pThis, int rc, int flags, const mosquitto_property* pProps) {
             static_cast<MosquittoClient*>(pThis)->onConnectCb(pClient, rc, flags, pProps);
         });
     mosquitto_disconnect_v5_callback_set(
-        pClient, [](struct mosquitto* pClient, void* pThis, int rc, const mosquitto_property* pProps) {
+        pMosqClient, [](struct mosquitto* pClient, void* pThis, int rc, const mosquitto_property* pProps) {
             static_cast<MosquittoClient*>(pThis)->onDisconnectCb(pClient, rc, pProps);
         });
     mosquitto_publish_v5_callback_set(
-        pClient, [](struct mosquitto* pClient, void* pThis, int messageId, int rc, const mosquitto_property* pProps) {
+        pMosqClient,
+        [](struct mosquitto* pClient, void* pThis, int messageId, int rc, const mosquitto_property* pProps) {
             static_cast<MosquittoClient*>(pThis)->onPublishCb(pClient, messageId, rc, pProps);
         });
-    mosquitto_message_v5_callback_set(pClient,
+    mosquitto_message_v5_callback_set(pMosqClient,
                                       [](struct mosquitto*               pClient,
                                          void*                           pThis,
                                          const struct mosquitto_message* pMsg,
                                          const mosquitto_property*       pProps) {
                                           static_cast<MosquittoClient*>(pThis)->onMessageCb(pClient, pMsg, pProps);
                                       });
-    mosquitto_subscribe_v5_callback_set(pClient,
+    mosquitto_subscribe_v5_callback_set(pMosqClient,
                                         [](struct mosquitto*         pClient,
                                            void*                     pThis,
                                            int                       messageId,
@@ -120,11 +124,11 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
                                                 pClient, messageId, grantedQosCount, pGrantedQos, pProps);
                                         });
     mosquitto_unsubscribe_v5_callback_set(
-        pClient, [](struct mosquitto* pClient, void* pThis, int messageId, const mosquitto_property* pProps) {
+        pMosqClient, [](struct mosquitto* pClient, void* pThis, int messageId, const mosquitto_property* pProps) {
             static_cast<MosquittoClient*>(pThis)->onUnSubscribeCb(pClient, messageId, pProps);
         });
 #ifdef IMQTT_WITH_TLS
-    rc = mosquitto_tls_set(pClient,
+    rc = mosquitto_tls_set(pMosqClient,
                            params.caFilePath.empty() ? nullptr : params.caFilePath.c_str(),
                            params.caDirPath.empty() ? nullptr : params.caDirPath.c_str(),
                            params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str(),
@@ -132,7 +136,7 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
                            [](char* buf, int size, int rwflag, void* pClient) -> int {
                                if (rwflag != 0) {
                                    return static_cast<int>(static_cast<MosquittoClient*>(
-                                                               mosquitto_userdata(static_cast<mosquitto*>(pClient)))
+                                                               mosquitto_userdata(static_cast<struct mosquitto*>(pClient)))
                                                                ->params.privateKeyPassword.copy(buf, size));
                                }
                                return 0;
@@ -140,13 +144,13 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     if (MOSQ_ERR_SUCCESS != rc) {
         throw runtime_error("Was not able to set TLS settings: " + string(mosquitto_strerror(rc)));
     }
-    rc = mosquitto_tls_opts_set(pClient, SSL_VERIFY_PEER, nullptr, nullptr);
+    rc = mosquitto_tls_opts_set(pMosqClient, SSL_VERIFY_PEER, nullptr, nullptr);
     if (MOSQ_ERR_SUCCESS != rc) {
         throw runtime_error("Was not able to set TLS options: " + string(mosquitto_strerror(rc)));
     }
 #endif
     logCb->Log(LogLevel::INFO, "Starting mosquitto instance");
-    rc = mosquitto_loop_start(pClient);
+    rc = mosquitto_loop_start(pMosqClient);
     if (MOSQ_ERR_SUCCESS != rc) {
         throw runtime_error("Was not able to start mosquitto loop: " + string(mosquitto_strerror(rc)));
     }
@@ -158,8 +162,8 @@ MosquittoClient::~MosquittoClient() noexcept
     if (IsConnected()) {
         DisconnectAsync(Mqtt5ReasonCode::SUCCESS);
     }
-    mosquitto_loop_stop(pClient, false);
-    mosquitto_destroy(pClient);
+    mosquitto_loop_stop(pMosqClient, false);
+    mosquitto_destroy(pMosqClient);
     // If no users are left, clean the lib
     lock_guard<mutex> l(libMutex);
     if (counter.fetch_sub(1) == 1) {
@@ -169,7 +173,7 @@ MosquittoClient::~MosquittoClient() noexcept
 }
 
 void
-MosquittoClient::onConnectCb(struct mosquitto* pClient, int mqttRc, int flags, const mosquitto_property* pProps)
+MosquittoClient::onConnectCb(struct mosquitto const* pClient, int mqttRc, int flags, mosquitto_property const* pProps)
 {
     (void)pClient;
     (void)flags;
@@ -185,7 +189,7 @@ MosquittoClient::onConnectCb(struct mosquitto* pClient, int mqttRc, int flags, c
 }
 
 void
-MosquittoClient::onDisconnectCb(struct mosquitto* pClient, int mqttRc, const mosquitto_property* pProps)
+MosquittoClient::onDisconnectCb(struct mosquitto const* pClient, int mqttRc, mosquitto_property const* pProps)
 {
     (void)pClient;
     (void)pProps;
@@ -197,7 +201,10 @@ MosquittoClient::onDisconnectCb(struct mosquitto* pClient, int mqttRc, const mos
 }
 
 void
-MosquittoClient::onPublishCb(struct mosquitto* pClient, int messageId, int mqttRc, const mosquitto_property* pProps)
+MosquittoClient::onPublishCb(struct mosquitto const*   pClient,
+                             int                       messageId,
+                             int                       mqttRc,
+                             mosquitto_property const* pProps) const
 {
     (void)pClient;
     (void)pProps;
@@ -208,9 +215,9 @@ MosquittoClient::onPublishCb(struct mosquitto* pClient, int messageId, int mqttR
 }
 
 void
-MosquittoClient::onMessageCb(struct mosquitto*               pClient,
-                             const struct mosquitto_message* pMsg,
-                             const mosquitto_property*       pProps)
+MosquittoClient::onMessageCb(struct mosquitto const*         pClient,
+                             struct mosquitto_message const* pMsg,
+                             mosquitto_property const*       pProps) const
 {
     (void)pClient;
 
@@ -271,21 +278,21 @@ MosquittoClient::onMessageCb(struct mosquitto*               pClient,
     }
 
     {
-        uint8_t formatIndicator{0u};
+        uint8_t formatIndicator{0U};
         (void)mosquitto_property_read_byte(pProps, MQTT_PROP_PAYLOAD_FORMAT_INDICATOR, &formatIndicator, false);
         mqttMessage->payloadFormatIndicator =
-            formatIndicator == 1u ? IMqttMessage::FormatIndicator::UTF8 : IMqttMessage::FormatIndicator::UNSPECIFIED;
+            formatIndicator == 1U ? IMqttMessage::FormatIndicator::UTF8 : IMqttMessage::FormatIndicator::UNSPECIFIED;
     }
 
     msgCb->OnMqttMessage(move(mqttMessage));
 }
 
 void
-MosquittoClient::onSubscribeCb(struct mosquitto*         pClient,
+MosquittoClient::onSubscribeCb(struct mosquitto const*   pClient,
                                int                       messageId,
                                int                       grantedQosCount,
-                               const int*                pGrantedQos,
-                               const mosquitto_property* pProps)
+                               int const*                pGrantedQos,
+                               mosquitto_property const* pProps) const
 {
     (void)pClient;
     (void)pProps;
@@ -297,7 +304,7 @@ MosquittoClient::onSubscribeCb(struct mosquitto*         pClient,
 }
 
 void
-MosquittoClient::onUnSubscribeCb(struct mosquitto* pClient, int messageId, const mosquitto_property* pProps)
+MosquittoClient::onUnSubscribeCb(struct mosquitto const* pClient, int messageId, mosquitto_property const* pProps) const
 {
     (void)pClient;
     (void)pProps;
@@ -307,7 +314,7 @@ MosquittoClient::onUnSubscribeCb(struct mosquitto* pClient, int messageId, const
 }
 
 void
-MosquittoClient::onLog(struct mosquitto* pClient, int logLevel, const char* pTxt)
+MosquittoClient::onLog(struct mosquitto const* pClient, int logLevel, char const* pTxt) const
 {
     (void)pClient;
     auto logLvl{LogLevelLib::INFO};
@@ -329,8 +336,6 @@ MosquittoClient::onLog(struct mosquitto* pClient, int logLevel, const char* pTxt
         break;
     case MOSQ_LOG_NOTICE:
         /*fallthrough*/
-    case MOSQ_LOG_INFO:
-        /*fallthrough*/
     default:
         break;
     }
@@ -342,7 +347,7 @@ MosquittoClient::ConnectAsync(void)
 {
     logCb->Log(LogLevel::INFO, "Connecting to broker async: " + params.hostAddress + ":" + to_string(params.port));
     return mosqRcToReasonCode(
-        mosquitto_connect_async(pClient, params.hostAddress.c_str(), params.port, params.keepAliveInterval),
+        mosquitto_connect_async(pMosqClient, params.hostAddress.c_str(), params.port, params.keepAliveInterval),
         "mosquitto_connect_async");
 }
 
@@ -350,7 +355,8 @@ ReasonCode
 MosquittoClient::DisconnectAsync(Mqtt5ReasonCode rc)
 {
     logCb->Log(LogLevel::INFO, "Disconnecting from broker");
-    return mosqRcToReasonCode(mosquitto_disconnect_v5(pClient, static_cast<int>(rc), NULL), "mosquitto_disconnect_v5");
+    return mosqRcToReasonCode(mosquitto_disconnect_v5(pMosqClient, static_cast<int>(rc), nullptr),
+                              "mosquitto_disconnect_v5");
 }
 
 ReasonCode
@@ -360,12 +366,12 @@ MosquittoClient::SubscribeAsync(string const& topic, IMqttMessage::QOS qos, int*
     int options{0};
     if (!params.allowLocalTopics) {
         options |= mqtt5_sub_options::MQTT_SUB_OPT_NO_LOCAL;
-    };
+    }
     if (getRetained == false) {
         options |= mqtt5_sub_options::MQTT_SUB_OPT_SEND_RETAIN_NEVER;
     }
     return mosqRcToReasonCode(
-        mosquitto_subscribe_v5(pClient, token, topic.c_str(), static_cast<int>(qos), options, NULL),
+        mosquitto_subscribe_v5(pMosqClient, token, topic.c_str(), static_cast<int>(qos), options, nullptr),
         "mosquitto_subscribe_v5");
 }
 
@@ -373,7 +379,7 @@ ReasonCode
 MosquittoClient::UnSubscribeAsync(string const& topic, int* token)
 {
     logCb->Log(LogLevel::DEBUG, "Unsubscribing from topic: \"" + topic + "\"");
-    return mosqRcToReasonCode(mosquitto_unsubscribe_v5(pClient, token, topic.c_str(), NULL),
+    return mosqRcToReasonCode(mosquitto_unsubscribe_v5(pMosqClient, token, topic.c_str(), nullptr),
                               "mosquitto_unsubscribe_v5");
 }
 
@@ -394,10 +400,11 @@ MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
         }
     }
 
-    if (MOSQ_ERR_SUCCESS != mosquitto_property_add_binary(&pProps,
-                                                          MQTT_PROP_CORRELATION_DATA,
-                                                          mqttMsg->correlationDataProps.data(),
-                                                          mqttMsg->correlationDataProps.size())) {
+    if (MOSQ_ERR_SUCCESS !=
+        mosquitto_property_add_binary(&pProps,
+                                      MQTT_PROP_CORRELATION_DATA,
+                                      mqttMsg->correlationDataProps.data(),
+                                      static_cast<uint16_t>(mqttMsg->correlationDataProps.size()))) {
         logCb->Log(LogLevel::ERROR, "Invalid MQTT correlation data property - ignoring message");
         propertiesOkay = false;
     }
@@ -424,10 +431,10 @@ MosquittoClient::PublishAsync(upMqttMessage_t mqttMsg, int* token)
 
     auto status{ReasonCode::ERROR_GENERAL};
     if (propertiesOkay) {
-        status = mosqRcToReasonCode(mosquitto_publish_v5(pClient,
+        status = mosqRcToReasonCode(mosquitto_publish_v5(pMosqClient,
                                                          token,
                                                          mqttMsg->topic.c_str(),
-                                                         mqttMsg->payload.size(),
+                                                         static_cast<uint16_t>(mqttMsg->payload.size()),
                                                          mqttMsg->payload.data(),
                                                          static_cast<int>(mqttMsg->qos),
                                                          mqttMsg->retain,

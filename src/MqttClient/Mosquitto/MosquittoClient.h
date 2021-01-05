@@ -33,24 +33,24 @@ private:
     static std::mutex       libMutex;
 
     std::atomic_bool                  connected{false};
-    mosquitto*                        pClient{nullptr};
+    mosquitto*                        pMosqClient{nullptr};
     IMqttClient::InitializeParameters params;
 
-    void       onConnectCb(struct mosquitto*, int, int, const mosquitto_property* props);
-    void       onDisconnectCb(struct mosquitto*, int, const mosquitto_property*);
-    void       onPublishCb(struct mosquitto*, int, int, const mosquitto_property*);
-    void       onMessageCb(struct mosquitto*, const struct mosquitto_message*, const mosquitto_property*);
-    void       onSubscribeCb(struct mosquitto*, int, int, const int*, const mosquitto_property*);
-    void       onUnSubscribeCb(struct mosquitto*, int, const mosquitto_property*);
-    void       onLog(struct mosquitto*, int, const char*);
+    void       onConnectCb(struct mosquitto const*, int, int, mosquitto_property const*);
+    void       onDisconnectCb(struct mosquitto const*, int, mosquitto_property const*);
+    void       onPublishCb(struct mosquitto const*, int, int, mosquitto_property const*) const;
+    void       onMessageCb(struct mosquitto const*, struct mosquitto_message const*, mosquitto_property const*) const;
+    void       onSubscribeCb(struct mosquitto const*, int, int, int const*, mosquitto_property const*) const;
+    void       onUnSubscribeCb(struct mosquitto const*, int, mosquitto_property const*) const;
+    void       onLog(struct mosquitto const*, int, char const*) const;
     ReasonCode mosqRcToReasonCode(int, std::string const&) const;
 
-    virtual ReasonCode  ConnectAsync(void) override;
-    virtual ReasonCode  DisconnectAsync(Mqtt5ReasonCode) override;
-    virtual ReasonCode  SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
-    virtual ReasonCode  UnSubscribeAsync(std::string const&, int*) override;
-    virtual ReasonCode  PublishAsync(upMqttMessage_t, int*) override;
-    virtual bool        IsConnected(void) const noexcept override;
+    ReasonCode ConnectAsync(void) override;
+    ReasonCode DisconnectAsync(Mqtt5ReasonCode) override;
+    ReasonCode SubscribeAsync(std::string const&, IMqttMessage::QOS, int*, bool) override;
+    ReasonCode UnSubscribeAsync(std::string const&, int*) override;
+    ReasonCode PublishAsync(upMqttMessage_t, int*) override;
+    bool       IsConnected(void) const noexcept override;
 
 public:
     MosquittoClient(IMqttClient::InitializeParameters const&,

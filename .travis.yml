@@ -3,26 +3,41 @@ sudo: false
 addons:
   sonarcloud:
     organization: "tiolan"
+  apt:
+    packages:
+      - graphviz
+      - doxygen
 
 language: cpp
 
-script:
-  # Prepare the build system
-  - mkdir build
-  - cd build
-  - cmake -DIMQTT_USE_MOSQ:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=OFF -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=OFF -DBUILD_SHARED_LIBS=OFF ..
-  - cd ..
-  - NUMBER_OF_PROCESSORS=$(nproc --all)
-  # Wraps the compilation with the Build Wrapper to generate configuration (used
-  # later by the SonarQube Scanner) into the "bw-output" folder
-  - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/ -j ${NUMBER_OF_PROCESSORS}
-  # And finally run the SonarQube analysis - read the "sonar-project.properties"
-  # file to see the specific configuration
-  - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
+jobs:
+  include:
+  - stage: pahoSonar
+    name: "Use Paho with Sonar Scan"
+    script:
+    - NUMBER_OF_PROCESSORS=$(nproc --all)
+    - mkdir build
+    - cd build
+    #-S and -B do not seem to work in this cmake version
+    #TODO: check why install did not work
+    - cmake -DIMQTT_USE_PAHO:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=ON -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=ON -DBUILD_SHARED_LIBS=OFF ..
+    - cd ..
+    - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/ -j ${NUMBER_OF_PROCESSORS}
+    - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
+  - stage: mosqSonar
+    name: "Use Mosquitto with Sonar Scan"
+    script:
+    - NUMBER_OF_PROCESSORS=$(nproc --all)
+    - mkdir build
+    - cd build
+    #-S and -B do not seem to work in this cmake version
+    #TODO: check why install did not work
+    - cmake -DIMQTT_USE_MOSQ:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=ON -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=ON -DBUILD_SHARED_LIBS=OFF ..
+    - cd ..
+    - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/ -j ${NUMBER_OF_PROCESSORS}
+    - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
 
 cache:
   directories:
     - $HOME/.sonar/cache
-    # This contains the CFamily cache. According to https://docs.travis-ci.com/user/caching/#pull-request-builds-and-caches,
-    # for a PR, it will use the cache of the target branch if the branch of the PR does not already have its cache.
     - $HOME/.cfamily

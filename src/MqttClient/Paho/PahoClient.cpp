@@ -263,7 +263,7 @@ PahoClient::ConnectAsync(void)
         try {
             static_cast<promise<int>*>(static_cast<Context*>(pCtx)->pContext)->set_value(MQTTASYNC_SUCCESS);
         }
-        catch (const future_error) {
+        catch (future_error const&) {
         }
     };
     connectOptions.onFailure5 = [](void* pCtx, MQTTAsync_failureData5* data) {
@@ -272,7 +272,7 @@ PahoClient::ConnectAsync(void)
         try {
             static_cast<promise<int>*>(static_cast<Context*>(pCtx)->pContext)->set_value(data->code);
         }
-        catch (const future_error) {
+        catch (future_error const&) {
         }
     };
     if (!params.mqttUsername.empty()) {
