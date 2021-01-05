@@ -21,7 +21,7 @@ jobs:
         #-S and -B do not seem to work in this cmake version
         #TODO: check why install did not work
         - cmake -DIMQTT_USE_PAHO:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=ON -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=ON -DBUILD_SHARED_LIBS=OFF ..
-        - cmake --build build -j ${NUMBER_OF_PROCESSORS}
+        - cmake --build . -j ${NUMBER_OF_PROCESSORS}
     - stage: Mosquitto
       name: "Build with Mosquitto"
       script:
@@ -31,7 +31,7 @@ jobs:
         #-S and -B do not seem to work in this cmake version
         #TODO: check why install did not work
         - cmake -DIMQTT_USE_MOSQ:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=ON -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=ON -DBUILD_SHARED_LIBS=OFF ..
-        - cmake --build build -j ${NUMBER_OF_PROCESSORS}
+        - cmake --build . -j ${NUMBER_OF_PROCESSORS}
     - stage: Sonarscan
       name: "Perform Sonarscan"
       script:
