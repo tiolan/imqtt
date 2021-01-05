@@ -94,17 +94,18 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
         throw runtime_error("Was not able to set MQTT version: " + string(mosquitto_strerror(rc)));
     }
     mosquitto_connect_v5_callback_set(
-        pMosqClient, [](struct mosquitto* pClient, void* pThis, int rc, int flags, const mosquitto_property* pProps) {
-            static_cast<MosquittoClient*>(pThis)->onConnectCb(pClient, rc, flags, pProps);
+        pMosqClient,
+        [](struct mosquitto* pClient, void* pThis, int mqttRc, int flags, const mosquitto_property* pProps) {
+            static_cast<MosquittoClient*>(pThis)->onConnectCb(pClient, mqttRc, flags, pProps);
         });
     mosquitto_disconnect_v5_callback_set(
-        pMosqClient, [](struct mosquitto* pClient, void* pThis, int rc, const mosquitto_property* pProps) {
-            static_cast<MosquittoClient*>(pThis)->onDisconnectCb(pClient, rc, pProps);
+        pMosqClient, [](struct mosquitto* pClient, void* pThis, int mqttRc, const mosquitto_property* pProps) {
+            static_cast<MosquittoClient*>(pThis)->onDisconnectCb(pClient, mqttRc, pProps);
         });
     mosquitto_publish_v5_callback_set(
         pMosqClient,
-        [](struct mosquitto* pClient, void* pThis, int messageId, int rc, const mosquitto_property* pProps) {
-            static_cast<MosquittoClient*>(pThis)->onPublishCb(pClient, messageId, rc, pProps);
+        [](struct mosquitto* pClient, void* pThis, int messageId, int mqttRc, const mosquitto_property* pProps) {
+            static_cast<MosquittoClient*>(pThis)->onPublishCb(pClient, messageId, mqttRc, pProps);
         });
     mosquitto_message_v5_callback_set(pMosqClient,
                                       [](struct mosquitto*               pClient,
@@ -128,19 +129,20 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
             static_cast<MosquittoClient*>(pThis)->onUnSubscribeCb(pClient, messageId, pProps);
         });
 #ifdef IMQTT_WITH_TLS
-    rc = mosquitto_tls_set(pMosqClient,
-                           params.caFilePath.empty() ? nullptr : params.caFilePath.c_str(),
-                           params.caDirPath.empty() ? nullptr : params.caDirPath.c_str(),
-                           params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str(),
-                           params.privateKeyFilePath.empty() ? nullptr : params.privateKeyFilePath.c_str(),
-                           [](char* buf, int size, int rwflag, void* pClient) -> int {
-                               if (rwflag != 0) {
-                                   return static_cast<int>(static_cast<MosquittoClient*>(
-                                                               mosquitto_userdata(static_cast<struct mosquitto*>(pClient)))
-                                                               ->params.privateKeyPassword.copy(buf, size));
-                               }
-                               return 0;
-                           });
+    rc = mosquitto_tls_set(
+        pMosqClient,
+        params.caFilePath.empty() ? nullptr : params.caFilePath.c_str(),
+        params.caDirPath.empty() ? nullptr : params.caDirPath.c_str(),
+        params.clientCertFilePath.empty() ? nullptr : params.clientCertFilePath.c_str(),
+        params.privateKeyFilePath.empty() ? nullptr : params.privateKeyFilePath.c_str(),
+        [](char* buf, int size, int rwflag, void* pClient) -> int {
+            if (rwflag != 0) {
+                return static_cast<int>(
+                    static_cast<MosquittoClient*>(mosquitto_userdata(static_cast<struct mosquitto*>(pClient)))
+                        ->params.privateKeyPassword.copy(buf, size));
+            }
+            return 0;
+        });
     if (MOSQ_ERR_SUCCESS != rc) {
         throw runtime_error("Was not able to set TLS settings: " + string(mosquitto_strerror(rc)));
     }

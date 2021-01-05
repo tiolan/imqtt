@@ -9,6 +9,7 @@ The (not yet) complete API Reference can be found here: https://tiolan.github.io
 
 # Status
 [![Build Status](https://www.travis-ci.com/tiolan/imqtt.svg?branch=master)](https://www.travis-ci.com/tiolan/imqtt)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tiolan_imqtt&metric=alert_status)](https://sonarcloud.io/dashboard?id=tiolan_imqtt)
 
 # Maturity
 IMqtt is in development.

@@ -12,30 +12,31 @@ language: cpp
 
 jobs:
   include:
-  - stage: pahoSonar
-    name: "Use Paho with Sonar Scan"
-    script:
-    - NUMBER_OF_PROCESSORS=$(nproc --all)
-    - mkdir build
-    - cd build
-    #-S and -B do not seem to work in this cmake version
-    #TODO: check why install did not work
-    - cmake -DIMQTT_USE_PAHO:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=ON -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=ON -DBUILD_SHARED_LIBS=OFF ..
-    - cd ..
-    - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/ -j ${NUMBER_OF_PROCESSORS}
-    - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
-  - stage: mosqSonar
-    name: "Use Mosquitto with Sonar Scan"
-    script:
-    - NUMBER_OF_PROCESSORS=$(nproc --all)
-    - mkdir build
-    - cd build
-    #-S and -B do not seem to work in this cmake version
-    #TODO: check why install did not work
-    - cmake -DIMQTT_USE_MOSQ:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=ON -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=ON -DBUILD_SHARED_LIBS=OFF ..
-    - cd ..
-    - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/ -j ${NUMBER_OF_PROCESSORS}
-    - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
+    - stage: Paho
+      name: "Build with Paho"
+      script:
+        - NUMBER_OF_PROCESSORS=$(nproc --all)
+        - mkdir build
+        - cd build
+        #-S and -B do not seem to work in this cmake version
+        #TODO: check why install did not work
+        - cmake -DIMQTT_USE_PAHO:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=ON -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=ON -DBUILD_SHARED_LIBS=OFF ..
+        - cmake --build build -j ${NUMBER_OF_PROCESSORS}
+    - stage: Mosquitto
+      name: "Build with Mosquitto"
+      script:
+        - NUMBER_OF_PROCESSORS=$(nproc --all)
+        - mkdir build
+        - cd build
+        #-S and -B do not seem to work in this cmake version
+        #TODO: check why install did not work
+        - cmake -DIMQTT_USE_MOSQ:BOOL=ON -DIMQTT_BUILD_SAMPLE:BOOL=ON -DIMQTT_INSTALL:BOOL=OFF -DIMQTT_BUILD_DOC:BOOL=ON -DBUILD_SHARED_LIBS=OFF ..
+        - cmake --build build -j ${NUMBER_OF_PROCESSORS}
+    - stage: Sonarscan
+      name: "Perform Sonarscan"
+      script:
+        - build-wrapper-linux-x86-64 --out-dir bw-output bash ./scripts/SonarBuildWrapper.sh
+        - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
 
 cache:
   directories:
