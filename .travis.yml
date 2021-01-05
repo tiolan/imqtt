@@ -35,6 +35,7 @@ jobs:
     - stage: Sonarscan
       name: "Perform Sonarscan"
       script:
+        - NUMBER_OF_PROCESSORS=$(nproc --all)
         - build-wrapper-linux-x86-64 --out-dir bw-output bash ./scripts/SonarBuildWrapper.sh
         - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
 
