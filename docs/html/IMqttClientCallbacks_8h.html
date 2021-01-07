@@ -90,7 +90,7 @@ Include dependency graph for IMqttClientCallbacks.h:</div>
 <area shape="rect" title=" " alt="" coords="429,169,507,196"/>
 <area shape="rect" title=" " alt="" coords="531,169,618,196"/>
 <area shape="rect" title=" " alt="" coords="163,169,226,196"/>
-<area shape="rect" href="IMqttClientDefines_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="251,169,405,196"/>
+<area shape="rect" href="IMqttClientDefines_8h.html" title="Constant defines and textual representations." alt="" coords="251,169,405,196"/>
 <area shape="rect" title=" " alt="" coords="235,244,322,271"/>
 <area shape="rect" title=" " alt="" coords="347,244,405,271"/>
 </map>
@@ -118,14 +118,19 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">i_mqtt_client::IMqttLogCallbacks</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the abstract callback interface for an MqttClient to provide logs to the user. Inherit from this class in order to obtain logs from the IMqtt implementation.  <a href="classi__mqtt__client_1_1IMqttLogCallbacks.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">i_mqtt_client::IMqttConnectionCallbacks</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the abstract callback interface that is used in order to provide information about connection status changes to the user. Inherit from this class in order to provide callbacks to the IMqtt implementation.  <a href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">i_mqtt_client::IMqttMessageCallbacks</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the abstract interface that is used in order to provides MQTT messages received by the underlying MQTT libary to the user. Inherit from this class in order to provide a callback method.  <a href="classi__mqtt__client_1_1IMqttMessageCallbacks.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">i_mqtt_client::IMqttCommandCallbacks</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the abstract interface that is used in order to handover information about command such as Publish, Subscribe and Unsubscribe to the user. Inherit from this class in order to provide a callback method.  <a href="classi__mqtt__client_1_1IMqttCommandCallbacks.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttClientCallbacks.html">i_mqtt_client::IMqttClientCallbacks</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In case the user wants one class to inherit from each callback class, this wrapper allows to inherit all of them combined in one class. It does not provide any functionality.  <a href="classi__mqtt__client_1_1IMqttClientCallbacks.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

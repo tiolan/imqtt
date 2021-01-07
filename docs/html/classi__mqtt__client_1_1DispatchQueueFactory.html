@@ -73,13 +73,67 @@ $(function() {
 <div class="title">i_mqtt_client::DispatchQueueFactory Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Used to instantiate a <a class="el" href="classi__mqtt__client_1_1DispatchQueue.html">DispatchQueue</a> object behind an <a class="el" href="classi__mqtt__client_1_1IDispatchQueue.html" title="MQTT library implementations usually rely on callbacks, that are invoked by the MQTT library to hando...">IDispatchQueue</a> interface.  
+ <a href="classi__mqtt__client_1_1DispatchQueueFactory.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="IDispatchQueue_8h_source.html">IDispatchQueue.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a50dcc3d0d4d37df2d0198d0512331399"><td class="memItemLeft" align="right" valign="top"><a id="a50dcc3d0d4d37df2d0198d0512331399"></a>
-static std::unique_ptr&lt; <a class="el" href="classi__mqtt__client_1_1IDispatchQueue.html">IDispatchQueue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Create</b> (<a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const *, <a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const &amp;)</td></tr>
-<tr class="separator:a50dcc3d0d4d37df2d0198d0512331399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2df895e4c6f0f2c911f54d8f47a18f8"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classi__mqtt__client_1_1IDispatchQueue.html">IDispatchQueue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1DispatchQueueFactory.html#ae2df895e4c6f0f2c911f54d8f47a18f8">Create</a> (<a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const *log, <a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const &amp;msg)</td></tr>
+<tr class="memdesc:ae2df895e4c6f0f2c911f54d8f47a18f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a <a class="el" href="classi__mqtt__client_1_1DispatchQueue.html">DispatchQueue</a> object behind an <a class="el" href="classi__mqtt__client_1_1IDispatchQueue.html" title="MQTT library implementations usually rely on callbacks, that are invoked by the MQTT library to hando...">IDispatchQueue</a> interface. The user is responsible for object lifetime management.  <a href="classi__mqtt__client_1_1DispatchQueueFactory.html#ae2df895e4c6f0f2c911f54d8f47a18f8">More...</a><br /></td></tr>
+<tr class="separator:ae2df895e4c6f0f2c911f54d8f47a18f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Used to instantiate a <a class="el" href="classi__mqtt__client_1_1DispatchQueue.html">DispatchQueue</a> object behind an <a class="el" href="classi__mqtt__client_1_1IDispatchQueue.html" title="MQTT library implementations usually rely on callbacks, that are invoked by the MQTT library to hando...">IDispatchQueue</a> interface. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae2df895e4c6f0f2c911f54d8f47a18f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2df895e4c6f0f2c911f54d8f47a18f8">&#9670;&nbsp;</a></span>Create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unique_ptr&lt; <a class="el" href="classi__mqtt__client_1_1IDispatchQueue.html">IDispatchQueue</a> &gt; i_mqtt_client::DispatchQueueFactory::Create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const *&#160;</td>
+          <td class="paramname"><em>log</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const &amp;&#160;</td>
+          <td class="paramname"><em>msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generates a <a class="el" href="classi__mqtt__client_1_1DispatchQueue.html">DispatchQueue</a> object behind an <a class="el" href="classi__mqtt__client_1_1IDispatchQueue.html" title="MQTT library implementations usually rely on callbacks, that are invoked by the MQTT library to hando...">IDispatchQueue</a> interface. The user is responsible for object lifetime management. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">log</td><td>reference to an object providing a log callback </td></tr>
+    <tr><td class="paramname">msg</td><td>reference to an object providig a message callback in order to deliver messages to the user </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>unique pointer to a <a class="el" href="classi__mqtt__client_1_1DispatchQueue.html">DispatchQueue</a> hidden behind an <a class="el" href="classi__mqtt__client_1_1IDispatchQueue.html" title="MQTT library implementations usually rely on callbacks, that are invoked by the MQTT library to hando...">IDispatchQueue</a> interface </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/MqttClient/Interface/<a class="el" href="IDispatchQueue_8h_source.html">IDispatchQueue.h</a></li>
 <li>src/MqttClient/<a class="el" href="DispatchQueue_8cpp.html">DispatchQueue.cpp</a></li>

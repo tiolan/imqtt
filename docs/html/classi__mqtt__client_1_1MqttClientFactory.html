@@ -73,13 +73,87 @@ $(function() {
 <div class="title">i_mqtt_client::MqttClientFactory Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Used to instantiate an MqttClient object behind an <a class="el" href="classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation....">IMqttClient</a> interface.  
+ <a href="classi__mqtt__client_1_1MqttClientFactory.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="IMqttClient_8h_source.html">IMqttClient.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a0141947b603378c5091e30bdd905466f"><td class="memItemLeft" align="right" valign="top"><a id="a0141947b603378c5091e30bdd905466f"></a>
-static std::unique_ptr&lt; <a class="el" href="classi__mqtt__client_1_1IMqttClient.html">IMqttClient</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Create</b> (<a class="el" href="structi__mqtt__client_1_1IMqttClient_1_1InitializeParameters.html">IMqttClient::InitializeParameters</a> const &amp;, <a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const *msg, <a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const *log=nullptr, <a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> const *cmd=nullptr, <a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> const *con=nullptr)</td></tr>
+<tr class="memitem:a0141947b603378c5091e30bdd905466f"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classi__mqtt__client_1_1IMqttClient.html">IMqttClient</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1MqttClientFactory.html#a0141947b603378c5091e30bdd905466f">Create</a> (<a class="el" href="structi__mqtt__client_1_1IMqttClient_1_1InitializeParameters.html">IMqttClient::InitializeParameters</a> const &amp;, <a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const *msg, <a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const *log=nullptr, <a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> const *cmd=nullptr, <a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> const *con=nullptr)</td></tr>
+<tr class="memdesc:a0141947b603378c5091e30bdd905466f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates an MqttClient object behind an <a class="el" href="classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation....">IMqttClient</a> interface. The user is responsible for object lifetime management.  <a href="classi__mqtt__client_1_1MqttClientFactory.html#a0141947b603378c5091e30bdd905466f">More...</a><br /></td></tr>
 <tr class="separator:a0141947b603378c5091e30bdd905466f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Used to instantiate an MqttClient object behind an <a class="el" href="classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation....">IMqttClient</a> interface. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a0141947b603378c5091e30bdd905466f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0141947b603378c5091e30bdd905466f">&#9670;&nbsp;</a></span>Create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unique_ptr&lt; <a class="el" href="classi__mqtt__client_1_1IMqttClient.html">IMqttClient</a> &gt; i_mqtt_client::MqttClientFactory::Create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structi__mqtt__client_1_1IMqttClient_1_1InitializeParameters.html">IMqttClient::InitializeParameters</a> const &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classi__mqtt__client_1_1IMqttMessageCallbacks.html">IMqttMessageCallbacks</a> const *&#160;</td>
+          <td class="paramname"><em>msg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html">IMqttLogCallbacks</a> const *&#160;</td>
+          <td class="paramname"><em>log</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html">IMqttCommandCallbacks</a> const *&#160;</td>
+          <td class="paramname"><em>cmd</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html">IMqttConnectionCallbacks</a> const *&#160;</td>
+          <td class="paramname"><em>con</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generates an MqttClient object behind an <a class="el" href="classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation....">IMqttClient</a> interface. The user is responsible for object lifetime management. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">msg</td><td>pointer to an object providing a message callback </td></tr>
+    <tr><td class="paramname">log</td><td>pointer to an object providing a log callback for the IMqtt implementation, may be nullptr if not needed </td></tr>
+    <tr><td class="paramname">cmd</td><td>pointer to an object providing a command callback for the IMqtt implementation, may be nullptr if not needed </td></tr>
+    <tr><td class="paramname">con</td><td>pointer to an object providing a connection status callback for the IMqtt implementation, may be nullptr if not needed </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>unique pointer to an MqttClient object hidden by an abstract <a class="el" href="classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation....">IMqttClient</a> interface </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/MqttClient/Interface/<a class="el" href="IMqttClient_8h_source.html">IMqttClient.h</a></li>
 <li>src/MqttClient/Mosquitto/<a class="el" href="MosquittoClient_8cpp.html">MosquittoClient.cpp</a></li>

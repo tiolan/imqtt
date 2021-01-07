@@ -74,7 +74,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Abstract interface definition for an MqttClient.  
+<p>Constant defines and textual representations.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;limits&gt;</code><br />
@@ -83,7 +83,7 @@ Include dependency graph for IMqttClientDefines.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="IMqttClientDefines_8h__incl.png" border="0" usemap="#src_2MqttClient_2Interface_2IMqttClientDefines_8h" alt=""/></div>
 <map name="src_2MqttClient_2Interface_2IMqttClientDefines_8h" id="src_2MqttClient_2Interface_2IMqttClientDefines_8h">
-<area shape="rect" title="Abstract interface definition for an MqttClient." alt="" coords="9,5,184,47"/>
+<area shape="rect" title="Constant defines and textual representations." alt="" coords="9,5,184,47"/>
 <area shape="rect" title=" " alt="" coords="5,95,92,121"/>
 <area shape="rect" title=" " alt="" coords="117,95,175,121"/>
 </map>
@@ -93,7 +93,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="IMqttClientDefines_8h__dep__incl.png" border="0" usemap="#src_2MqttClient_2Interface_2IMqttClientDefines_8hdep" alt=""/></div>
 <map name="src_2MqttClient_2Interface_2IMqttClientDefines_8hdep" id="src_2MqttClient_2Interface_2IMqttClientDefines_8hdep">
-<area shape="rect" title="Abstract interface definition for an MqttClient." alt="" coords="263,5,438,47"/>
+<area shape="rect" title="Constant defines and textual representations." alt="" coords="263,5,438,47"/>
 <area shape="rect" href="IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="263,95,438,136"/>
 <area shape="rect" href="DispatchQueue_8h.html" title="Class definition for DispatchQueue." alt="" coords="13,370,241,397"/>
 <area shape="rect" href="IMqttClientCallbacks_8h.html" title="Callback definitions for an abstract MqttClient." alt="" coords="263,184,438,225"/>
@@ -141,16 +141,16 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>i_mqtt_client::Mqtt5
 <tr class="memitem:ae5cb4539bb1f25ff36a6979de77f87fb"><td class="memItemLeft" align="right" valign="top"><a id="ae5cb4539bb1f25ff36a6979de77f87fb"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>i_mqtt_client::Mqtt5ReasonCodeRepr_t</b> = const std::pair&lt; Mqtt5ReasonCodeStringShort_t, Mqtt5ReasonCodeStringLong_t &gt;</td></tr>
 <tr class="separator:ae5cb4539bb1f25ff36a6979de77f87fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a394ee8cd2bd3395b58552abe343b22c2"><td class="memItemLeft" align="right" valign="top"><a id="a394ee8cd2bd3395b58552abe343b22c2"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>i_mqtt_client::MmqttLibLogCb_t</b> = std::function&lt; void(LogLevelLib, std::string const  &amp;)&gt;</td></tr>
+<tr class="memitem:a394ee8cd2bd3395b58552abe343b22c2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMqttClientDefines_8h.html#a394ee8cd2bd3395b58552abe343b22c2">i_mqtt_client::MmqttLibLogCb_t</a> = std::function&lt; void(LogLevelLib, std::string const  &amp;)&gt;</td></tr>
+<tr class="memdesc:a394ee8cd2bd3395b58552abe343b22c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">A callback that is invoked for handing over logs from the underlying MQTT library to the user. May be set to nullptr in order to disable logging.  <a href="IMqttClientDefines_8h.html#a394ee8cd2bd3395b58552abe343b22c2">More...</a><br /></td></tr>
 <tr class="separator:a394ee8cd2bd3395b58552abe343b22c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0023e1f8b78e4743b44013708ca4998"><td class="memItemLeft" align="right" valign="top"><a id="af0023e1f8b78e4743b44013708ca4998"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>i_mqtt_client::MqttLogInit_t</b> = std::pair&lt; MmqttLibLogCb_t, LogLevelLib &gt;</td></tr>
+<tr class="memitem:af0023e1f8b78e4743b44013708ca4998"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMqttClientDefines_8h.html#af0023e1f8b78e4743b44013708ca4998">i_mqtt_client::MqttLogInit_t</a> = std::pair&lt; MmqttLibLogCb_t, LogLevelLib &gt;</td></tr>
+<tr class="memdesc:af0023e1f8b78e4743b44013708ca4998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pair containing the callback function for logs from the underlying MQTT library and the minimum log level.  <a href="IMqttClientDefines_8h.html#af0023e1f8b78e4743b44013708ca4998">More...</a><br /></td></tr>
 <tr class="separator:af0023e1f8b78e4743b44013708ca4998"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a283f0e2bf22b17edcd682089c4fc5d1c"><td class="memItemLeft" align="right" valign="top"><a id="a283f0e2bf22b17edcd682089c4fc5d1c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ReasonCode</b> { <br />
+<tr class="memitem:a283f0e2bf22b17edcd682089c4fc5d1c"><td class="memItemLeft" align="right" valign="top"><a id="a283f0e2bf22b17edcd682089c4fc5d1c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMqttClientDefines_8h.html#a283f0e2bf22b17edcd682089c4fc5d1c">i_mqtt_client::ReasonCode</a> { <br />
 &#160;&#160;<b>OKAY</b>, 
 <b>ERROR_GENERAL</b>, 
 <b>ERROR_NO_CONNECTION</b>, 
@@ -159,8 +159,9 @@ Enumerations</h2></td></tr>
 &#160;&#160;<b>NOT_ALLOWED</b>
 <br />
  }</td></tr>
+<tr class="memdesc:a283f0e2bf22b17edcd682089c4fc5d1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents error codes, used for feedback to IMqttClient calls. <br /></td></tr>
 <tr class="separator:a283f0e2bf22b17edcd682089c4fc5d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2726620002e53f50514c0246d7b640f7"><td class="memItemLeft" align="right" valign="top"><a id="a2726620002e53f50514c0246d7b640f7"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>MqttReasonCode</b> : int { <br />
+<tr class="memitem:a2726620002e53f50514c0246d7b640f7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMqttClientDefines_8h.html#a2726620002e53f50514c0246d7b640f7">i_mqtt_client::MqttReasonCode</a> : int { <br />
 &#160;&#160;<b>ACCEPTED</b> = 0x0, 
 <b>UNACCEPTABLE_PROTOCOL_VERSION</b> = 0x1, 
 <b>IDENTIFIER_REJECTED</b> = 0x2, 
@@ -170,8 +171,9 @@ Enumerations</h2></td></tr>
 <b>NOT_AUTHORIZED</b> = 0x5
 <br />
  }</td></tr>
+<tr class="memdesc:a2726620002e53f50514c0246d7b640f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents MQTTv3 ReasonCodes retunred by the library.  <a href="IMqttClientDefines_8h.html#a2726620002e53f50514c0246d7b640f7">More...</a><br /></td></tr>
 <tr class="separator:a2726620002e53f50514c0246d7b640f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac70226ba557048a656e14509656db3a"><td class="memItemLeft" align="right" valign="top"><a id="aac70226ba557048a656e14509656db3a"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Mqtt5ReasonCode</b> : int { <br />
+<tr class="memitem:aac70226ba557048a656e14509656db3a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMqttClientDefines_8h.html#aac70226ba557048a656e14509656db3a">i_mqtt_client::Mqtt5ReasonCode</a> : int { <br />
 &#160;&#160;<b>SUCCESS</b> = 0x0, 
 <b>GRANTED_QOS_1</b> = 0x01, 
 <b>GRANTED_QOS_2</b> = 0x02, 
@@ -227,8 +229,9 @@ Enumerations</h2></td></tr>
 <b>WILDCARD_SUBSCRIPTIONS_NOT_SUPPORTED</b> = 0xA2
 <br />
  }</td></tr>
+<tr class="memdesc:aac70226ba557048a656e14509656db3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents MQTTv5 ReasonCodes returned by the broker.  <a href="IMqttClientDefines_8h.html#aac70226ba557048a656e14509656db3a">More...</a><br /></td></tr>
 <tr class="separator:aac70226ba557048a656e14509656db3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57e62a786673e797a5b7fe0b2c96cca6"><td class="memItemLeft" align="right" valign="top"><a id="a57e62a786673e797a5b7fe0b2c96cca6"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>LogLevel</b> : int { <br />
+<tr class="memitem:a57e62a786673e797a5b7fe0b2c96cca6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMqttClientDefines_8h.html#a57e62a786673e797a5b7fe0b2c96cca6">i_mqtt_client::LogLevel</a> : int { <br />
 &#160;&#160;<b>TRACE</b> = 1, 
 <b>DEBUG</b> = 2, 
 <b>INFO</b> = 3, 
@@ -238,8 +241,9 @@ Enumerations</h2></td></tr>
 <b>FATAL</b> = 6
 <br />
  }</td></tr>
+<tr class="memdesc:a57e62a786673e797a5b7fe0b2c96cca6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents log levels for messages from the IMqttClient implementation.  <a href="IMqttClientDefines_8h.html#a57e62a786673e797a5b7fe0b2c96cca6">More...</a><br /></td></tr>
 <tr class="separator:a57e62a786673e797a5b7fe0b2c96cca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a029d7b425fed2d66d94c1b033d3267a6"><td class="memItemLeft" align="right" valign="top"><a id="a029d7b425fed2d66d94c1b033d3267a6"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>LogLevelLib</b> : int { <br />
+<tr class="memitem:a029d7b425fed2d66d94c1b033d3267a6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMqttClientDefines_8h.html#a029d7b425fed2d66d94c1b033d3267a6">i_mqtt_client::LogLevelLib</a> : int { <br />
 &#160;&#160;<b>TRACE</b> = 1, 
 <b>DEBUG</b> = 2, 
 <b>INFO</b> = 3, 
@@ -250,16 +254,147 @@ Enumerations</h2></td></tr>
 <b>NONE</b> = std::numeric_limits&lt;int&gt;::max()
 <br />
  }</td></tr>
+<tr class="memdesc:a029d7b425fed2d66d94c1b033d3267a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents log levels for messages from the underlying MQTT library.  <a href="IMqttClientDefines_8h.html#a029d7b425fed2d66d94c1b033d3267a6">More...</a><br /></td></tr>
 <tr class="separator:a029d7b425fed2d66d94c1b033d3267a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Abstract interface definition for an MqttClient. </p>
+<div class="textblock"><p>Constant defines and textual representations. </p>
 <dl class="section author"><dt>Author</dt><dd>Timo Lange </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2020 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>Copyright 2020 Timo Lange</dd></dl>
 <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at </p><pre class="fragment">http://www.apache.org/licenses/LICENSE-2.0
 </pre><p>Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="a394ee8cd2bd3395b58552abe343b22c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a394ee8cd2bd3395b58552abe343b22c2">&#9670;&nbsp;</a></span>MmqttLibLogCb_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="IMqttClientDefines_8h.html#a394ee8cd2bd3395b58552abe343b22c2">i_mqtt_client::MmqttLibLogCb_t</a> = typedef std::function&lt;void(LogLevelLib, std::string const&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A callback that is invoked for handing over logs from the underlying MQTT library to the user. May be set to nullptr in order to disable logging. </p>
+
+</div>
+</div>
+<a id="af0023e1f8b78e4743b44013708ca4998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0023e1f8b78e4743b44013708ca4998">&#9670;&nbsp;</a></span>MqttLogInit_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="IMqttClientDefines_8h.html#af0023e1f8b78e4743b44013708ca4998">i_mqtt_client::MqttLogInit_t</a> = typedef std::pair&lt;MmqttLibLogCb_t, LogLevelLib&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pair containing the callback function for logs from the underlying MQTT library and the minimum log level. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a57e62a786673e797a5b7fe0b2c96cca6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57e62a786673e797a5b7fe0b2c96cca6">&#9670;&nbsp;</a></span>LogLevel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="IMqttClientDefines_8h.html#a57e62a786673e797a5b7fe0b2c96cca6">i_mqtt_client::LogLevel</a> : int</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Represents log levels for messages from the IMqttClient implementation. </p>
+
+</div>
+</div>
+<a id="a029d7b425fed2d66d94c1b033d3267a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a029d7b425fed2d66d94c1b033d3267a6">&#9670;&nbsp;</a></span>LogLevelLib</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="IMqttClientDefines_8h.html#a029d7b425fed2d66d94c1b033d3267a6">i_mqtt_client::LogLevelLib</a> : int</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Represents log levels for messages from the underlying MQTT library. </p>
+
+</div>
+</div>
+<a id="aac70226ba557048a656e14509656db3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac70226ba557048a656e14509656db3a">&#9670;&nbsp;</a></span>Mqtt5ReasonCode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="IMqttClientDefines_8h.html#aac70226ba557048a656e14509656db3a">i_mqtt_client::Mqtt5ReasonCode</a> : int</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Represents MQTTv5 ReasonCodes returned by the broker. </p>
+
+</div>
+</div>
+<a id="a2726620002e53f50514c0246d7b640f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2726620002e53f50514c0246d7b640f7">&#9670;&nbsp;</a></span>MqttReasonCode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="IMqttClientDefines_8h.html#a2726620002e53f50514c0246d7b640f7">i_mqtt_client::MqttReasonCode</a> : int</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Represents MQTTv3 ReasonCodes retunred by the library. </p>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

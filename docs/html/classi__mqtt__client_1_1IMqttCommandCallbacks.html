@@ -74,14 +74,19 @@ $(function() {
 <div class="title">i_mqtt_client::IMqttCommandCallbacks Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Describes the abstract interface that is used in order to handover information about command such as Publish, Subscribe and Unsubscribe to the user. Inherit from this class in order to provide a callback method.  
+ <a href="classi__mqtt__client_1_1IMqttCommandCallbacks.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="IMqttClientCallbacks_8h_source.html">IMqttClientCallbacks.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for i_mqtt_client::IMqttCommandCallbacks:</div>
 <div class="dyncontent">
 <div class="center"><img src="classi__mqtt__client_1_1IMqttCommandCallbacks__inherit__graph.png" border="0" usemap="#i__mqtt__client_1_1IMqttCommandCallbacks_inherit__map" alt="Inheritance graph"/></div>
 <map name="i__mqtt__client_1_1IMqttCommandCallbacks_inherit__map" id="i__mqtt__client_1_1IMqttCommandCallbacks_inherit__map">
-<area shape="rect" title=" " alt="" coords="90,5,306,47"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttClientCallbacks.html" title=" " alt="" coords="105,95,291,136"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttClient.html" title=" " alt="" coords="105,184,291,211"/>
+<area shape="rect" title="Describes the abstract interface that is used in order to handover information about command such as ..." alt="" coords="90,5,306,47"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttClientCallbacks.html" title="In case the user wants one class to inherit from each callback class, this wrapper allows to inherit ..." alt="" coords="105,95,291,136"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation...." alt="" coords="105,184,291,211"/>
 <area shape="rect" href="classi__mqtt__client_1_1MosquittoClient.html" title=" " alt="" coords="5,259,185,300"/>
 <area shape="rect" href="classi__mqtt__client_1_1PahoClient.html" title=" " alt="" coords="210,266,394,293"/>
 </map>
@@ -89,15 +94,15 @@ Inheritance diagram for i_mqtt_client::IMqttCommandCallbacks:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad86ab18011e08cac099be97a27db36d8"><td class="memItemLeft" align="right" valign="top"><a id="ad86ab18011e08cac099be97a27db36d8"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnSubscribe</b> (token_t) const</td></tr>
-<tr class="separator:ad86ab18011e08cac099be97a27db36d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5eae57fa20d1e8c60c054255ae6a7371"><td class="memItemLeft" align="right" valign="top"><a id="a5eae57fa20d1e8c60c054255ae6a7371"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnUnSubscribe</b> (token_t) const</td></tr>
-<tr class="separator:a5eae57fa20d1e8c60c054255ae6a7371"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3ae5da9a4afb0dab081ec44618735cd"><td class="memItemLeft" align="right" valign="top"><a id="aa3ae5da9a4afb0dab081ec44618735cd"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnPublish</b> (token_t, Mqtt5ReasonCode) const</td></tr>
-<tr class="separator:aa3ae5da9a4afb0dab081ec44618735cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab80af43b5361c5dcbfe9e25359f3172d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html#ab80af43b5361c5dcbfe9e25359f3172d">OnSubscribe</a> (token_t token) const</td></tr>
+<tr class="memdesc:ab80af43b5361c5dcbfe9e25359f3172d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Can be overriden by the user in order to obtain information about a preceeded call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#afe9736cc57cc3a925a63d820b3f3fbd5" title="Starts an attempt to Subscribe to a given topic. The subscription is done asynchronously,...">IMqttClient::SubscribeAsync</a>. Currently is invoked, once the underlying MQTT library finished subscribing. If not overriden, a default empty callback will be used.  <a href="classi__mqtt__client_1_1IMqttCommandCallbacks.html#ab80af43b5361c5dcbfe9e25359f3172d">More...</a><br /></td></tr>
+<tr class="separator:ab80af43b5361c5dcbfe9e25359f3172d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6914d1a903a0529bcd229377b4be4b89"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html#a6914d1a903a0529bcd229377b4be4b89">OnUnSubscribe</a> (token_t token) const</td></tr>
+<tr class="memdesc:a6914d1a903a0529bcd229377b4be4b89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Can be overriden by the user in order to obtain information about a preceeded call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#a8aa89b8ecdf04e06afaa7e7c942c2277" title="Starts an attempt to Unsubscribe from a given topic. The unsubscription is done asynchronously,...">IMqttClient::UnSubscribeAsync</a>. Currently is invoked, once the underlying MQTT library finished unsubscribing. If not overriden, a default empty callback will be used.  <a href="classi__mqtt__client_1_1IMqttCommandCallbacks.html#a6914d1a903a0529bcd229377b4be4b89">More...</a><br /></td></tr>
+<tr class="separator:a6914d1a903a0529bcd229377b4be4b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04bdf08acfe2e068d9da1ee57cb80d17"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttCommandCallbacks.html#a04bdf08acfe2e068d9da1ee57cb80d17">OnPublish</a> (token_t token, <a class="el" href="IMqttClientDefines_8h.html#aac70226ba557048a656e14509656db3a">Mqtt5ReasonCode</a> mqttRc) const</td></tr>
+<tr class="memdesc:a04bdf08acfe2e068d9da1ee57cb80d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Can be overriden by the user in order to obtain information about a preceeded call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#a3a9e11eeeb8272d3e6fd5c6d9ae6d8ee" title="Starts an attempt to Publish a message to a given topic. The publish is done asynchronously,...">IMqttClient::PublishAsync</a>. Is invoked, once the underlying MQTT library finished publishing. If not overriden, a default empty callback will be used.  <a href="classi__mqtt__client_1_1IMqttCommandCallbacks.html#a04bdf08acfe2e068d9da1ee57cb80d17">More...</a><br /></td></tr>
+<tr class="separator:a04bdf08acfe2e068d9da1ee57cb80d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
 Protected Types</h2></td></tr>
@@ -105,6 +110,127 @@ Protected Types</h2></td></tr>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>token_t</b> = int</td></tr>
 <tr class="separator:a8cccdbd2a05c3ca37116a475ac6517b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Describes the abstract interface that is used in order to handover information about command such as Publish, Subscribe and Unsubscribe to the user. Inherit from this class in order to provide a callback method. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a04bdf08acfe2e068d9da1ee57cb80d17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04bdf08acfe2e068d9da1ee57cb80d17">&#9670;&nbsp;</a></span>OnPublish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void i_mqtt_client::IMqttCommandCallbacks::OnPublish </td>
+          <td>(</td>
+          <td class="paramtype">token_t&#160;</td>
+          <td class="paramname"><em>token</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="IMqttClientDefines_8h.html#aac70226ba557048a656e14509656db3a">Mqtt5ReasonCode</a>&#160;</td>
+          <td class="paramname"><em>mqttRc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Can be overriden by the user in order to obtain information about a preceeded call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#a3a9e11eeeb8272d3e6fd5c6d9ae6d8ee" title="Starts an attempt to Publish a message to a given topic. The publish is done asynchronously,...">IMqttClient::PublishAsync</a>. Is invoked, once the underlying MQTT library finished publishing. If not overriden, a default empty callback will be used. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">token</td><td>a value indicating which preceeding call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#a3a9e11eeeb8272d3e6fd5c6d9ae6d8ee" title="Starts an attempt to Publish a message to a given topic. The publish is done asynchronously,...">IMqttClient::PublishAsync</a> this callback belongs to. </td></tr>
+    <tr><td class="paramname">mqttRc</td><td>the MQTTv5 reason code, provided by the broker </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Warning</dt><dd>For Paho AND QOS0 operations, the token is always 0 (fire and forget strategy) </dd></dl>
+
+</div>
+</div>
+<a id="ab80af43b5361c5dcbfe9e25359f3172d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab80af43b5361c5dcbfe9e25359f3172d">&#9670;&nbsp;</a></span>OnSubscribe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void i_mqtt_client::IMqttCommandCallbacks::OnSubscribe </td>
+          <td>(</td>
+          <td class="paramtype">token_t&#160;</td>
+          <td class="paramname"><em>token</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Can be overriden by the user in order to obtain information about a preceeded call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#afe9736cc57cc3a925a63d820b3f3fbd5" title="Starts an attempt to Subscribe to a given topic. The subscription is done asynchronously,...">IMqttClient::SubscribeAsync</a>. Currently is invoked, once the underlying MQTT library finished subscribing. If not overriden, a default empty callback will be used. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>This method should provide the MQTT v5 reason codes to the user.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">token</td><td>a value indicating which preceeding call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#afe9736cc57cc3a925a63d820b3f3fbd5" title="Starts an attempt to Subscribe to a given topic. The subscription is done asynchronously,...">IMqttClient::SubscribeAsync</a> this callback belongs to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Warning</dt><dd>For Paho AND QOS0 operations, the token is always 0 (fire and forget strategy). </dd></dl>
+
+</div>
+</div>
+<a id="a6914d1a903a0529bcd229377b4be4b89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6914d1a903a0529bcd229377b4be4b89">&#9670;&nbsp;</a></span>OnUnSubscribe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void i_mqtt_client::IMqttCommandCallbacks::OnUnSubscribe </td>
+          <td>(</td>
+          <td class="paramtype">token_t&#160;</td>
+          <td class="paramname"><em>token</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Can be overriden by the user in order to obtain information about a preceeded call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#a8aa89b8ecdf04e06afaa7e7c942c2277" title="Starts an attempt to Unsubscribe from a given topic. The unsubscription is done asynchronously,...">IMqttClient::UnSubscribeAsync</a>. Currently is invoked, once the underlying MQTT library finished unsubscribing. If not overriden, a default empty callback will be used. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>This method should provide the MQTT v5 reason codes to the user.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">token</td><td>a value indicating which preceeding call to <a class="el" href="classi__mqtt__client_1_1IMqttClient.html#a8aa89b8ecdf04e06afaa7e7c942c2277" title="Starts an attempt to Unsubscribe from a given topic. The unsubscription is done asynchronously,...">IMqttClient::UnSubscribeAsync</a> this callback belongs to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Warning</dt><dd>For Paho AND QOS0 operations, the token is always 0 (fire and forget strategy). </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/MqttClient/Interface/<a class="el" href="IMqttClientCallbacks_8h_source.html">IMqttClientCallbacks.h</a></li>
 </ul>

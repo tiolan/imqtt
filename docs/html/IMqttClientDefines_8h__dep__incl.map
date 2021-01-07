@@ -1,5 +1,5 @@
 <map id="src/MqttClient/Interface/IMqttClientDefines.h" name="src/MqttClient/Interface/IMqttClientDefines.h">
-<area shape="rect" id="node1" title="Abstract interface definition for an MqttClient." alt="" coords="263,5,438,47"/>
+<area shape="rect" id="node1" title="Constant defines and textual representations." alt="" coords="263,5,438,47"/>
 <area shape="rect" id="node2" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="263,95,438,136"/>
 <area shape="rect" id="node3" href="$DispatchQueue_8h.html" title="Class definition for DispatchQueue." alt="" coords="13,370,241,397"/>
 <area shape="rect" id="node5" href="$IMqttClientCallbacks_8h.html" title="Callback definitions for an abstract MqttClient." alt="" coords="263,184,438,225"/>

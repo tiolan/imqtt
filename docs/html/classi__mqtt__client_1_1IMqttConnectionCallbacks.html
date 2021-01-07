@@ -74,14 +74,19 @@ $(function() {
 <div class="title">i_mqtt_client::IMqttConnectionCallbacks Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Describes the abstract callback interface that is used in order to provide information about connection status changes to the user. Inherit from this class in order to provide callbacks to the IMqtt implementation.  
+ <a href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="IMqttClientCallbacks_8h_source.html">IMqttClientCallbacks.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for i_mqtt_client::IMqttConnectionCallbacks:</div>
 <div class="dyncontent">
 <div class="center"><img src="classi__mqtt__client_1_1IMqttConnectionCallbacks__inherit__graph.png" border="0" usemap="#i__mqtt__client_1_1IMqttConnectionCallbacks_inherit__map" alt="Inheritance graph"/></div>
 <map name="i__mqtt__client_1_1IMqttConnectionCallbacks_inherit__map" id="i__mqtt__client_1_1IMqttConnectionCallbacks_inherit__map">
-<area shape="rect" title=" " alt="" coords="87,5,309,47"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttClientCallbacks.html" title=" " alt="" coords="105,95,291,136"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttClient.html" title=" " alt="" coords="105,184,291,211"/>
+<area shape="rect" title="Describes the abstract callback interface that is used in order to provide information about connecti..." alt="" coords="87,5,309,47"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttClientCallbacks.html" title="In case the user wants one class to inherit from each callback class, this wrapper allows to inherit ..." alt="" coords="105,95,291,136"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation...." alt="" coords="105,184,291,211"/>
 <area shape="rect" href="classi__mqtt__client_1_1MosquittoClient.html" title=" " alt="" coords="5,259,185,300"/>
 <area shape="rect" href="classi__mqtt__client_1_1PahoClient.html" title=" " alt="" coords="210,266,394,293"/>
 </map>
@@ -89,17 +94,97 @@ Inheritance diagram for i_mqtt_client::IMqttConnectionCallbacks:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aba896851a55a92f8989dbe219d625ec9"><td class="memItemLeft" align="right" valign="top"><a id="aba896851a55a92f8989dbe219d625ec9"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ConnectionType</b> { <b>CONNECT</b>, 
-<b>DISCONNECT</b>
+<tr class="memitem:aba896851a55a92f8989dbe219d625ec9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#aba896851a55a92f8989dbe219d625ec9">ConnectionType</a> { <a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#aba896851a55a92f8989dbe219d625ec9ab57e2519e26151feacdbe52076bc39ec">ConnectionType::CONNECT</a>, 
+<a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#aba896851a55a92f8989dbe219d625ec9add7cd0eb57db08d4f98abc48e5593462">ConnectionType::DISCONNECT</a>
  }</td></tr>
+<tr class="memdesc:aba896851a55a92f8989dbe219d625ec9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of connection information (not the actual connection status)  <a href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#aba896851a55a92f8989dbe219d625ec9">More...</a><br /></td></tr>
 <tr class="separator:aba896851a55a92f8989dbe219d625ec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4cbd5bc46cf7197aa06843c1c57b52a1"><td class="memItemLeft" align="right" valign="top"><a id="a4cbd5bc46cf7197aa06843c1c57b52a1"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnConnectionStatusChanged</b> (ConnectionType, Mqtt5ReasonCode) const</td></tr>
-<tr class="separator:a4cbd5bc46cf7197aa06843c1c57b52a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0eaa0a97dc091564927e66ceef411e0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#ac0eaa0a97dc091564927e66ceef411e0">OnConnectionStatusChanged</a> (<a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#aba896851a55a92f8989dbe219d625ec9">ConnectionType</a> type, <a class="el" href="IMqttClientDefines_8h.html#aac70226ba557048a656e14509656db3a">Mqtt5ReasonCode</a> mqttRc) const</td></tr>
+<tr class="memdesc:ac0eaa0a97dc091564927e66ceef411e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override this method in order to obatain information about the status of the connection or connection changes. If not overriden, a default empty method will be used.  <a href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#ac0eaa0a97dc091564927e66ceef411e0">More...</a><br /></td></tr>
+<tr class="separator:ac0eaa0a97dc091564927e66ceef411e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Describes the abstract callback interface that is used in order to provide information about connection status changes to the user. Inherit from this class in order to provide callbacks to the IMqtt implementation. </p>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="aba896851a55a92f8989dbe219d625ec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba896851a55a92f8989dbe219d625ec9">&#9670;&nbsp;</a></span>ConnectionType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#aba896851a55a92f8989dbe219d625ec9">i_mqtt_client::IMqttConnectionCallbacks::ConnectionType</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Type of connection information (not the actual connection status) </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aba896851a55a92f8989dbe219d625ec9ab57e2519e26151feacdbe52076bc39ec"></a>CONNECT&#160;</td><td class="fielddoc"><p>Callback is invoked because of information about the connection state. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aba896851a55a92f8989dbe219d625ec9add7cd0eb57db08d4f98abc48e5593462"></a>DISCONNECT&#160;</td><td class="fielddoc"><p>Callback is invoked because of information about the dis-connection state. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac0eaa0a97dc091564927e66ceef411e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0eaa0a97dc091564927e66ceef411e0">&#9670;&nbsp;</a></span>OnConnectionStatusChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void i_mqtt_client::IMqttConnectionCallbacks::OnConnectionStatusChanged </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classi__mqtt__client_1_1IMqttConnectionCallbacks.html#aba896851a55a92f8989dbe219d625ec9">ConnectionType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="IMqttClientDefines_8h.html#aac70226ba557048a656e14509656db3a">Mqtt5ReasonCode</a>&#160;</td>
+          <td class="paramname"><em>mqttRc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Override this method in order to obatain information about the status of the connection or connection changes. If not overriden, a default empty method will be used. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>indicates whether the information are about a connect or a disconnect (see ConnectionType) </td></tr>
+    <tr><td class="paramname">mqttRc</td><td>MQTTv5 reason code provided by the MQTT library </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/MqttClient/Interface/<a class="el" href="IMqttClientCallbacks_8h_source.html">IMqttClientCallbacks.h</a></li>
 </ul>
