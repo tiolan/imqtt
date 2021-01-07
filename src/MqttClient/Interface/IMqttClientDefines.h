@@ -2,7 +2,7 @@
 /**
  * @file IMqttClientDefines.h
  * @author Timo Lange
- * @brief Abstract interface definition for an MqttClient
+ * @brief Constant defines and textual representations
  * @date 2020
  * @copyright    Copyright 2020 Timo Lange
 
@@ -24,10 +24,22 @@
 #include <limits>
 
 namespace i_mqtt_client {
-/*When adding ReasonCodes, also add them to the string representation*/
-enum class ReasonCode { OKAY, ERROR_GENERAL, ERROR_NO_CONNECTION, ERROR_TLS, NOT_ALLOWED };
+/**
+ * @brief Represents error codes, used for feedback to IMqttClient calls.
+ */
+enum class ReasonCode {
+    OKAY,
+    ERROR_GENERAL,
+    ERROR_NO_CONNECTION,
+    ERROR_TLS,
+    NOT_ALLOWED,
+    /*When adding ReasonCodes, also add them to the string representation*/
+};
 
-/*When adding MqttReasonCodes, also add them to the string representation*/
+/**
+ * @brief Represents MQTTv3 ReasonCodes retunred by the library
+ * 
+ */
 enum class MqttReasonCode : int {
     ACCEPTED                      = 0x0,
     UNACCEPTABLE_PROTOCOL_VERSION = 0x1,
@@ -35,9 +47,13 @@ enum class MqttReasonCode : int {
     SERVER_UNAVAILABLE            = 0x3,
     BAD_USERNAME_OR_PASSWORD      = 0x4,
     NOT_AUTHORIZED                = 0x5,
+    /*When adding MqttReasonCodes, also add them to the string representation*/
 };
 
-/*When adding Mqtt5ReasonCodes, also add them to the string representation*/
+/**
+ * @brief Represents MQTTv5 ReasonCodes returned by the broker
+ *
+ */
 enum class Mqtt5ReasonCode : int {
     SUCCESS /*GRANTED_QOS_0*/              = 0x0,  /*CONNACK, PUBACK, PUBREC, PUBREL, PUBCOMP, UNSUBACK, AUTH / SUBACK*/
     GRANTED_QOS_1                          = 0x01, /*SUBACK*/
@@ -82,6 +98,7 @@ enum class Mqtt5ReasonCode : int {
     MAXIMUM_CONNECT_TIME                   = 0xA0, /*DISCONNECT*/
     SUBSCRIPTION_IDENTIFIERS_NOT_SUPPORTED = 0xA1, /*SUBACK*/
     WILDCARD_SUBSCRIPTIONS_NOT_SUPPORTED   = 0xA2, /*SUBACK, DISCONNECT*/
+    /*When adding Mqtt5ReasonCodes, also add them to the string representation*/
 };
 
 using ReasonCodeStringShort_t = const std::string;
@@ -96,6 +113,10 @@ using Mqtt5ReasonCodeStringShort_t = const std::string;
 using Mqtt5ReasonCodeStringLong_t  = const std::string;
 using Mqtt5ReasonCodeRepr_t        = const std::pair<Mqtt5ReasonCodeStringShort_t, Mqtt5ReasonCodeStringLong_t>;
 
+/**
+ * @brief Represents log levels for messages from the IMqttClient implementation
+ * 
+ */
 enum class LogLevel : int {
     TRACE   = 1,
     DEBUG   = 2,
@@ -105,6 +126,10 @@ enum class LogLevel : int {
     FATAL   = 6,
 };
 
+/**
+ * @brief Represents log levels for messages from the underlying MQTT library
+ *
+ */
 enum class LogLevelLib : int {
     TRACE   = 1,
     DEBUG   = 2,
@@ -115,6 +140,16 @@ enum class LogLevelLib : int {
     NONE    = std::numeric_limits<int>::max(),
 };
 
+/**
+ * @brief A callback that is invoked for handing over logs from the underlying MQTT library to the user. May be set to
+ * nullptr in order to disable logging.
+ *
+ */
 using MmqttLibLogCb_t = std::function<void(LogLevelLib, std::string const&)>;
-using MqttLogInit_t   = std::pair<MmqttLibLogCb_t, LogLevelLib>;
+
+/**
+ * @brief Pair containing the callback function for logs from the underlying MQTT library and the minimum log level.
+ *
+ */
+using MqttLogInit_t = std::pair<MmqttLibLogCb_t, LogLevelLib>;
 }  // namespace i_mqtt_client

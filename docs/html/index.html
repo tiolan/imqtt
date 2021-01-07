@@ -66,14 +66,15 @@ $(function() {
 <div class="title">IMqtt </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>IMqtt is a (by far not fully complete) C++ wrapper around existing MQTT libraries. It is desgined to use MQTTv5 protocol only.</p>
-<p>The idea is to provide an abstract C++ interface to make the underlaying MQTT library exchangeable quite easy. Target for now is to support <a href="https://github.com/eclipse/paho.mqtt.c">Paho</a> (written in C) and <a href="https://github.com/eclipse/mosquitto">Mosquitto</a> (written in C).</p>
+<div class="textblock"><p>IMqtt is a (by far not fully complete) C++ wrapper around existing MQTT libraries. It is desgined to use the MQTTv5 protocol only.</p>
+<p>It provides an abstract C++ interface IMqttClient and hides the underlying MQTT library, such that it is exchangeable quite easy (depending on the functions used). It furthermore provides a C++ wrapper around the C interfaces of common MQTT libraries. Target for now is to support <a href="https://github.com/eclipse/paho.mqtt.c">Paho</a> (written in C) and <a href="https://github.com/eclipse/mosquitto">Mosquitto</a> (written in C). IMqtt is heavily based on callback interfaces. The user has to implement those callback interfaces and hand them over to an object of IMqttClient. Via those callbacks, messages and other status information are provided to the user.</p>
+<p>In order to decouple the callbacks of the underlying MQTT library and the (potentially long-lasting) MQTT message processing done by the user, an optional FIFO-like IDispatchQueue is provided.</p>
 <h1><a class="anchor" id="autotoc_md1"></a>
 API Reference</h1>
-<p>The (not yet) complete API Reference can be found here: <a href="https://tiolan.github.io/imqtt/">https://tiolan.github.io/imqtt/</a></p>
+<p>The API Reference can be found here: <a href="https://tiolan.github.io/imqtt/">https://tiolan.github.io/imqtt/</a></p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Status</h1>
-<p><a href="https://www.travis-ci.com/tiolan/imqtt"><object type="image/svg+xml" data="https://www.travis-ci.com/tiolan/imqtt.svg?branch=master" style="pointer-events: none;">Build Status</object></a></p>
+<p><a href="https://www.travis-ci.com/tiolan/imqtt"><object type="image/svg+xml" data="https://www.travis-ci.com/tiolan/imqtt.svg?branch=master" style="pointer-events: none;">Build Status</object></a> <a href="https://sonarcloud.io/dashboard?id=tiolan_imqtt"><img src="https://sonarcloud.io/api/project_badges/measure?project=tiolan_imqtt&amp;metric=alert_status" alt="Quality Gate Status" class="inline"/></a></p>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Maturity</h1>
 <p>IMqtt is in development.</p><ul>

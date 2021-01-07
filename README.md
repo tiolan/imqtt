@@ -1,14 +1,18 @@
 # IMqtt
-IMqtt is a (by far not fully complete) C++ wrapper around existing MQTT libraries. It is desgined to use MQTTv5 protocol only.
+IMqtt is a (by far not fully complete) C++ wrapper around existing MQTT libraries. It is desgined to use the MQTTv5 protocol only.
 
-The idea is to provide an abstract C++ interface to make the underlaying MQTT library exchangeable quite easy.
+It provides an abstract C++ interface IMqttClient and hides the underlying MQTT library, such that it is exchangeable quite easy (depending on the functions used). It furthermore provides a C++ wrapper around the C interfaces of common MQTT libraries.
 Target for now is to support [Paho](https://github.com/eclipse/paho.mqtt.c) (written in C) and [Mosquitto](https://github.com/eclipse/mosquitto) (written in C).
+IMqtt is heavily based on callback interfaces. The user has to implement those callback interfaces and hand them over to an object of IMqttClient. Via those callbacks, messages and other status information are provided to the user.
+
+In order to decouple the callbacks of the underlying MQTT library and the (potentially long-lasting) MQTT message processing done by the user, an optional FIFO-like IDispatchQueue is provided.
 
 # API Reference
-The (not yet) complete API Reference can be found here: https://tiolan.github.io/imqtt/
+The API Reference can be found here: https://tiolan.github.io/imqtt/
 
 # Status
 [![Build Status](https://www.travis-ci.com/tiolan/imqtt.svg?branch=master)](https://www.travis-ci.com/tiolan/imqtt)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tiolan_imqtt&metric=alert_status)](https://sonarcloud.io/dashboard?id=tiolan_imqtt)
 
 # Maturity
 IMqtt is in development.

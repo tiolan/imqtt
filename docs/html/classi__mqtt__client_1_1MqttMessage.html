@@ -79,7 +79,7 @@ Inheritance diagram for i_mqtt_client::MqttMessage:</div>
 <div class="center"><img src="classi__mqtt__client_1_1MqttMessage__inherit__graph.png" border="0" usemap="#i__mqtt__client_1_1MqttMessage_inherit__map" alt="Inheritance graph"/></div>
 <map name="i__mqtt__client_1_1MqttMessage_inherit__map" id="i__mqtt__client_1_1MqttMessage_inherit__map">
 <area shape="rect" title=" " alt="" coords="7,80,210,107"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttMessage.html" title=" " alt="" coords="5,5,212,32"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttMessage.html" title="Describes the abstract interface to be used in order to deal with MqttMessages. It hides the underlyi..." alt="" coords="5,5,212,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -88,7 +88,7 @@ Collaboration diagram for i_mqtt_client::MqttMessage:</div>
 <div class="center"><img src="classi__mqtt__client_1_1MqttMessage__coll__graph.png" border="0" usemap="#i__mqtt__client_1_1MqttMessage_coll__map" alt="Collaboration graph"/></div>
 <map name="i__mqtt__client_1_1MqttMessage_coll__map" id="i__mqtt__client_1_1MqttMessage_coll__map">
 <area shape="rect" title=" " alt="" coords="1052,104,1255,131"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttMessage.html" title=" " alt="" coords="796,104,1003,131"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttMessage.html" title="Describes the abstract interface to be used in order to deal with MqttMessages. It hides the underlyi..." alt="" coords="796,104,1003,131"/>
 <area shape="rect" title=" " alt="" coords="393,5,607,32"/>
 <area shape="rect" title=" " alt="" coords="419,149,581,190"/>
 <area shape="rect" title="STL class." alt="" coords="193,112,280,139"/>
@@ -100,30 +100,32 @@ Collaboration diagram for i_mqtt_client::MqttMessage:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8554830378c5ab44ddbbd8438bcf50a3"><td class="memItemLeft" align="right" valign="top"><a id="a8554830378c5ab44ddbbd8438bcf50a3"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetPayloadCastedToString</b> (void) const override</td></tr>
+<tr class="memitem:a8554830378c5ab44ddbbd8438bcf50a3"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1MqttMessage.html#a8554830378c5ab44ddbbd8438bcf50a3">GetPayloadCastedToString</a> (void) const override</td></tr>
+<tr class="memdesc:a8554830378c5ab44ddbbd8438bcf50a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the raw byte payload casted a C++ string. Depending on the payload not printable.  <a href="classi__mqtt__client_1_1MqttMessage.html#a8554830378c5ab44ddbbd8438bcf50a3">More...</a><br /></td></tr>
 <tr class="separator:a8554830378c5ab44ddbbd8438bcf50a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae47f25c363dad486b2f6d81039faeb2a"><td class="memItemLeft" align="right" valign="top"><a id="ae47f25c363dad486b2f6d81039faeb2a"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetCorrelationDataCastedToString</b> (void) const override</td></tr>
+<tr class="memitem:ae47f25c363dad486b2f6d81039faeb2a"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1MqttMessage.html#ae47f25c363dad486b2f6d81039faeb2a">GetCorrelationDataCastedToString</a> (void) const override</td></tr>
+<tr class="memdesc:ae47f25c363dad486b2f6d81039faeb2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the raw byte correlation data casted a C++ string. Depending on the correlation data not printable.  <a href="classi__mqtt__client_1_1MqttMessage.html#ae47f25c363dad486b2f6d81039faeb2a">More...</a><br /></td></tr>
 <tr class="separator:ae47f25c363dad486b2f6d81039faeb2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e5235030cf3005c2821e566f7036a1b"><td class="memItemLeft" align="right" valign="top"><a id="a4e5235030cf3005c2821e566f7036a1b"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToString</b> (void) const noexcept override</td></tr>
+<tr class="memitem:a4e5235030cf3005c2821e566f7036a1b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1MqttMessage.html#a4e5235030cf3005c2821e566f7036a1b">ToString</a> (void) const noexcept override</td></tr>
+<tr class="memdesc:a4e5235030cf3005c2821e566f7036a1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a textual description of the <a class="el" href="classi__mqtt__client_1_1MqttMessage.html">MqttMessage</a>.  <a href="classi__mqtt__client_1_1MqttMessage.html#a4e5235030cf3005c2821e566f7036a1b">More...</a><br /></td></tr>
 <tr class="separator:a4e5235030cf3005c2821e566f7036a1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac78396bf3dd21ad957a3f6d5e144b16c"><td class="memItemLeft" align="right" valign="top"><a id="ac78396bf3dd21ad957a3f6d5e144b16c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MqttMessage</b> (std::string const &amp;, payload_t const &amp;, QOS, bool)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MqttMessage</b> (std::string const &amp;, payload_t const &amp;, <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a26bfd295d494f71a118278a9779a7af1">QOS</a>, bool)</td></tr>
 <tr class="separator:ac78396bf3dd21ad957a3f6d5e144b16c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classi__mqtt__client_1_1IMqttMessage"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classi__mqtt__client_1_1IMqttMessage')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html">i_mqtt_client::IMqttMessage</a></td></tr>
-<tr class="memitem:a9d07fdff58918f5fe8bb08282d5f0d10 inherit pub_types_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a9d07fdff58918f5fe8bb08282d5f0d10"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>FormatIndicator</b> { <b>UNSPECIFIED</b>, 
+<tr class="memitem:a9d07fdff58918f5fe8bb08282d5f0d10 inherit pub_types_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a9d07fdff58918f5fe8bb08282d5f0d10">FormatIndicator</a> { <b>UNSPECIFIED</b>, 
 <b>UTF8</b>
  }</td></tr>
+<tr class="memdesc:a9d07fdff58918f5fe8bb08282d5f0d10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Payload Format Indicator as defined in the MQTTv5 standard.  <a href="classi__mqtt__client_1_1IMqttMessage.html#a9d07fdff58918f5fe8bb08282d5f0d10">More...</a><br /></td></tr>
 <tr class="separator:a9d07fdff58918f5fe8bb08282d5f0d10 inherit pub_types_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26bfd295d494f71a118278a9779a7af1 inherit pub_types_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a26bfd295d494f71a118278a9779a7af1"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>QOS</b> : int { <b>QOS_0</b> = 0, 
+<tr class="memitem:a26bfd295d494f71a118278a9779a7af1 inherit pub_types_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a26bfd295d494f71a118278a9779a7af1">QOS</a> : int { <b>QOS_0</b> = 0, 
 <b>QOS_1</b> = 1, 
 <b>QOS_2</b> = 2
  }</td></tr>
+<tr class="memdesc:a26bfd295d494f71a118278a9779a7af1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quality of Service as defined in the MQTTv5 standard.  <a href="classi__mqtt__client_1_1IMqttMessage.html#a26bfd295d494f71a118278a9779a7af1">More...</a><br /></td></tr>
 <tr class="separator:a26bfd295d494f71a118278a9779a7af1 inherit pub_types_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade42c2f735c8b859f223c57d673a51c2 inherit pub_types_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="ade42c2f735c8b859f223c57d673a51c2"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>payloadRaw_t</b> = unsigned char</td></tr>
@@ -138,41 +140,125 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>userProps_t</b> = st
 using&#160;</td><td class="memItemRight" valign="bottom"><b>correlationDataProps_t</b> = std::vector&lt; payloadRaw_t &gt;</td></tr>
 <tr class="separator:ac0a47460c60d43fe16156b31039427be inherit pub_types_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classi__mqtt__client_1_1IMqttMessage')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html">i_mqtt_client::IMqttMessage</a></td></tr>
-<tr class="memitem:aba7298224b2171c55aff56faa806e756 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="aba7298224b2171c55aff56faa806e756"></a>
-const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>topic</b></td></tr>
+<tr class="memitem:aba7298224b2171c55aff56faa806e756 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#aba7298224b2171c55aff56faa806e756">topic</a></td></tr>
 <tr class="separator:aba7298224b2171c55aff56faa806e756 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5fbb8806d5d1b329b8ad0b06973b050 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="ac5fbb8806d5d1b329b8ad0b06973b050"></a>
-const payload_t&#160;</td><td class="memItemRight" valign="bottom"><b>payload</b></td></tr>
+<tr class="memitem:ac5fbb8806d5d1b329b8ad0b06973b050 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">const payload_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#ac5fbb8806d5d1b329b8ad0b06973b050">payload</a></td></tr>
 <tr class="separator:ac5fbb8806d5d1b329b8ad0b06973b050 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f70b912e00968ff6525f8b69712a9b3 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a5f70b912e00968ff6525f8b69712a9b3"></a>
-const IMqttMessage::QOS&#160;</td><td class="memItemRight" valign="bottom"><b>qos</b></td></tr>
+<tr class="memitem:a5f70b912e00968ff6525f8b69712a9b3 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a26bfd295d494f71a118278a9779a7af1">IMqttMessage::QOS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a5f70b912e00968ff6525f8b69712a9b3">qos</a></td></tr>
 <tr class="separator:a5f70b912e00968ff6525f8b69712a9b3 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68fae398e5ba4a199e72e8c6e298840f inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a68fae398e5ba4a199e72e8c6e298840f"></a>
-const bool&#160;</td><td class="memItemRight" valign="bottom"><b>retain</b></td></tr>
+<tr class="memitem:a68fae398e5ba4a199e72e8c6e298840f inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a68fae398e5ba4a199e72e8c6e298840f">retain</a></td></tr>
 <tr class="separator:a68fae398e5ba4a199e72e8c6e298840f inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac53f75a91ff2ab112342a4161253f9af inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="ac53f75a91ff2ab112342a4161253f9af"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>messageId</b> {-1}</td></tr>
+<tr class="memitem:ac53f75a91ff2ab112342a4161253f9af inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#ac53f75a91ff2ab112342a4161253f9af">messageId</a> {-1}</td></tr>
 <tr class="separator:ac53f75a91ff2ab112342a4161253f9af inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57ffcd5d1f6637640651e8cc68e2adef inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a57ffcd5d1f6637640651e8cc68e2adef"></a>
-userProps_t&#160;</td><td class="memItemRight" valign="bottom"><b>userProps</b> {userProps_t()}</td></tr>
+<tr class="memitem:a57ffcd5d1f6637640651e8cc68e2adef inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">userProps_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a57ffcd5d1f6637640651e8cc68e2adef">userProps</a> {userProps_t()}</td></tr>
 <tr class="separator:a57ffcd5d1f6637640651e8cc68e2adef inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5800e1b6a0c749543a91fa2decbfbff inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="ab5800e1b6a0c749543a91fa2decbfbff"></a>
-correlationDataProps_t&#160;</td><td class="memItemRight" valign="bottom"><b>correlationDataProps</b> {correlationDataProps_t()}</td></tr>
+<tr class="memitem:ab5800e1b6a0c749543a91fa2decbfbff inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">correlationDataProps_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#ab5800e1b6a0c749543a91fa2decbfbff">correlationDataProps</a> {correlationDataProps_t()}</td></tr>
 <tr class="separator:ab5800e1b6a0c749543a91fa2decbfbff inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8157ba9a57814abe7e14b7d74efacf6c inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a8157ba9a57814abe7e14b7d74efacf6c"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>responseTopic</b> {&quot;&quot;}</td></tr>
+<tr class="memitem:a8157ba9a57814abe7e14b7d74efacf6c inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a8157ba9a57814abe7e14b7d74efacf6c">responseTopic</a> {&quot;&quot;}</td></tr>
 <tr class="separator:a8157ba9a57814abe7e14b7d74efacf6c inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06cdb0dabe7376f4222e393df594a4d2 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a06cdb0dabe7376f4222e393df594a4d2"></a>
-FormatIndicator&#160;</td><td class="memItemRight" valign="bottom"><b>payloadFormatIndicator</b> {FormatIndicator::UNSPECIFIED}</td></tr>
+<tr class="memitem:a06cdb0dabe7376f4222e393df594a4d2 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a9d07fdff58918f5fe8bb08282d5f0d10">FormatIndicator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a06cdb0dabe7376f4222e393df594a4d2">payloadFormatIndicator</a> {FormatIndicator::UNSPECIFIED}</td></tr>
 <tr class="separator:a06cdb0dabe7376f4222e393df594a4d2 inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1788ac0e245567006377649b41b728db inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a1788ac0e245567006377649b41b728db"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>payloadContentType</b> {&quot;&quot;}</td></tr>
+<tr class="memitem:a1788ac0e245567006377649b41b728db inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a1788ac0e245567006377649b41b728db">payloadContentType</a> {&quot;&quot;}</td></tr>
 <tr class="separator:a1788ac0e245567006377649b41b728db inherit pub_attribs_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classi__mqtt__client_1_1IMqttMessage"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classi__mqtt__client_1_1IMqttMessage')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html">i_mqtt_client::IMqttMessage</a></td></tr>
 <tr class="memitem:a5a6080b6b6ba5cb66f0ac063fd221b47 inherit pro_methods_classi__mqtt__client_1_1IMqttMessage"><td class="memItemLeft" align="right" valign="top"><a id="a5a6080b6b6ba5cb66f0ac063fd221b47"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>IMqttMessage</b> (std::string const &amp;topic, payload_t const &amp;payload, QOS qos, bool retain)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>IMqttMessage</b> (std::string const &amp;<a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#aba7298224b2171c55aff56faa806e756">topic</a>, payload_t const &amp;<a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#ac5fbb8806d5d1b329b8ad0b06973b050">payload</a>, <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a26bfd295d494f71a118278a9779a7af1">QOS</a> <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a5f70b912e00968ff6525f8b69712a9b3">qos</a>, bool <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a68fae398e5ba4a199e72e8c6e298840f">retain</a>)</td></tr>
 <tr class="separator:a5a6080b6b6ba5cb66f0ac063fd221b47 inherit pro_methods_classi__mqtt__client_1_1IMqttMessage"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae47f25c363dad486b2f6d81039faeb2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae47f25c363dad486b2f6d81039faeb2a">&#9670;&nbsp;</a></span>GetCorrelationDataCastedToString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string i_mqtt_client::MqttMessage::GetCorrelationDataCastedToString </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the raw byte correlation data casted a C++ string. Depending on the correlation data not printable. </p>
+<dl class="section return"><dt>Returns</dt><dd>string container for raw, binary correlation data </dd></dl>
+
+<p>Implements <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#ad48cdf301d6c93144b945cb79c77f9fd">i_mqtt_client::IMqttMessage</a>.</p>
+
+</div>
+</div>
+<a id="a8554830378c5ab44ddbbd8438bcf50a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8554830378c5ab44ddbbd8438bcf50a3">&#9670;&nbsp;</a></span>GetPayloadCastedToString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string i_mqtt_client::MqttMessage::GetPayloadCastedToString </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the raw byte payload casted a C++ string. Depending on the payload not printable. </p>
+<dl class="section return"><dt>Returns</dt><dd>string container for raw, binary payload data </dd></dl>
+
+<p>Implements <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a3776cc81a1d6e2fbf97308818d8e752c">i_mqtt_client::IMqttMessage</a>.</p>
+
+</div>
+</div>
+<a id="a4e5235030cf3005c2821e566f7036a1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e5235030cf3005c2821e566f7036a1b">&#9670;&nbsp;</a></span>ToString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string i_mqtt_client::MqttMessage::ToString </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns a textual description of the <a class="el" href="classi__mqtt__client_1_1MqttMessage.html">MqttMessage</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>textual representation </dd></dl>
+
+<p>Implements <a class="el" href="classi__mqtt__client_1_1IMqttMessage.html#a4004522c5f62b0f730039bcf2c51ee06">i_mqtt_client::IMqttMessage</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/MqttClient/<a class="el" href="MqttMessage_8h_source.html">MqttMessage.h</a></li>
 <li>src/MqttClient/<a class="el" href="MqttMessage_8cpp.html">MqttMessage.cpp</a></li>

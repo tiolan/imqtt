@@ -1,12 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classi__mqtt__client_1_1IMqttCommandCallbacks.html" title=" " alt="" coords="15,5,231,47"/>
-<area shape="rect" id="node2" href="$classi__mqtt__client_1_1IMqttClientCallbacks.html" title=" " alt="" coords="288,97,475,139"/>
-<area shape="rect" id="node3" href="$classi__mqtt__client_1_1IMqttClient.html" title=" " alt="" coords="537,105,723,131"/>
+<area shape="rect" id="node1" href="$classi__mqtt__client_1_1IMqttCommandCallbacks.html" title="Describes the abstract interface that is used in order to handover information about command such as ..." alt="" coords="15,5,231,47"/>
+<area shape="rect" id="node2" href="$classi__mqtt__client_1_1IMqttClientCallbacks.html" title="In case the user wants one class to inherit from each callback class, this wrapper allows to inherit ..." alt="" coords="288,97,475,139"/>
+<area shape="rect" id="node3" href="$classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation...." alt="" coords="537,105,723,131"/>
 <area shape="rect" id="node4" href="$classi__mqtt__client_1_1MosquittoClient.html" title=" " alt="" coords="787,68,967,109"/>
 <area shape="rect" id="node5" href="$classi__mqtt__client_1_1PahoClient.html" title=" " alt="" coords="785,134,969,161"/>
-<area shape="rect" id="node6" href="$classi__mqtt__client_1_1IMqttConnectionCallbacks.html" title=" " alt="" coords="11,71,234,112"/>
-<area shape="rect" id="node7" href="$classi__mqtt__client_1_1IMqttLogCallbacks.html" title=" " alt="" coords="5,137,240,163"/>
-<area shape="rect" id="node8" href="$classi__mqtt__client_1_1IMqttMessageCallbacks.html" title=" " alt="" coords="19,188,226,229"/>
-<area shape="rect" id="node9" href="$classi__mqtt__client_1_1IDispatchQueue.html" title=" " alt="" coords="293,188,469,229"/>
+<area shape="rect" id="node6" href="$classi__mqtt__client_1_1IMqttConnectionCallbacks.html" title="Describes the abstract callback interface that is used in order to provide information about connecti..." alt="" coords="11,71,234,112"/>
+<area shape="rect" id="node7" href="$classi__mqtt__client_1_1IMqttLogCallbacks.html" title="Describes the abstract callback interface for an MqttClient to provide logs to the user...." alt="" coords="5,137,240,163"/>
+<area shape="rect" id="node8" href="$classi__mqtt__client_1_1IMqttMessageCallbacks.html" title="Describes the abstract interface that is used in order to provides MQTT messages received by the unde..." alt="" coords="19,188,226,229"/>
+<area shape="rect" id="node9" href="$classi__mqtt__client_1_1IDispatchQueue.html" title="MQTT library implementations usually rely on callbacks, that are invoked by the MQTT library to hando..." alt="" coords="293,188,469,229"/>
 <area shape="rect" id="node10" href="$classi__mqtt__client_1_1DispatchQueue.html" title=" " alt="" coords="523,195,737,222"/>
 </map>

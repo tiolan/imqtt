@@ -13,7 +13,7 @@
 <area shape="rect" id="node11" href="$IMqttMessage_8h.html" title="Abstract interface definition for MQTT messages in C++." alt="" coords="319,244,446,271"/>
 <area shape="rect" id="node12" title=" " alt="" coords="107,319,194,345"/>
 <area shape="rect" id="node13" title=" " alt="" coords="218,319,281,345"/>
-<area shape="rect" id="node14" href="$IMqttClientDefines_8h.html" title="Abstract interface definition for an MqttClient." alt="" coords="305,319,460,345"/>
+<area shape="rect" id="node14" href="$IMqttClientDefines_8h.html" title="Constant defines and textual representations." alt="" coords="305,319,460,345"/>
 <area shape="rect" id="node15" title=" " alt="" coords="290,393,377,420"/>
 <area shape="rect" id="node16" title=" " alt="" coords="401,393,460,420"/>
 </map>
