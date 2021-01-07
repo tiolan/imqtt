@@ -65,6 +65,11 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     logCb->Log(LogLevel::INFO, "Broker-Address: " + params.hostAddress + ":" + to_string(params.port));
     pMosqClient = mosquitto_new(params.clientId.c_str(), params.cleanSession, this);
 
+    if (params.reconnectDelayMinLower < 0 || params.reconnectDelayMinUpper < 0 ||
+        params.reconnectDelayMinLower > params.reconnectDelayMinUpper) {
+        throw runtime_error("reconnectDelay not properly set");
+    }
+
     /*This either disables logging, or gets, what the user already set*/
     if (IMqttLogCallbacks::InitLogMqttLib({nullptr, LogLevelLib::NONE}).second != LogLevelLib::NONE) {
         mosquitto_log_callback_set(pMosqClient,

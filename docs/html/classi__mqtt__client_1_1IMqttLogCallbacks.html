@@ -74,14 +74,19 @@ $(function() {
 <div class="title">i_mqtt_client::IMqttLogCallbacks Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Describes the abstract callback interface for an MqttClient to provide logs to the user. Inherit from this class in order to obtain logs from the IMqtt implementation.  
+ <a href="classi__mqtt__client_1_1IMqttLogCallbacks.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="IMqttClientCallbacks_8h_source.html">IMqttClientCallbacks.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for i_mqtt_client::IMqttLogCallbacks:</div>
 <div class="dyncontent">
 <div class="center"><img src="classi__mqtt__client_1_1IMqttLogCallbacks__inherit__graph.png" border="0" usemap="#i__mqtt__client_1_1IMqttLogCallbacks_inherit__map" alt="Inheritance graph"/></div>
 <map name="i__mqtt__client_1_1IMqttLogCallbacks_inherit__map" id="i__mqtt__client_1_1IMqttLogCallbacks_inherit__map">
-<area shape="rect" title=" " alt="" coords="81,5,315,32"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttClientCallbacks.html" title=" " alt="" coords="105,80,291,121"/>
-<area shape="rect" href="classi__mqtt__client_1_1IMqttClient.html" title=" " alt="" coords="105,169,291,196"/>
+<area shape="rect" title="Describes the abstract callback interface for an MqttClient to provide logs to the user...." alt="" coords="81,5,315,32"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttClientCallbacks.html" title="In case the user wants one class to inherit from each callback class, this wrapper allows to inherit ..." alt="" coords="105,80,291,121"/>
+<area shape="rect" href="classi__mqtt__client_1_1IMqttClient.html" title="Describes the abstract interface to be used in order to use the IMqttClient implementation...." alt="" coords="105,169,291,196"/>
 <area shape="rect" href="classi__mqtt__client_1_1MosquittoClient.html" title=" " alt="" coords="5,244,185,285"/>
 <area shape="rect" href="classi__mqtt__client_1_1PahoClient.html" title=" " alt="" coords="210,251,394,278"/>
 </map>
@@ -89,19 +94,140 @@ Inheritance diagram for i_mqtt_client::IMqttLogCallbacks:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aabdd76efb83f8734e2fe4935a9c57eac"><td class="memItemLeft" align="right" valign="top"><a id="aabdd76efb83f8734e2fe4935a9c57eac"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Log</b> (LogLevel, std::string const &amp;) const</td></tr>
-<tr class="separator:aabdd76efb83f8734e2fe4935a9c57eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34d8dc0b52328b716636c7217204ce8f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html#a34d8dc0b52328b716636c7217204ce8f">Log</a> (<a class="el" href="IMqttClientDefines_8h.html#a57e62a786673e797a5b7fe0b2c96cca6">LogLevel</a> lvl, std::string const &amp;txt) const</td></tr>
+<tr class="memdesc:a34d8dc0b52328b716636c7217204ce8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override this method in order to obatain logs from the IMqtt implementation. Logs from the underlying MQTT library will not be provided in this callback. If not overriden, a default empty function will be used.  <a href="classi__mqtt__client_1_1IMqttLogCallbacks.html#a34d8dc0b52328b716636c7217204ce8f">More...</a><br /></td></tr>
+<tr class="separator:a34d8dc0b52328b716636c7217204ce8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a6052970f1a4a6cb8cbb2e310335d6641"><td class="memItemLeft" align="right" valign="top"><a id="a6052970f1a4a6cb8cbb2e310335d6641"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>LogMqttLib</b> (LogLevelLib, std::string const &amp;)</td></tr>
+<tr class="memitem:a6052970f1a4a6cb8cbb2e310335d6641"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html#a6052970f1a4a6cb8cbb2e310335d6641">LogMqttLib</a> (<a class="el" href="IMqttClientDefines_8h.html#a029d7b425fed2d66d94c1b033d3267a6">LogLevelLib</a>, std::string const &amp;)</td></tr>
+<tr class="memdesc:a6052970f1a4a6cb8cbb2e310335d6641"><td class="mdescLeft">&#160;</td><td class="mdescRight">used internally  <a href="classi__mqtt__client_1_1IMqttLogCallbacks.html#a6052970f1a4a6cb8cbb2e310335d6641">More...</a><br /></td></tr>
 <tr class="separator:a6052970f1a4a6cb8cbb2e310335d6641"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a373ddd823fe3dc92ea1051698c4292d1"><td class="memItemLeft" align="right" valign="top"><a id="a373ddd823fe3dc92ea1051698c4292d1"></a>
-static MqttLogInit_t const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>InitLogMqttLib</b> (MqttLogInit_t const &amp;)</td></tr>
-<tr class="separator:a373ddd823fe3dc92ea1051698c4292d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f384a87085ac8773b344eeb5b90203e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="IMqttClientDefines_8h.html#af0023e1f8b78e4743b44013708ca4998">MqttLogInit_t</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classi__mqtt__client_1_1IMqttLogCallbacks.html#a0f384a87085ac8773b344eeb5b90203e">InitLogMqttLib</a> (<a class="el" href="IMqttClientDefines_8h.html#af0023e1f8b78e4743b44013708ca4998">MqttLogInit_t</a> const &amp;initParam)</td></tr>
+<tr class="memdesc:a0f384a87085ac8773b344eeb5b90203e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Can be used in order to provide a callback function object, that is invoked to handover logs from the underlying MQTT library to the user. Logs from IMqtt will not be provided through this callback. This method can only be called one single time and has to be called before instantiating the first IMqtt object.  <a href="classi__mqtt__client_1_1IMqttLogCallbacks.html#a0f384a87085ac8773b344eeb5b90203e">More...</a><br /></td></tr>
+<tr class="separator:a0f384a87085ac8773b344eeb5b90203e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Describes the abstract callback interface for an MqttClient to provide logs to the user. Inherit from this class in order to obtain logs from the IMqtt implementation. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a0f384a87085ac8773b344eeb5b90203e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f384a87085ac8773b344eeb5b90203e">&#9670;&nbsp;</a></span>InitLogMqttLib()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="IMqttClientDefines_8h.html#af0023e1f8b78e4743b44013708ca4998">MqttLogInit_t</a> const  &amp; i_mqtt_client::IMqttLogCallbacks::InitLogMqttLib </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="IMqttClientDefines_8h.html#af0023e1f8b78e4743b44013708ca4998">MqttLogInit_t</a> const &amp;&#160;</td>
+          <td class="paramname"><em>initParam</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Can be used in order to provide a callback function object, that is invoked to handover logs from the underlying MQTT library to the user. Logs from IMqtt will not be provided through this callback. This method can only be called one single time and has to be called before instantiating the first IMqtt object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">initParam</td><td>see MqttLogInit_t </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Either what is set via argument, or in case of a second call, what has been set already (argument is ignored in this case). </dd></dl>
+
+</div>
+</div>
+<a id="a34d8dc0b52328b716636c7217204ce8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34d8dc0b52328b716636c7217204ce8f">&#9670;&nbsp;</a></span>Log()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void i_mqtt_client::IMqttLogCallbacks::Log </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="IMqttClientDefines_8h.html#a57e62a786673e797a5b7fe0b2c96cca6">LogLevel</a>&#160;</td>
+          <td class="paramname"><em>lvl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>txt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Override this method in order to obatain logs from the IMqtt implementation. Logs from the underlying MQTT library will not be provided in this callback. If not overriden, a default empty function will be used. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lvl</td><td>the log level of the message </td></tr>
+    <tr><td class="paramname">txt</td><td>the message text </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6052970f1a4a6cb8cbb2e310335d6641"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6052970f1a4a6cb8cbb2e310335d6641">&#9670;&nbsp;</a></span>LogMqttLib()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void i_mqtt_client::IMqttLogCallbacks::LogMqttLib </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="IMqttClientDefines_8h.html#a029d7b425fed2d66d94c1b033d3267a6">LogLevelLib</a>&#160;</td>
+          <td class="paramname"><em>lvl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>txt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>used internally </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/MqttClient/Interface/<a class="el" href="IMqttClientCallbacks_8h_source.html">IMqttClientCallbacks.h</a></li>
 <li>src/MqttClient/<a class="el" href="IMqttClient_8cpp.html">IMqttClient.cpp</a></li>

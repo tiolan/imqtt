@@ -1,4 +1,4 @@
 <map id="i_mqtt_client::IDispatchQueue" name="i_mqtt_client::IDispatchQueue">
-<area shape="rect" id="node1" title=" " alt="" coords="21,95,197,136"/>
-<area shape="rect" id="node2" href="$classi__mqtt__client_1_1IMqttMessageCallbacks.html" title=" " alt="" coords="5,5,212,47"/>
+<area shape="rect" id="node1" title="MQTT library implementations usually rely on callbacks, that are invoked by the MQTT library to hando..." alt="" coords="21,95,197,136"/>
+<area shape="rect" id="node2" href="$classi__mqtt__client_1_1IMqttMessageCallbacks.html" title="Describes the abstract interface that is used in order to provides MQTT messages received by the unde..." alt="" coords="5,5,212,47"/>
 </map>

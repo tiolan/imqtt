@@ -101,6 +101,12 @@ PahoClient::PahoClient(InitializeParameters const&     parameters,
     logCb->Log(LogLevel::INFO, "Initializing paho instance");
     auto brokerAddress{params.hostAddress + ":" + to_string(params.port)};
     logCb->Log(LogLevel::INFO, "Broker-Address: " + brokerAddress);
+
+    if (params.reconnectDelayMinLower < 0 || params.reconnectDelayMinUpper < 0 ||
+        params.reconnectDelayMinLower > params.reconnectDelayMinUpper) {
+        throw runtime_error("reconnectDelay not properly set");
+    }
+
     MQTTAsync_createOptions createOptions MQTTAsync_createOptions_initializer5;
 
     auto rc{MQTTASYNC_SUCCESS};

@@ -1,4 +1,4 @@
 <map id="i_mqtt_client::MqttMessage" name="i_mqtt_client::MqttMessage">
 <area shape="rect" id="node1" title=" " alt="" coords="7,80,210,107"/>
-<area shape="rect" id="node2" href="$classi__mqtt__client_1_1IMqttMessage.html" title=" " alt="" coords="5,5,212,32"/>
+<area shape="rect" id="node2" href="$classi__mqtt__client_1_1IMqttMessage.html" title="Describes the abstract interface to be used in order to deal with MqttMessages. It hides the underlyi..." alt="" coords="5,5,212,32"/>
 </map>
