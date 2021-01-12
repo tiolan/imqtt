@@ -155,6 +155,10 @@ MosquittoClient::MosquittoClient(IMqttClient::InitializeParameters const& parame
     if (MOSQ_ERR_SUCCESS != rc) {
         throw runtime_error("Was not able to set TLS options: " + string(mosquitto_strerror(rc)));
     }
+    rc = mosquitto_int_option(pMosqClient, MOSQ_OPT_TLS_USE_OS_CERTS, params.disableDefaultCaStore ? 0 : 1);
+    if (MOSQ_ERR_SUCCESS != rc) {
+        throw runtime_error("Was not able to dis/enable usage of OS certs: " + string(mosquitto_strerror(rc)));
+    }
 #endif
     logCb->Log(LogLevel::INFO, "Starting mosquitto instance");
     rc = mosquitto_loop_start(pMosqClient);

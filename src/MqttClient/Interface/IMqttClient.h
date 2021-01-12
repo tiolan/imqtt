@@ -85,6 +85,7 @@ public:
 #ifdef IMQTT_WITH_TLS
         std::string caFilePath{""};         /*!< path to a file containing a CA certificate */
         std::string caDirPath{""};          /*!< path to a directory containing CA certificates */
+        bool disableDefaultCaStore{false};  /*!< if true, the systems default CA directory will not be considered */
         std::string clientCertFilePath{""}; /*!< path to a file containing the client certificate */
         std::string privateKeyFilePath{""}; /*!< path to a file containting the clients private key */
         std::string privateKeyPassword{
@@ -95,7 +96,6 @@ public:
 #endif
 #endif
 #ifdef IMQTT_USE_PAHO
-        bool disableDefaultCaStore{false}; /*!< if true, the systems default CA directory will not be considered */
         bool autoReconnect{true};          /*!< if true, after connection loss, the MQTT library will try to reconnect
                                               automatically (true for Mosquitto always) */
         std::string httpProxy{

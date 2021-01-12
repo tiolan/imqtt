@@ -85,7 +85,6 @@ public:
 #ifdef IMQTT_WITH_TLS
 #ifdef IMQTT_USE_PAHO
         params.hostAddress           = "ssl://" + params.hostAddress;
-        params.disableDefaultCaStore = true;
 #endif
 #ifdef IMQTT_EXPERIMENTAL
         params.clientCert = CLIENT_CERT;
@@ -96,6 +95,7 @@ public:
 #endif
         params.port       = 8883;
         params.caFilePath = "/etc/mosquitto/certs/ca.crt";
+        params.disableDefaultCaStore = true;
 #else
         params.port = 1883;
 #endif

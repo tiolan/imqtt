@@ -125,17 +125,17 @@ $(function() {
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#ifdef IMQTT_WITH_TLS</span></div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        std::string caFilePath{<span class="stringliteral">&quot;&quot;</span>};         </div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        std::string caDirPath{<span class="stringliteral">&quot;&quot;</span>};          </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        std::string clientCertFilePath{<span class="stringliteral">&quot;&quot;</span>}; </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        std::string privateKeyFilePath{<span class="stringliteral">&quot;&quot;</span>}; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        std::string privateKeyPassword{</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            <span class="stringliteral">&quot;&quot;</span>}; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#ifdef IMQTT_EXPERIMENTAL</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        std::string clientCert{<span class="stringliteral">&quot;&quot;</span>}; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        std::string privateKey{<span class="stringliteral">&quot;&quot;</span>}; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordtype">bool</span> disableDefaultCaStore{<span class="keyword">false</span>};  </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        std::string clientCertFilePath{<span class="stringliteral">&quot;&quot;</span>}; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        std::string privateKeyFilePath{<span class="stringliteral">&quot;&quot;</span>}; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        std::string privateKeyPassword{</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="stringliteral">&quot;&quot;</span>}; </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#ifdef IMQTT_EXPERIMENTAL</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        std::string clientCert{<span class="stringliteral">&quot;&quot;</span>}; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        std::string privateKey{<span class="stringliteral">&quot;&quot;</span>}; </div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#ifdef IMQTT_USE_PAHO</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <span class="keywordtype">bool</span> disableDefaultCaStore{<span class="keyword">false</span>}; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#ifdef IMQTT_USE_PAHO</span></div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="keywordtype">bool</span> autoReconnect{<span class="keyword">true</span>};          </div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        std::string httpProxy{</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;            <span class="stringliteral">&quot;&quot;</span>}; </div>
