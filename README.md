@@ -8,7 +8,7 @@ IMqtt is heavily based on callback interfaces. The user has to implement those c
 In order to decouple the callbacks of the underlying MQTT library and the (potentially long-lasting) MQTT message processing done by the user, an optional FIFO-like IDispatchQueue is provided.
 
 # API Reference
-The API Reference can be found here: https://tiolan.github.io/imqtt/
+The API Reference can be found here: https://tiolan.github.io/imqtt/index.html
 
 # Status
 [![Build Status](https://www.travis-ci.com/tiolan/imqtt.svg?branch=master)](https://www.travis-ci.com/tiolan/imqtt)
